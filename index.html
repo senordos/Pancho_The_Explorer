@@ -14,10 +14,14 @@
 <canvas id="myCanvas" width="1024" height="768"></canvas>
 </section>
 <script src="leveldata.js"></script>
-<script src="sprite.js"></script>
+<script src="sprites/Sprite.js"></script>
+<script src="sprites/Enemy3.js"></script>
 
 <script>
 
+test = new Enemy3();
+
+console.log(test.name);
 
 
 
@@ -189,7 +193,7 @@ function initBricks(){
 
                 if (levels[level].layers[l].objects[o].name == "Player")
                 {
-                    player1 = new sprite();
+                    player1 = new Sprite();
                     setAttributes(player1, { 
                         name:"Player1", 
                         img:"tiles/spritesheet_player.png",
@@ -201,7 +205,7 @@ function initBricks(){
                 }
                 if (levels[level].layers[l].objects[o].name == "Enemy1")
                 {
-                    enemies[enemyCounter] = new sprite();
+                    enemies[enemyCounter] = new Sprite();
                     setAttributes(enemies[enemyCounter], { 
                         name:"Enemy1", 
                         img:"tiles/spritesheet_enemy1.png",
@@ -221,7 +225,7 @@ function initBricks(){
                 }
                 if (levels[level].layers[l].objects[o].name == "Enemy2")
                 {
-                    enemies[enemyCounter] = new sprite();
+                    enemies[enemyCounter] = new Sprite();
                     setAttributes(enemies[enemyCounter], { 
                         name:"Enemy2", 
                         img:"tiles/spritesheet_enemy2.png",                         
@@ -241,7 +245,7 @@ function initBricks(){
                 }
                 if (levels[level].layers[l].objects[o].name == "Enemy3")
                 {
-                    enemies[enemyCounter] = new sprite();
+                    enemies[enemyCounter] = new Sprite();
                     setAttributes(enemies[enemyCounter], { 
                         name:"Enemy3", 
                         x:384, 
