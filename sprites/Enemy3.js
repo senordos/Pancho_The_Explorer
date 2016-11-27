@@ -60,26 +60,26 @@ Enemy3.prototype.updateMoveAttributesX = function (map)
 
     if (this.localBricks.xLinedUp == true)
     {
-        if (map[this.localBricks.down].colour == 0 && this.xDirection == 1 && this.rotation == 0)
+        if (map[this.localBricks.down].type == 0 && this.xDirection == 1 && this.rotation == 0)
         {
             this.xDirection = 0;
             this.yDirection = 1;
             this.rotation = 90;
         }   
-        if (map[this.localBricks.down].colour == 0 && this.xDirection == -1 && this.rotation == 0)
+        if (map[this.localBricks.down].type == 0 && this.xDirection == -1 && this.rotation == 0)
         {
             this.xDirection = 0;
             this.yDirection = 1;
             this.rotation = 270;
 
         }                        
-        if (map[this.localBricks.up].colour == 0 && this.xDirection == -1  && this.rotation == 180)
+        if (map[this.localBricks.up].type == 0 && this.xDirection == -1  && this.rotation == 180)
         {
             this.xDirection = 0;
             this.yDirection = -1;
             this.rotation = 270;
         }    
-        if (map[this.localBricks.up].colour == 0 && this.xDirection == 1  && this.rotation == 180 )
+        if (map[this.localBricks.up].type == 0 && this.xDirection == 1  && this.rotation == 180 )
         {
             this.xDirection = 0;
             this.yDirection = -1;
@@ -97,28 +97,28 @@ Enemy3.prototype.updateMoveAttributesY = function (map)
 
     if ( this.localBricks.yLinedUp == true )
     {
-        if (bricks[this.localBricks.left].colour == 0 && this.yDirection == 1 && this.rotation == 90)
+        if (bricks[this.localBricks.left].type == 0 && this.yDirection == 1 && this.rotation == 90)
         {
                 this.yDirection = 0;        
                 this.xDirection = -1;
                 this.rotation = 180;
 
         }
-        if (bricks[this.localBricks.left].colour == 0 && this.yDirection == -1 && this.rotation == 90)
+        if (bricks[this.localBricks.left].type == 0 && this.yDirection == -1 && this.rotation == 90)
         {
                 this.yDirection = 0;        
                 this.xDirection = -1;
                 this.rotation = 0;
 
         }
-        if (bricks[this.localBricks.right].colour == 0 && this.yDirection == 1 && this.rotation == 270)
+        if (bricks[this.localBricks.right].type == 0 && this.yDirection == 1 && this.rotation == 270)
         {
                 this.yDirection = 0;        
                 this.xDirection = 1;
                 this.rotation = 180;
 
         }
-        if (bricks[this.localBricks.right].colour == 0 && this.yDirection == -1 && this.rotation == 270)
+        if (bricks[this.localBricks.right].type == 0 && this.yDirection == -1 && this.rotation == 270)
         {
                 this.yDirection = 0;        
                 this.xDirection = 1;
