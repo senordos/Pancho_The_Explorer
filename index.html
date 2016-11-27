@@ -16,13 +16,7 @@
 <script src="leveldata.js"></script>
 <script src="sprites/Sprite.js"></script>
 <script src="sprites/Enemy3.js"></script>
-
 <script>
-
-test = new Enemy3();
-
-console.log(test.name);
-
 
 
 var canvas = document.getElementById("myCanvas");
@@ -243,17 +237,10 @@ function initBricks(){
 
                     enemyCounter++;
                 }
+                
                 if (levels[level].layers[l].objects[o].name == "Enemy3")
                 {
-                    enemies[enemyCounter] = new Sprite();
-                    setAttributes(enemies[enemyCounter], { 
-                        name:"Enemy3", 
-                        x:384, 
-                        y:128,
-                        xSpeed:1,
-                        rectOffset:{top:16,bottom:63,left:8,right:55}
-                    
-                    });
+                    enemies[enemyCounter] = new Enemy3();
 
                     enemies[enemyCounter].x = Math.floor(levels[level].layers[l].objects[o].x); 
                     enemies[enemyCounter].y = Math.floor(levels[level].layers[l].objects[o].y);
@@ -264,35 +251,20 @@ function initBricks(){
                     enemies[enemyCounter].y = (enemies[enemyCounter].y - enemies[enemyCounter].y % 64);
                     console.log("after x: " + enemies[enemyCounter].x);
                     console.log("after y: " + enemies[enemyCounter].y);
-                    
+
+                                  
                     //for Enemy3, set the starting x and y direction. If not set, use defaults.
+             
+                                       
+                    enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
 
-                    if ( levels[level].layers[l].objects[o].properties !== undefined &&
-                         levels[level].layers[l].objects[o].properties.startXDirection !== undefined &&
-                         levels[level].layers[l].objects[o].properties.startYDirection !== undefined &&
-                         levels[level].layers[l].objects[o].rotation !== undefined )
-                    {
-                       
-                        enemies[enemyCounter].xDirection = levels[level].layers[l].objects[o].properties.startXDirection;
-                        enemies[enemyCounter].yDirection = levels[level].layers[l].objects[o].properties.startYDirection;
-                        enemies[enemyCounter].rotation = levels[level].layers[l].objects[o].rotation;
-                     
-                    }
-                    else
-                    {
-                        //X and Y direction will be defaults.
-                        console.log("Enemy3 - properties undefined for startXDirection / startYDirection")                                                
-                    }
                    
-
-
-
-
-                    enemies[enemyCounter].enemyImage.src = "tiles/spritesheet_enemy3.png";                         
- 
+                    
 
                     enemyCounter++;
+
                 }
+                    
 
             }    
         }

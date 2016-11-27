@@ -50,7 +50,8 @@ levels[0] =
                  "properties":
                     {
                      "startXDirection":1,
-                     "startYDirection":0
+                     "startYDirection":0,
+                     "rotation":0
                     },
                  "propertytypes":
                     {
@@ -72,7 +73,8 @@ levels[0] =
                  "properties":
                     {
                      "startXDirection":1,
-                     "startYDirection":0
+                     "startYDirection":0,
+                     "rotation":180
                     },
                  "propertytypes":
                     {

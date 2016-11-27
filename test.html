@@ -1,0 +1,27 @@
+<script>
+
+function Element() {}
+Element.prototype.render = function(text2) {
+    // Generic element rendering code.
+    console.log("2" + "Text = " + text2);
+};
+
+function ImageElement() {}
+
+ImageElement.prototype = Object.create(Element.prototype);
+
+ImageElement.prototype.render = function(text) {
+    
+    console.log("1" + "Text = " + text);
+    
+    // Call the super method.
+    // Be sure to apply it onto our current object with call(this)!
+    Element.prototype.render.call(this);
+
+    // Rendering code specific to images.
+};
+
+
+test = new ImageElement();
+test.render("Hello");
+</script>
