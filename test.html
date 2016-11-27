@@ -16,7 +16,7 @@ ImageElement.prototype.render = function(text) {
     
     // Call the super method.
     // Be sure to apply it onto our current object with call(this)!
-    Element.prototype.render.call(this);
+    Element.prototype.render.call(this, text);
 
     // Rendering code specific to images.
 };
