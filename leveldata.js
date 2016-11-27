@@ -109,7 +109,7 @@ levels[0] =
          "x":0,
          "y":0
         }],
- "nextobjectid":22,
+ "nextobjectid":24,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tileheight":64,
@@ -167,7 +167,6 @@ levels[0] =
  "version":1,
  "width":60
 };
-
 
 
 

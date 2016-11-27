@@ -91,6 +91,8 @@ function Sprite()
 
 Sprite.prototype.init = function(level_sprite_data)
 {
+    console.log("INIT: " + this.name);
+
     this.image = new Image();
     this.image.src = this.image_src;
 
@@ -98,8 +100,8 @@ Sprite.prototype.init = function(level_sprite_data)
     this.x = Math.floor(level_sprite_data.x); 
     this.y = Math.floor(level_sprite_data.y);
 
-    console.log("before x: " + this.x);
-    console.log("before y: " + this.y);
+    console.log("map x: " + this.x);
+    console.log("map y: " + this.y);
 
     var xAlignGap = this.x % 64;
     var yAlignGap = this.y % 64;
@@ -110,8 +112,8 @@ Sprite.prototype.init = function(level_sprite_data)
     if ( yAlignGap > 32 ) { this.y = this.y + (64 - yAlignGap); }
     else                  { this.y = this.y - yAlignGap; }
 
-    console.log("after x: " + this.x);
-    console.log("after y: " + this.y);
+    console.log("aligned x: " + this.x);
+    console.log("aligned y: " + this.y);
 
 
 
@@ -119,7 +121,8 @@ Sprite.prototype.init = function(level_sprite_data)
 
 Sprite.prototype.getCollisionRect = function()
 {
-    var collisionRect = {
+    var collisionRect = 
+    {
           top: this.rectOffset.top + this.targetY,
           bottom: this.rectOffset.bottom + this.targetY,
           left: this.rectOffset.left + this.targetX,
@@ -128,3 +131,26 @@ Sprite.prototype.getCollisionRect = function()
 
     return  collisionRect;
 };
+
+Sprite.prototype.setMoveTargetX = function()
+{
+    this.targetX = this.x;
+    this.targetY = this.y; 
+}
+
+Sprite.prototype.setMoveTargetY = function()
+{
+    this.targetX = this.x;
+    this.targetY = this.y;
+}
+
+
+Sprite.prototype.updateMoveAttributesX = function(map)
+{
+    //Do nothing
+}
+
+Sprite.prototype.updateMoveAttributesY = function(map)
+{
+    //Do nothing
+}
