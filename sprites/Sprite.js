@@ -1,4 +1,4 @@
-function sprite()
+function Sprite()
 { 
     this.x = 64;
     this.y = 64;
@@ -8,6 +8,7 @@ function sprite()
     this.targetY = 512;
     this.name = "GENERAL SPRITE"; 
     this.img = "NO_IMAGE"; 
+    this.image_src = "HELLO";
     this.enemyImage = new Image();
     this.animFrame = 0;
     this.xDirection = 1;
@@ -42,7 +43,8 @@ function sprite()
     this.jump = false;
 
     this.localBricks = {current:0,left:0,right:0,up:0,down:0,leftUp:0,leftDown:0,rightUp:0,rightDown:0,xLinedUp:false,yLinedUp:false};
-                
+
+/*                
     this.getCollisionRect = function()
                 {
                     var collisionRect = {
@@ -54,6 +56,7 @@ function sprite()
 
                     return  collisionRect;
                 },
+*/
 
     this.getBottomCollisionRect = function()
                 {
@@ -99,3 +102,22 @@ function sprite()
                 }
 
 }; 
+
+Sprite.prototype.init = function(level_sprite_data)
+{
+    this.enemyImage = new Image();
+    this.enemyImage.src = this.image_src;
+
+};
+
+Sprite.prototype.getCollisionRect = function()
+{
+    var collisionRect = {
+          top: this.rectOffset.top + this.targetY,
+          bottom: this.rectOffset.bottom + this.targetY,
+          left: this.rectOffset.left + this.targetX,
+          right: this.rectOffset.right + this.targetX
+    };
+
+    return  collisionRect;
+};
