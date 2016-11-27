@@ -122,6 +122,9 @@ tiles = new Image();
 tiles.src = "tiles/platform_tiles.png";
 
 
+var enemy_image = new Image();
+var player_image = new Image();
+
 var player1;
 var enemies = [];
 
@@ -190,11 +193,10 @@ function initBricks(){
                     setAttributes(player1, { 
                         name:"Player1", 
                         img:"tiles/spritesheet_player.png",
-                        image_src:"tiles/spritesheet_player.png",
                         rectOffset:{top:0,bottom:63,left:8,right:55}
                         });
-
-                    player1.init(levels[level].layers[l].objects[o]); 
+                    player1.x = Math.floor(levels[level].layers[l].objects[o].x); 
+                    player1.y = Math.floor(levels[level].layers[l].objects[o].y); 
                         
                 }
                 if (levels[level].layers[l].objects[o].name == "Enemy1")
@@ -849,7 +851,8 @@ function drawPlayer()
         animXOffset = (gameFrame % 5) * 64;
    }
 
-   bctx.drawImage(player1.image, animXOffset,animYOffset,64,64, player1.x - mapOffsetX, player1.y - mapOffsetY,64,64);
+   player_image.src = player1.img;
+   bctx.drawImage(player_image, animXOffset,animYOffset,64,64, player1.x - mapOffsetX, player1.y - mapOffsetY,64,64);
 }
 
 
@@ -885,8 +888,13 @@ function drawEnemies()
        //sets position in the spritesheet 
        //the 4 is because there are only 4 animations in the enemy 
        animXOffset = (gameFrame % 4) * 64;
+
+       //enemy_image.src = enemies[i].img;  
+       
+       //console.log("enemy " + i + " animXOffset= " + animXOffset + " animYOffset " + animYOffset + " src= " + enemy_image.src);
+      
         
-       bctx.drawImage(enemies[i].image, animXOffset, animYOffset,64,64, enemies[i].x - mapOffsetX, enemies[i].y - mapOffsetY,64,64);
+       bctx.drawImage(enemies[i].enemyImage, animXOffset, animYOffset,64,64, enemies[i].x - mapOffsetX, enemies[i].y - mapOffsetY,64,64);
    }
 }
 

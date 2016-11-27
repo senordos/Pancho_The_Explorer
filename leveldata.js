@@ -27,8 +27,8 @@ levels[0] =
                  "type":"",
                  "visible":true,
                  "width":64,
-                 "x":1017,
-                 "y":127
+                 "x":1328.13320079523,
+                 "y":161.791252485089
                 }, 
                 {
                  "gid":11,
@@ -39,8 +39,8 @@ levels[0] =
                  "type":"",
                  "visible":true,
                  "width":64,
-                 "x":1217,
-                 "y":127
+                 "x":884.992047713718,
+                 "y":125.011928429423
                 }, 
                 {
                  "gid":11,
@@ -49,14 +49,15 @@ levels[0] =
                  "name":"Enemy3",
                  "properties":
                     {
+                     "rotation":0,
                      "startXDirection":1,
-                     "startYDirection":0,
-                     "rotation":0
+                     "startYDirection":0
                     },
                  "propertytypes":
                     {
-                     "XDirection":"int",
-                     "YDirection":"int"
+                     "rotation":"int",
+                     "startXDirection":"int",
+                     "startYDirection":"int"
                     },
                  "rotation":0,
                  "type":"",
@@ -72,21 +73,34 @@ levels[0] =
                  "name":"Enemy3",
                  "properties":
                     {
+                     "rotation":180,
                      "startXDirection":1,
-                     "startYDirection":0,
-                     "rotation":180
+                     "startYDirection":0
                     },
                  "propertytypes":
                     {
-                     "XDirection":"int",
-                     "YDirection":"int"
+                     "rotation":"int",
+                     "startXDirection":"int",
+                     "startYDirection":"int"
                     },
-                 "rotation":180,
+                 "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":64,
                  "x":1088,
-                 "y":832
+                 "y":831
+                }, 
+                {
+                 "gid":11,
+                 "height":64,
+                 "id":21,
+                 "name":"Enemy1",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":64,
+                 "x":1535,
+                 "y":127
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -95,7 +109,7 @@ levels[0] =
          "x":0,
          "y":0
         }],
- "nextobjectid":21,
+ "nextobjectid":22,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tileheight":64,
