@@ -218,6 +218,7 @@ function initBricks(){
                     enemyCounter++;
 
                 }
+
                     
 
             }    
@@ -465,14 +466,28 @@ function checkEnemyCollisions(playerSprite)
 
             if(intersectRect(playerBottomRect, enemyTopRect) && enemies[i].hit == false)
             {
-                //player on top of enemy
 
-                enemies[i].hit = true;
-                enemies[i].deadly = false;
-                enemies[i].xSpeed = 3;
-                enemies[i].xDirection = enemies[i].xDirection * -1;
+                if (enemies[i].name != "Bridge1")
+                {
+                    //player on top of enemy
 
-                playerSprite.yDirection = PLAYERJUMP - 4;;
+                    enemies[i].hit = true;
+                    enemies[i].deadly = false;
+                    enemies[i].xSpeed = 3;
+                    enemies[i].xDirection = enemies[i].xDirection * -1;
+
+                    playerSprite.yDirection = PLAYERJUMP - 4;
+                }
+                else
+                {
+                    enemies[i].hit = true;
+                    enemies[i].deadly = false;
+                    enemies[i].xSpeed = 3;
+                    enemies[i].yDirection = 1;
+                    enemies[i].ySpeed = 1;
+
+                    playerSprite.yDirection = 0;                    
+                }
 
             }
             else
@@ -546,6 +561,7 @@ function movePlayerY()
     player1.targetX = player1.x;
     player1.targetY = player1.y;
 
+
     if(player1_UpPressed && player1.collisionBottom)
     {
       player1.yDirection = PLAYERJUMP; 
@@ -587,37 +603,13 @@ function moveEnemiesY()
 
     for(i=0; i < enemies.length; i++)
     {
-        //reset the enemy targets before moving.
-        enemies[i].targetX = enemies[i].x;
-        enemies[i].targetY = enemies[i].y;
-
         
-        if (enemies[i].name == "Enemy1" || enemies[i].name == "Enemy2")
-        {
-
-            // 1 //
-
-            //enemies fall due to gravity
-            enemies[i].yDirection = enemies[i].yDirection + GRAVITY;
-
-            if (enemies[i].yDirection > 5) {enemies[i].yDirection = 5;}
-
-            enemies[i].targetY = enemies[i].y + enemies[i].yDirection;
-        }
-
-        if (enemies[i].name == "Enemy3")
-        {
-            // 1 //
-            // This enemy is immune to gravity, following its own path
-            enemies[i].targetY = enemies[i].y + enemies[i].yDirection * 2;  //<-- this should be times speed
-        }
-
+        // 1 //
+        enemies[i].setMoveTargetY();
+        
 
         // 2 & 3 //
         checkWorldCollisions(enemies[i]);
-        
-        
-        
 
         
         // 4 //
@@ -627,53 +619,7 @@ function moveEnemiesY()
         // 5 //
         setLocalBricks(enemies[i]);
 
-        // All enemy types will stop Y direction if they hit something whilst moving Y
-        if (enemies[i].collision == true)
-        {
-                enemies[i].yDirection = 0;
-        }
-
-
-        if ( enemies[i].name == "Enemy3")
-        {
-            if ( enemies[i].localBricks.yLinedUp == true )
-            {
-                if (bricks[enemies[i].localBricks.left].colour == 0 && enemies[i].yDirection == 1 && enemies[i].rotation == 90)
-                {
-                        enemies[i].yDirection = 0;        
-                        enemies[i].xDirection = -1;
-                        enemies[i].rotation = 180;
-                    
-                }
-                if (bricks[enemies[i].localBricks.left].colour == 0 && enemies[i].yDirection == -1 && enemies[i].rotation == 90)
-                {
-                        enemies[i].yDirection = 0;        
-                        enemies[i].xDirection = -1;
-                        enemies[i].rotation = 0;
-                    
-                }
-                if (bricks[enemies[i].localBricks.right].colour == 0 && enemies[i].yDirection == 1 && enemies[i].rotation == 270)
-                {
-                        enemies[i].yDirection = 0;        
-                        enemies[i].xDirection = 1;
-                        enemies[i].rotation = 180;
-                    
-                }
-                if (bricks[enemies[i].localBricks.right].colour == 0 && enemies[i].yDirection == -1 && enemies[i].rotation == 270)
-                {
-                        enemies[i].yDirection = 0;        
-                        enemies[i].xDirection = 1;
-                        enemies[i].rotation = 0;
-                    
-                }
-
-            }
-        }
-
-
-
-
-
+        enemies[i].updateMoveAttributesY(bricks);
     }
 }
 
@@ -688,15 +634,10 @@ function moveEnemiesX()
 
     for(i=0; i < enemies.length; i++)
     {
-        //reset the player targets before moving.
-        enemies[i].targetY = enemies[i].y;
-        enemies[i].targetX = enemies[i].x;
-
-
 
         // 1 //
-        //all enemies move at the same speed and with the same rules in the X direction
-        enemies[i].targetX = enemies[i].x + ((enemies[i].xDirection) * 2); //This is currently tied to the framerate
+        enemies[i].setMoveTargetX();
+
        
 
         // 2 & 3 //
@@ -709,72 +650,9 @@ function moveEnemiesX()
 
         // 5 //
         setLocalBricks(enemies[i]);
-        
-        //if the new position is perfectly lined up, have a look around.
-        if (enemies[i].localBricks.xLinedUp && enemies[i].name == "Enemy3")  {  console.log("X Lined Up"); }
 
+        enemies[i].updateMoveAttributesX(bricks);
 
-        //for all enemies, if hit a wall whilst moving in X direction, reverse direction.
-        if ( enemies[i].collision == true )
-        {
-
-            enemies[i].xDirection = enemies[i].xDirection * -1;
-        
-        }
-
-
-
-        // if enemies = Enemy 2, make the enemy jump over walls of 1 brick high        
-        if ( enemies[i].name == "Enemy2")
-        {
-           if ( (   enemies[i].collisionBottom == true && 
-                    enemies[i].xDirection < 0 && 
-                    bricks[enemies[i].localBricks.leftUp].tileName == "none" &&
-                    bricks[enemies[i].localBricks.left].tileName != "none" 
-                )
-                ||
-                (   enemies[i].collisionBottom == true && 
-                    enemies[i].xDirection > 0 && 
-                    bricks[enemies[i].localBricks.rightUp].tileName == "none" &&
-                    bricks[enemies[i].localBricks.right].tileName != "none" 
-                )
-              ) 
-           {
-               enemies[i].yDirection = enemies[i].yDirection = -25;
-           }
-        }
-        // if enemy = Enemy 3, check for blocks to crawl along. If no block, change Y direction.
-        if ( enemies[i].name =="Enemy3")
-        {
-            if (enemies[i].localBricks.xLinedUp == true)
-            {
-                if (bricks[enemies[i].localBricks.down].colour == 0 && enemies[i].xDirection == 1 && enemies[i].rotation == 0)
-                {
-                    enemies[i].xDirection = 0;
-                    enemies[i].yDirection = 1;
-                    enemies[i].rotation = 90;
-                }   
-                if (bricks[enemies[i].localBricks.down].colour == 0 && enemies[i].xDirection == -1 && enemies[i].rotation == 0)
-                {
-                    enemies[i].xDirection = 0;
-                    enemies[i].yDirection = 1;
-                    enemies[i].rotation = 270;
-
-                }                        
-                if (bricks[enemies[i].localBricks.up].colour == 0 && enemies[i].xDirection == -1  && enemies[i].rotation == 180)
-                {
-                    enemies[i].xDirection = 0;
-                    enemies[i].yDirection = -1;
-                    enemies[i].rotation = 270;
-                }    
-                if (bricks[enemies[i].localBricks.up].colour == 0 && enemies[i].xDirection == 1  && enemies[i].rotation == 180 )
-                {
-                    enemies[i].xDirection = 0;
-                    enemies[i].yDirection = -1;
-                    enemies[i].rotation = 90;
-                }                
-            }
-        }
 
     }
 }
