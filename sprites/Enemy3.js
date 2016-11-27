@@ -3,8 +3,8 @@ function Enemy3()
 
     Sprite.call(this);
 
-    console.log("Enemy3 Constructor");
     this.name = "Enemy3";
+
     this.image_src = "tiles/spritesheet_enemy3.png";
 
 }
@@ -31,5 +31,5 @@ Enemy3.prototype.init = function(level_sprite_data)
         //X and Y direction will be defaults.
         console.log("Enemy[] - Enemy3 - properties undefined for startXDirection / startYDirection / rotation")                                                
     }
-    
+
 };

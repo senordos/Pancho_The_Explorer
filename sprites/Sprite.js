@@ -44,20 +44,6 @@ function Sprite()
 
     this.localBricks = {current:0,left:0,right:0,up:0,down:0,leftUp:0,leftDown:0,rightUp:0,rightDown:0,xLinedUp:false,yLinedUp:false};
 
-/*                
-    this.getCollisionRect = function()
-                {
-                    var collisionRect = {
-                          top: this.rectOffset.top + this.targetY,
-                          bottom: this.rectOffset.bottom + this.targetY,
-                          left: this.rectOffset.left + this.targetX,
-                          right: this.rectOffset.right + this.targetX
-                    };
-
-                    return  collisionRect;
-                },
-*/
-
     this.getBottomCollisionRect = function()
                 {
                     var bottomCollisionRect = {
@@ -105,8 +91,29 @@ function Sprite()
 
 Sprite.prototype.init = function(level_sprite_data)
 {
-    this.enemyImage = new Image();
-    this.enemyImage.src = this.image_src;
+    this.image = new Image();
+    this.image.src = this.image_src;
+
+
+    this.x = Math.floor(level_sprite_data.x); 
+    this.y = Math.floor(level_sprite_data.y);
+
+    console.log("before x: " + this.x);
+    console.log("before y: " + this.y);
+
+    var xAlignGap = this.x % 64;
+    var yAlignGap = this.y % 64;
+
+    if ( xAlignGap > 32 ) { this.x = this.x + (64 - xAlignGap); }
+    else                  { this.x = this.x - xAlignGap; }
+
+    if ( yAlignGap > 32 ) { this.y = this.y + (64 - yAlignGap); }
+    else                  { this.y = this.y - yAlignGap; }
+
+    console.log("after x: " + this.x);
+    console.log("after y: " + this.y);
+
+
 
 };
 
