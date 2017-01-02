@@ -18,9 +18,9 @@
 <script src="sprites/Enemy1.js"></script>
 <script src="sprites/Enemy2.js"></script>
 <script src="sprites/Enemy3.js"></script>
+<script src="sprites/Bridge1.js"></script>
 <script src="bricks/Brick.js"></script>
 <script src="bricks/RegularBrick.js"></script>
-<script src="bricks/Bridge1.js"></script>
 <script>
 
 
@@ -217,6 +217,13 @@ function initBricks(){
                 if (levels[level].layers[l].objects[o].name == "Enemy3")
                 {
                     enemies[enemyCounter] = new Enemy3();                            
+                    enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
+                    enemyCounter++;
+
+                }
+               if (levels[level].layers[l].objects[o].name == "Bridge1")
+                {
+                    enemies[enemyCounter] = new Bridge1();                            
                     enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
                     enemyCounter++;
 
@@ -454,50 +461,80 @@ function checkEnemyCollisions(playerSprite)
     //get the Rect for this sprite
         //Build a rectangle based on the overall sprite's collision offset
     var playerRect = playerSprite.getCollisionRect();
+    var playerTopRect = playerSprite.getTopCollisionRect();
+    var playerBottomRect = playerSprite.getBottomCollisionRect();
+    var playerLeftRect = playerSprite.getLeftCollisionRect();
+    var playerRightRect = playerSprite.getRightCollisionRect();
 
     for (i=0; i < enemies.length; i++)
     {
         var enemyRect = enemies[i].getCollisionRect();
+        var enemyTopRect = enemies[i].getTopCollisionRect();
+
+
+        if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Bridge1")
+        {
+
+            console.log("HIT BRIDGE");
+            // Has hit a bridge 
+
+
+
+            if (intersectRect(playerBottomRect, enemyTopRect))
+            {
+                //Start the bridge falling
+                enemies[i].hit = true;
+                enemies[i].yDirection = 1;
+                enemies[i].ySpeed = 1;
+
+                playerSprite.yDirection = 0;   
+                playerSprite.y = enemies[i].y - playerSprite.collisionHeight; 
+                playerSprite.collisionBottom = true;
+            }
+            if (intersectRect(playerLeftRect, enemyRect))
+            {
+                playerSprite.xDirection = 0;
+                playerSprite.x = enemies[i].x + playerSprite.collisionWidth; 
+                playerSprite.collisionLeft = true;
+            }
+            if (intersectRect(playerRightRect, enemyRect))
+            {
+                playerSprite.xDirection = 0;
+                playerSprite.x = enemies[i].x - playerSprite.collisionWidth; 
+                playerSprite.collisionRight = true;
+            }
+
+        }        
 
         if(intersectRect(playerRect, enemyRect) && enemies[i].deadly == true)
         {
-            console.log("hit enemy!");
-            var playerBottomRect = playerSprite.getBottomCollisionRect();
-
-            var enemyTopRect = enemies[i].getTopCollisionRect();
 
             if(intersectRect(playerBottomRect, enemyTopRect) && enemies[i].hit == false)
             {
 
-                if (enemies[i].name != "Bridge1")
-                {
-                    //player on top of enemy
 
-                    enemies[i].hit = true;
-                    enemies[i].deadly = false;
-                    enemies[i].xSpeed = 3;
-                    enemies[i].xDirection = enemies[i].xDirection * -1;
+                //player on top of enemy
 
-                    playerSprite.yDirection = PLAYERJUMP - 4;
-                }
-                else
-                {
-                    enemies[i].hit = true;
-                    enemies[i].deadly = false;
-                    enemies[i].xSpeed = 3;
-                    enemies[i].yDirection = 1;
-                    enemies[i].ySpeed = 1;
+                enemies[i].hit = true;
+                enemies[i].deadly = false;
+                enemies[i].xSpeed = 3;
+                enemies[i].xDirection = enemies[i].xDirection * -1;
 
-                    playerSprite.yDirection = 0;                    
-                }
+                playerSprite.yDirection = PLAYERJUMP - 4;
+
+
 
             }
             else
             {
+
                 //player hit by enemy
                 playerSprite.hit = true;
 
             }
+            
+
+
         }
     }
 }
@@ -659,16 +696,6 @@ function moveEnemiesX()
     }
 }
 
-function updateBricks()
-{
-    for (i=0; i < BRICKCOUNT; i++)
-    {
-        if( bricks[i].type != 0 && bricks[i].moveable == true )
-        {    
-            bricks[i].move();
-        }
-    }
-}
 
 
 function drawBricks(){
@@ -775,7 +802,7 @@ function drawEnemies()
 
        //sets position in the spritesheet 
        //the 4 is because there are only 4 animations in the enemy 
-       animXOffset = (gameFrame % 4) * 64;
+       animXOffset = (gameFrame % enemies[i].animMaxFrame) * 64;
         
        bctx.drawImage(enemies[i].image, animXOffset, animYOffset,64,64, enemies[i].x - mapOffsetX, enemies[i].y - mapOffsetY,64,64);
    }
@@ -866,8 +893,6 @@ function gameLoop()
 
         movePlayerX();
         movePlayerY();
-
-        updateBricks();
 
         checkEnemyCollisions(player1);
 

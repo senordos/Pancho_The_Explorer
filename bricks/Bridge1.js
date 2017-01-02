@@ -9,7 +9,7 @@ function Bridge1()
 
 Bridge1.prototype = Object.create(Brick.prototype);
 
-Bridge1.prototype.init = function()
+Bridge1.prototype.init = function(level_sprite_data)
 {
     Sprite.prototype.init.call(this, level_sprite_data);
 

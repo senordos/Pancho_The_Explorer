@@ -11,6 +11,7 @@ function Sprite()
     this.image_src = "HELLO";
     this.enemyImage = new Image();
     this.animFrame = 0;
+    this.animMaxFrame = 4;
     this.xDirection = 1;
     this.yDirection = 1;
     this.xSpeed = 0; 
@@ -65,8 +66,29 @@ function Sprite()
                     };
 
                     return  topCollisionRect;
-                },    
+                },
+    this.getLeftCollisionRect = function()
+                {
+                    var leftCollisionRect = {
+                          top: this.rectLeftOffset.top + this.targetY,
+                          bottom: this.rectLeftOffset.bottom + this.targetY,
+                          left: this.rectLeftOffset.left + this.targetX,
+                          right: this.rectLeftOffset.right + this.targetX
+                    };
 
+                    return  leftCollisionRect;
+                },    
+    this.getRightCollisionRect = function()
+                {
+                    var rightCollisionRect = {
+                          top: this.rectRightOffset.top + this.targetY,
+                          bottom: this.rectRightOffset.bottom + this.targetY,
+                          left: this.rectRightOffset.left + this.targetX,
+                          right: this.rectRightOffset.right + this.targetX
+                    };
+
+                    return  rightCollisionRect;
+                },    
     this.update = function()
                 {
                     
