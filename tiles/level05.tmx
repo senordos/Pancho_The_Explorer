@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="60" height="40" tilewidth="64" tileheight="64" nextobjectid="114">
+ <properties>
+  <property name="startYDirection" type="int" value="1"/>
+ </properties>
+ <tileset firstgid="1" name="platform_tileset" tilewidth="1" tileheight="1" tilecount="0" columns="0"/>
+ <tileset firstgid="1" name="platform_tiles" tilewidth="64" tileheight="64" tilecount="11" columns="1">
+  <image source="platform_tiles.png" width="64" height="704"/>
+ </tileset>
+ <tileset firstgid="12" name="spritesheet_enemy1" tilewidth="64" tileheight="64" tilecount="8" columns="4">
+  <image source="spritesheet_enemy1.png" width="256" height="128"/>
+ </tileset>
+ <tileset firstgid="20" name="spritesheet_player" tilewidth="64" tileheight="64" tilecount="12" columns="6">
+  <image source="spritesheet_player.png" width="384" height="128"/>
+ </tileset>
+ <tileset firstgid="32" name="spritesheet_enemy3" tilewidth="64" tileheight="64" tilecount="16" columns="4">
+  <image source="spritesheet_enemy3.png" width="256" height="256"/>
+  <tile id="0">
+   <properties>
+    <property name="rotation" type="int" value="0"/>
+    <property name="startXDirection" type="int" value="-1"/>
+    <property name="startYDirection" type="int" value="0"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="Map" width="60" height="40">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,6,6,6,6,6,6,6,6,6,6,6,6,6,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5,5,0,7,7,0,0,0,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,4,4,0,7,7,0,0,0,4,4,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,7,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,7,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,6,6,6,6,6,6,6,6,6,0,0,0,0,0,7,0,0,7,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0,0,7,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,
+6,6,6,0,0,0,0,6,6,6,6,6,6,6,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,
+7,7,7,0,0,5,0,7,7,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,
+7,7,0,0,0,0,0,0,0,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+8,0,0,0,0,5,0,0,0,0,0,0,0,0,0,3,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,4,5,5,5,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+8,0,0,0,5,5,0,0,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+7,4,4,0,0,0,0,0,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+7,7,7,6,6,6,6,6,6,6,6,6,6,6,6,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7
+</data>
+ </layer>
+ <objectgroup name="Objects">
+  <object id="9" name="Player" gid="20" x="128" y="2240" width="64" height="64"/>
+  <object id="21" name="Enemy1" gid="12" x="3456" y="1280" width="64" height="64"/>
+  <object id="22" name="Enemy1" gid="12" x="3328" y="1280" width="64" height="64"/>
+  <object id="28" name="Bridge1" gid="11" x="320" y="832" width="64" height="64"/>
+  <object id="29" name="Bridge1" gid="11" x="64" y="1024" width="64" height="64"/>
+  <object id="49" name="Bridge1" gid="11" x="192" y="896" width="64" height="64"/>
+  <object id="50" name="Bridge1" gid="11" x="448" y="768" width="64" height="64"/>
+  <object id="51" name="Bridge1" gid="11" x="576" y="704" width="64" height="64"/>
+  <object id="52" name="Bridge1" gid="11" x="768" y="640" width="64" height="64"/>
+  <object id="54" name="Bridge1" gid="11" x="960" y="640" width="64" height="64"/>
+  <object id="57" name="Bridge1" gid="11" x="1024" y="640" width="64" height="64"/>
+  <object id="58" name="Bridge1" gid="11" x="1088" y="640" width="64" height="64"/>
+  <object id="59" name="Bridge1" gid="11" x="1280" y="640" width="64" height="64"/>
+  <object id="60" name="Bridge1" gid="11" x="1344" y="640" width="64" height="64"/>
+  <object id="65" name="Enemy3" gid="32" x="2240" y="896" width="64" height="64">
+   <properties>
+    <property name="rotation" type="int" value="0"/>
+    <property name="startXDirection" type="int" value="-1"/>
+    <property name="startYDirection" type="int" value="0"/>
+   </properties>
+  </object>
+  <object id="69" name="Enemy3" gid="32" x="2304" y="1088" width="64" height="64">
+   <properties>
+    <property name="rotation" type="int" value="180"/>
+    <property name="startXDirection" type="int" value="1"/>
+    <property name="startYDirection" type="int" value="0"/>
+   </properties>
+  </object>
+  <object id="72" name="Bridge1" gid="11" x="3264" y="640" width="64" height="64"/>
+  <object id="74" name="Bridge1" gid="11" x="3328" y="640" width="64" height="64"/>
+  <object id="75" name="Bridge1" gid="11" x="3392" y="640" width="64" height="64"/>
+  <object id="78" name="Enemy3" gid="32" x="1728" y="768" width="64" height="64">
+   <properties>
+    <property name="rotation" type="int" value="180"/>
+    <property name="startXDirection" type="int" value="-1"/>
+    <property name="startYDirection" type="int" value="0"/>
+   </properties>
+  </object>
+  <object id="81" name="Enemy3" gid="32" x="3008" y="1152" width="64" height="64">
+   <properties>
+    <property name="rotation" type="int" value="180"/>
+    <property name="startXDirection" type="int" value="1"/>
+    <property name="startYDirection" type="int" value="0"/>
+   </properties>
+  </object>
+  <object id="82" name="Enemy3" gid="32" x="2880" y="1024" width="64" height="64">
+   <properties>
+    <property name="rotation" type="int" value="90"/>
+    <property name="startXDirection" type="int" value="0"/>
+    <property name="startYDirection" type="int" value="-1"/>
+   </properties>
+  </object>
+  <object id="84" name="Bridge1" gid="11" x="832" y="2112" width="64" height="64"/>
+  <object id="85" name="Bridge1" gid="11" x="256" y="1408" width="64" height="64"/>
+  <object id="86" name="Bridge1" gid="11" x="192" y="1280" width="64" height="64"/>
+  <object id="87" name="Bridge1" gid="11" x="128" y="1152" width="64" height="64"/>
+  <object id="90" name="Enemy3" gid="32" x="1728" y="320" width="64" height="64">
+   <properties>
+    <property name="rotation" type="int" value="0"/>
+    <property name="startXDirection" type="int" value="-1"/>
+    <property name="startYDirection" type="int" value="0"/>
+   </properties>
+  </object>
+  <object id="91" name="Enemy3" gid="32" x="1664" y="512" width="64" height="64">
+   <properties>
+    <property name="rotation" type="int" value="180"/>
+    <property name="startXDirection" type="int" value="1"/>
+    <property name="startYDirection" type="int" value="0"/>
+   </properties>
+  </object>
+  <object id="92" name="Enemy3" gid="32" x="1664" y="576" width="64" height="64">
+   <properties>
+    <property name="rotation" type="int" value="0"/>
+    <property name="startXDirection" type="int" value="1"/>
+    <property name="startYDirection" type="int" value="0"/>
+   </properties>
+  </object>
+  <object id="93" name="Bridge1" gid="11" x="896" y="2112" width="64" height="64"/>
+  <object id="94" name="Bridge1" gid="11" x="192" y="2368" width="64" height="64"/>
+  <object id="95" name="Bridge1" gid="11" x="384" y="2368" width="64" height="64"/>
+  <object id="96" name="Bridge1" gid="11" x="448" y="2368" width="64" height="64"/>
+  <object id="97" name="Bridge1" gid="11" x="512" y="2368" width="64" height="64"/>
+  <object id="98" name="Bridge1" gid="11" x="576" y="2368" width="64" height="64"/>
+  <object id="99" name="Bridge1" gid="11" x="640" y="2368" width="64" height="64"/>
+  <object id="100" name="Bridge1" gid="11" x="704" y="2368" width="64" height="64"/>
+  <object id="101" name="Bridge1" gid="11" x="768" y="2368" width="64" height="64"/>
+  <object id="103" name="Bridge1" gid="11" x="1216" y="1600" width="64" height="64"/>
+  <object id="104" name="Bridge1" gid="11" x="1280" y="1600" width="64" height="64"/>
+  <object id="105" name="Bridge1" gid="11" x="1344" y="1600" width="64" height="64"/>
+  <object id="106" name="Bridge1" gid="11" x="1408" y="1600" width="64" height="64"/>
+  <object id="107" name="Bridge1" gid="11" x="1472" y="1600" width="64" height="64"/>
+  <object id="108" name="Bridge1" gid="11" x="1536" y="1600" width="64" height="64"/>
+  <object id="109" name="Bridge1" gid="11" x="1600" y="1600" width="64" height="64"/>
+  <object id="110" name="Bridge1" gid="11" x="1664" y="1600" width="64" height="64"/>
+  <object id="111" name="Bridge1" gid="11" x="1728" y="1600" width="64" height="64"/>
+  <object id="113" name="Enemy3" gid="32" x="3136" y="1152" width="64" height="64">
+   <properties>
+    <property name="rotation" type="int" value="270"/>
+    <property name="startXDirection" type="int" value="0"/>
+    <property name="startYDirection" type="int" value="-1"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>
