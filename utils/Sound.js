@@ -1,17 +1,20 @@
 function Sound()
 {
-    this.soundarray = new Array();
-
-
-
+    this.sound = 0;
 }
 
 Sound.prototype.load = function(name, path)
 {
-    //Disabling sound until find IOS solution
-    //var sound = new Audio(path);
-    //var soundmap = {name, sound};
-    //this.soundarray.push(soundmap);
+    this.sound = new Audio(path);
+}
+
+Sound.prototype.getSound = function()
+{
+    while(this.sound == 0)
+    {
+        //do nothing.
+    }
+    return this.sound;
 }
 
 Sound.prototype.play = function(name)
@@ -35,4 +38,8 @@ Sound.prototype.play = function(name)
         }
     }
     */
+    if (this.sound != 0)
+    {
+        this.sound.play();
+    }
 }

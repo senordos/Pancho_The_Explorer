@@ -12,11 +12,46 @@
     </style>
 </head>
 <body>
-<section id="fullscreen">
-<canvas id="myCanvas" ></canvas>
-</section>
+    <section id="fullscreen">
+        <div id="button_panel">
+            <button onclick="clicked()">Click me</button>
+        </div>
+    
+        <canvas id="myCanvas" ></canvas>
+    </section>
+
 
 <script> 
+
+
+    /* OLD SOUND --
+    var sound = new Audio("sounds/jump.wav");
+    
+    function clicked()
+    {
+        console.log("Button Pressed");
+
+        var buttonPanel = document.getElementById( 'button_panel' );
+        buttonPanel.parentNode.removeChild( buttonPanel );
+
+        sound.play();
+
+    }
+
+    var handler = function() 
+    {
+        if (this.currentTime >= 0.5) 
+        {
+            this.pause();
+            console.log("Paused Sound");
+        }
+    };
+
+    sound.addEventListener('timeupdate', handler, false);
+    */
+
+
+
 
     const CANVASWIDTH = 1024;
     const CANVASHEIGHT = 768;    
@@ -79,7 +114,45 @@
 <script src="bricks/RegularBrick.js"></script>
 <script src="utils/Textbox.js"></script>
 <script src="utils/Sound.js"></script>
+<script src="webaudioapi/WebAudioAPI.js"></script>
 <script>
+
+
+//initialise the sound
+
+
+
+try 
+{
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    window.audioContext = new window.AudioContext();
+} catch (e) 
+{
+    console.log("No Web Audio support");
+}
+
+
+var blastSound, smashSound, backgroundMusic;
+
+soundJump = new WebAudioAPISound("sounds/jump.wav");
+soundStomp = new WebAudioAPISound("sounds/stomp.wav");
+//backgroundMusic = new WebAudioAPISound("smooth-jazz.mp3", {loop: true});
+
+//backgroundMusic.play();
+soundJump.play();
+soundStomp.play();
+
+/*
+//Play background music for 30 seconds
+setTimeout(function(){
+    backgroundMusic.stop();
+}, 30 * 1000);
+*/
+
+
+
+
+
 
 
 var canvas = document.getElementById("myCanvas");
@@ -213,10 +286,9 @@ var gameloopStart;
 var gameloopEnd;
 
 //Initialise sounds
-var sounds = new Sound();
 
-sounds.load("JUMP","sounds/jump.wav");
-sounds.load("SPIKED","sounds/spiked.wav");
+
+
 
 
 
@@ -701,11 +773,11 @@ function movePlayerY()
 
     if(player1_UpPressed && player1.collisionBottom)
     {
+      soundJump.play();
+
       player1.yDirection = PLAYERJUMP; 
       player1.targetY = player1.y + player1.yDirection;
 
-
-      sounds.play("JUMP");
     }
     else
     {
