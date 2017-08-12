@@ -9,34 +9,13 @@
     <title>Pancho the Explorer</title>
     <style>
     	* { padding: 0; margin: 0; }
-    	canvas { background: #ffffff; display: block; margin: 0 auto; }
+    	canvas { background: #ffffff; display: none; margin: 0 auto; }
     </style>
 </head>
 <body>
 
     <section id="fullscreen">
-        <div id="introScreen">
-            <button onclick="button_startGameClicked()"
-                    style="width:192px;
-                           height:96px;
-                           background-image: url('tiles/button_test.png');">
-            </button>
-            <button id="soundOn"
-                    onclick="button_toggleSoundClicked()"
-                    style="display:block;
-                           width:96px;
-                           height:96px;
-                           background-image: url('tiles/button_soundon.png');">
-            </button>
-            <button id="soundOff"
-                    onclick="button_toggleSoundClicked()"
-                    style="display:none;
-                           width:96px;
-                           height:96px;
-                           background-image: url('tiles/button_soundoff.png');">
-            </button>
-        </div>
-        <canvas id="gameCanvas" style="display:none"></canvas>
+        <canvas id="gameCanvas" style="display:block"></canvas>
     </section>
     <script src="leveldata.js"></script>
     <script src="sprites/Sprite.js"></script>
@@ -47,8 +26,8 @@
     <script src="bricks/Brick.js"></script>
     <script src="bricks/RegularBrick.js"></script>
     <script src="utils/Textbox.js"></script>
-    <script src="utils/Sound.js"></script>
-    <script src="webaudioapi/WebAudioAPI.js"></script>
+    <script src="sound/Sound.js"></script>
+    <script src="sound/WebAudioAPI.js"></script>
     <script src="game.js"></script>
 </body>
 </html>

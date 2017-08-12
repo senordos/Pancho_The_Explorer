@@ -47,7 +47,7 @@ WebAudioAPISoundManager.prototype = {
         if(this.playingSounds.hasOwnProperty(url)){
             for(var i in this.playingSounds[url]){
                 if(this.playingSounds[url].hasOwnProperty(i))
-                    this.playingSounds[url][i].noteOff(0);
+                    this.playingSounds[url][i].disconnect(0);
             }
         }
     }
@@ -87,6 +87,12 @@ WebAudioAPISound.prototype = {
             if(!this.manager.playingSounds.hasOwnProperty(this.url))
                 this.manager.playingSounds[this.url] = [];
             this.manager.playingSounds[this.url].push(source);
+
+            return true;
+        }
+        else
+        {
+            return false;
         }
     },
     stop: function () {

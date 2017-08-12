@@ -4,7 +4,27 @@
 const CANVASWIDTH = 1024;
 const CANVASHEIGHT = 768;
 
-var gameSound = true; //start the game with the sounds enabled
+const SND_JUMP = 0;
+const SND_STOMP = 1;
+const SND_PLAYERDIE = 2;
+
+var gameStarted = false;
+
+//initialise the sound engine
+var sound = new Sound();
+sound.soundsOn();          //start the game with the sounds enabled
+gameSound = true;
+gameMusic = false;
+sound.loadSound(SND_JUMP, "sounds/jump.wav");
+sound.loadSound(SND_STOMP, "sounds/stomp.wav");
+sound.loadSound(SND_PLAYERDIE, "sounds/sound_playerdie.wav");
+sound.loadMusic(0,"sounds/music_zacwilkins-wild-oddish-8-bit-synth.mp3")
+sound.loadMusic(1,"sounds/music_robosocks-chiptune-lead.mp3");
+sound.loadMusic(2,"sounds/music_bassfreak-another-chiptune.mp3");
+
+
+
+
 
 var heightRatio = window.innerHeight / CANVASHEIGHT;
 if (heightRatio > 1) { heightRatio = 1 };
@@ -16,44 +36,159 @@ var SCALE = heightRatio; ///size to scale to fit screen
 var SCALEDCANVASWIDTH = Math.floor(CANVASWIDTH * SCALE);
 var SCALEDCANVASHEIGHT = Math.floor(CANVASHEIGHT * SCALE);
 
-//not sure this is the right calculation!
 var margin = Math.floor((window.innerWidth - SCALEDCANVASWIDTH) / 2);
 
 var landscape = true;
 if (window.innerHeight < window.innerWidth) { landscape = true; } else { landscape = false; };
 
+//setup the intro screen
+var buttonSizeNum =  Math.trunc(96 * SCALE / 1.5);
+var textWidthNum = Math.trunc(480 * SCALE / 1.5);
+buttonSize = buttonSizeNum.toString() + "px";
+textWidth = textWidthNum.toString() + "px";
+
+//set up the intro screen position, based on the size of the buttonSize etc.
+var introX = Math.trunc((window.innerWidth / 2) - (0.5 * (buttonSizeNum + textWidthNum)));
+var introY = Math.trunc((window.innerHeight * 0.75 / 2) - (0.5 * (buttonSizeNum * 2)));
+introX = introX.toString() + "px";
+introY = introY.toString() + "px";
+
+console.log("X=" + introX + "Y=" + introY );
+
+var div_introScreen = document.createElement("div");
+    div_introScreen.id = "introscreen";
+    div_introScreen.style.position = "absolute";
+    div_introScreen.style.top = introY;
+    div_introScreen.style.left = introX;
+document.getElementById("fullscreen").appendChild(div_introScreen);
+
+var image_textSound = document.createElement("IMG");
+    image_textSound.src = "tiles/text_sound.png";
+    image_textSound.style.width = textWidth;
+    image_textSound.style.height = buttonSize;
+    image_textSound.style.display = "inline";
+document.getElementById("introscreen").appendChild(image_textSound);
+
+
+var button_toggleSound = document.createElement("button");
+    button_toggleSound.id = "button_togglesound";
+    button_toggleSound.style.width = buttonSize;
+    button_toggleSound.style.height = buttonSize;
+    button_toggleSound.style.display = "inline";
+    button_toggleSound.style.backgroundImage = "url('tiles/button_soundon.png')";
+    button_toggleSound.style.backgroundSize = buttonSize;
+    button_toggleSound.style.border = "none";
+    button_toggleSound.style.padding = "0px 0px";
+document.getElementById("introscreen").appendChild(button_toggleSound);
+
+button_toggleSound.addEventListener ("click", function() { button_toggleSoundClicked(); } );
+
+var linebreak1 = document.createElement("br");
+document.getElementById("introscreen").appendChild(linebreak1);
+
+var image_textMusic = document.createElement("IMG");
+    image_textMusic.src = "tiles/text_s.png";
+    image_textMusic.style.width = textWidth;
+    image_textMusic.style.height = buttonSize;
+    image_textMusic.style.display = "inline";
+document.getElementById("introscreen").appendChild(image_textMusic);
+
+var button_toggleMusic = document.createElement("button");
+    button_toggleMusic.id = "button_togglemusic";
+    button_toggleMusic.style.width = buttonSize;
+    button_toggleMusic.style.height = buttonSize;
+    button_toggleMusic.style.display = "inline";
+    button_toggleMusic.style.backgroundImage = "url('tiles/button_soundoff.png')";
+    button_toggleMusic.style.backgroundSize = buttonSize;
+    button_toggleMusic.style.border = "none";
+    button_toggleMusic.style.padding = "0px 0px";
+document.getElementById("introscreen").appendChild(button_toggleMusic);
+
+button_toggleMusic.addEventListener ("click", function() { button_toggleMusicClicked(); } );
+
+var linebreak2 = document.createElement("br");
+document.getElementById("introscreen").appendChild(linebreak2);
+
+
+var image_textPlay = document.createElement("IMG");
+    image_textPlay.src = "tiles/text_play.png";
+    image_textPlay.style.width = textWidth;
+    image_textPlay.style.height = buttonSize;
+    image_textPlay.style.display = "inline";
+document.getElementById("introscreen").appendChild(image_textPlay);
+
+
+var button_startGame = document.createElement("button");
+    button_startGame.id = "button_togglesound";
+    button_startGame.style.width = buttonSize;
+    button_startGame.style.height = buttonSize;
+    button_startGame.style.display = "inline";
+    button_startGame.style.backgroundImage = "url('tiles/button_go.png')";
+    button_startGame.style.backgroundSize = buttonSize;
+    button_startGame.style.border = "none";
+    button_startGame.style.padding = "0px 0px";
+document.getElementById("introscreen").appendChild(button_startGame);
+
+button_startGame.addEventListener ("click", function() { button_startGameClicked(); } );
+
+
 
 function button_startGameClicked()
 {
+    //Play a sound after the user clicks - only plays if the music is toggled.
+    var context = new window.AudioContext();
+    // create a dummy sound - and play it immediately in same 'thread'
+    var oscillator = context.createOscillator();
+    oscillator.frequency.value = 400;
+    oscillator.connect(context.destination);
+    oscillator.start(0);
+    oscillator.stop(0);
+
     //Turn introScreen off and gameCanvas on
-    document.getElementById("introScreen").style.display = "none";
+    document.getElementById("introscreen").style.display = "none";
     document.getElementById("gameCanvas").style.display = "block";
+    if (gameMusic == true)
+    {
+      sound.playMusic(0); //play level 0 music
+    }
+    gameStarted = true;
 
 }
+
 
 function button_toggleSoundClicked()
 {
-    //toggle the sound on or off
-    if ( document.getElementById("soundOff").style.display == "none" )
-    {
-        document.getElementById("soundOn").style.display = "none";
-        document.getElementById("soundOff").style.display = "block";
 
-        gameSound = false;
+
+    sound.toggleSound();
+    if (gameSound == true )
+    {
+      gameSound = false;
+      button_toggleSound.style.backgroundImage = "url('tiles/button_soundoff.png')";
     }
     else
     {
-
-        document.getElementById("soundOn").style.display = "block";
-        document.getElementById("soundOff").style.display = "none";
-
-        gameSound = true;
-
+      gameSound = true;
+      button_toggleSound.style.backgroundImage = "url('tiles/button_soundon.png')";
     }
-    //sound.play();
-
 }
 
+
+function button_toggleMusicClicked()
+{
+
+    sound.toggleMusic();
+    if (gameMusic == true )
+    {
+      gameMusic = false;
+      button_toggleMusic.style.backgroundImage = "url('tiles/button_soundoff.png')";
+    }
+    else
+    {
+      gameMusic = true;
+      button_toggleMusic.style.backgroundImage = "url('tiles/button_soundon.png')";
+    }
+}
 
 
 
@@ -80,30 +215,9 @@ function onWindowResize()
 }
 
 
-//initialise the sound
 
 
 
-
-
-try
-{
-    window.AudioContext = window.AudioContext || window.webkitAudioContext;
-    window.audioContext = new window.AudioContext();
-} catch (e)
-{
-    console.log("No Web Audio support");
-}
-
-
-var soundJump, soundStomp, musicLevel0;
-
-soundJump = new WebAudioAPISound("sounds/jump.wav");
-soundStomp = new WebAudioAPISound("sounds/stomp.wav");
-musicLevel0 = new WebAudioAPISound("sounds/music_platformer2.mp3",{loop: true});
-musicLevel0.setVolume(20);
-
-setTimeout(function(){ musicLevel0.play(); }, 3000);
 
 
 
@@ -261,18 +375,36 @@ function setAttributes(elem, obj)
 }
 
 
+function initMusic(level)
+{
+    switch(level)
+    {
+      case 0:
+          //Music already started on game init
+          break;
+      case 1:
+          //Same music as level 0
+          break;
+      case 2:
+          sound.playNextTrack();
+          break;
+      case 3:
+          sound.playNextTrack();
+          break;
+
+      default:
+
+          //Do nothing
+
+    }
+
+}
+
 
 
 
 function initBricks()
 {
-
-    //test sounds
-    //music = new Audio('sounds/music_level1.wav');
-    //music.onended=function(){ music.play(); };
-    //music.play();
-
-
 
 
     var i = 0; //array counter
@@ -646,7 +778,7 @@ function checkEnemyCollisions(playerSprite)
                 enemies[i].xSpeed = 3;
                 enemies[i].xDirection = enemies[i].xDirection * -1;
 
-                soundJump.play();
+                sound.playSound(SND_JUMP);
                 playerSprite.yDirection = PLAYERJUMP - 4;
 
 
@@ -667,7 +799,10 @@ function checkEnemyCollisions(playerSprite)
 }
 
 
-
+function demoMovePlayerX()
+{
+    //add demo player movement at some point
+}
 
 
 function movePlayerX()
@@ -730,7 +865,7 @@ function movePlayerY()
 
     if(player1_UpPressed && player1.collisionBottom)
     {
-      soundJump.play();
+      sound.playSound(SND_JUMP);
 
       player1.yDirection = PLAYERJUMP;
       player1.targetY = player1.y + player1.yDirection;
@@ -1046,9 +1181,16 @@ function gameLoop()
             moveEnemiesY();
 
 
+            if (gameStarted)
+            {
+                movePlayerX();
+                movePlayerY();
+            }
+            else
+            {
+                demoMovePlayerX();
+            }
 
-            movePlayerX();
-            movePlayerY();
 
             checkEnemyCollisions(player1);
 
@@ -1110,6 +1252,8 @@ function gameLoop()
             if (player1.hit)            { titletextbox.setText("WATCH OUT FOR THE BADDIES"); }
 
             titletextbox.draw(ctx);
+
+            sound.playSound(SND_PLAYERDIE);
             playerDied = false;
 
             messagebox.setText("PRESS R TO RESET LEVEL");
@@ -1125,7 +1269,7 @@ function gameLoop()
             levelComplete = false;
             if ( level <= maxlevel )
             {
-
+                initMusic(level);
                 initBricks();
             }
             else
@@ -1186,6 +1330,8 @@ function keyUpHandler(e)
 }
 
 function onTouchStart(event) {
+
+
 	//do stuff
     var x;
     var y;
@@ -1225,7 +1371,8 @@ function onTouchStart(event) {
         resetlevelPressed = true;
         gamePaused=false;
         gameState = "PLAYING";
-        initBricks(); }
+        initBricks();
+    }
     else { resetlevelPressed = false; }
 
 
