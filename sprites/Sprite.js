@@ -11,17 +11,18 @@ function Sprite()
     this.image_src = "HELLO";
     this.enemyImage = new Image();
     this.animFrame = 0;
+    this.animMaxFrame = 4;
     this.xDirection = 1;
     this.yDirection = 1;
     this.xSpeed = 0; 
     this.ySpeed = 0;
     this.rotation = 0;
 
-    //for collision detection, these rectangles define the player
+    //for collision detection, these rectangles define the sprite
     this.rectMain = {top:0,bottom:0,left:0,right:0};
     this.rectOffset = {top:0,bottom:63,left:0,right:63};
-    this.rectTopOffset = {top:0,bottom:19,left:7,right:55};
-    this.rectBottomOffset = {top:43,bottom:63,left:8,right:56};
+    this.rectTopOffset = {top:0,bottom:31,left:7,right:55};
+    this.rectBottomOffset = {top:32,bottom:63,left:8,right:56};
     this.rectLeftOffset = {top:19,bottom:43,left:0,right:19};
     this.rectRightOffset = {top:19,bottom:43,left:43,right:63};
     this.collisionWidth = 56;    
@@ -65,8 +66,29 @@ function Sprite()
                     };
 
                     return  topCollisionRect;
-                },    
+                },
+    this.getLeftCollisionRect = function()
+                {
+                    var leftCollisionRect = {
+                          top: this.rectLeftOffset.top + this.targetY,
+                          bottom: this.rectLeftOffset.bottom + this.targetY,
+                          left: this.rectLeftOffset.left + this.targetX,
+                          right: this.rectLeftOffset.right + this.targetX
+                    };
 
+                    return  leftCollisionRect;
+                },    
+    this.getRightCollisionRect = function()
+                {
+                    var rightCollisionRect = {
+                          top: this.rectRightOffset.top + this.targetY,
+                          bottom: this.rectRightOffset.bottom + this.targetY,
+                          left: this.rectRightOffset.left + this.targetX,
+                          right: this.rectRightOffset.right + this.targetX
+                    };
+
+                    return  rightCollisionRect;
+                },    
     this.update = function()
                 {
                     
