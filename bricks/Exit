@@ -1,0 +1,16 @@
+function Exit()
+{
+
+    Exit.call(this);
+
+    this.name = "Exit";
+
+}
+
+Exit.prototype = Object.create(Brick.prototype);
+
+Exit.prototype.init = function(level_sprite_data)
+{
+    Sprite.prototype.init.call(this, level_sprite_data);
+
+};

@@ -18,7 +18,7 @@ gameMusic = false;
 sound.loadSound(SND_JUMP, "sounds/jump.wav");
 sound.loadSound(SND_STOMP, "sounds/stomp.wav");
 sound.loadSound(SND_PLAYERDIE, "sounds/sound_playerdie.wav");
-sound.loadMusic(0,"sounds/music_zacwilkins-wild-oddish-8-bit-synth.mp3")
+sound.loadMusic(0,"sounds/music_beachfront-celebration.mp3")
 sound.loadMusic(1,"sounds/music_robosocks-chiptune-lead.mp3");
 sound.loadMusic(2,"sounds/music_bassfreak-another-chiptune.mp3");
 
@@ -87,7 +87,7 @@ var linebreak1 = document.createElement("br");
 document.getElementById("introscreen").appendChild(linebreak1);
 
 var image_textMusic = document.createElement("IMG");
-    image_textMusic.src = "tiles/text_s.png";
+    image_textMusic.src = "tiles/text_music.png";
     image_textMusic.style.width = textWidth;
     image_textMusic.style.height = buttonSize;
     image_textMusic.style.display = "inline";
@@ -285,7 +285,7 @@ const PADDLEMOVEMENT=3;
 const PADDLESTARTXGAP=20;
 const PLAYERJUMP= -28;
 
-const GRAVITY = 2.5;
+const GRAVITY = 3.5;
 
 var paddle1_X=PADDLESTARTXGAP;
 var paddle1_Y=canvas.height/2;
@@ -315,9 +315,12 @@ const BALLDIAMETER = BALLRADIUS * 2;
 const ANIMATIONSPEED = 125;
 
 //to build bricks to shape the level
-const BRICKCOLS = 60;
-const BRICKROWS = 40;
-const BRICKCOUNT = BRICKROWS * BRICKCOLS;
+var brickcols = 0;
+var brickrows = 0;
+var brickcount = 0;
+
+var lastBrickX = 0;
+
 const BRICKHEIGHT = 64;
 const BRICKWIDTH = 64;
 const BRICKSTARTX = 0;
@@ -334,10 +337,12 @@ var showTargetRect = false;
 tiles = new Image();
 tiles.src = "tiles/platform_tiles.png";
 
+bricksSpritesheet = new Image();
+
 
 var titletextbox = new Textbox(0,0,1024,64,"PANCHO THE EXPLORER","CENTRE");
 var messagebox = new Textbox(0,672, 1024, 64, "", "CENTRE" );
-var versionbox = new Textbox(0,600, 1024, 64, "ONLINE ALPHA     TECH DEMO", "CENTRE" );
+var versionbox = new Textbox(0,600, 1024, 64, "EPISODE 1  MEXICO", "CENTRE" );
 
 
 
@@ -414,6 +419,10 @@ function initBricks()
     var y = 0; //target brick y
     var p = 0; //Position in the level array
     var c = 0; //the type of the brick
+
+    brickcols = 0;
+    brickrows = 0;
+
     var rectMain; //to be the collision rectangle
     var tileName;
 
@@ -440,8 +449,8 @@ function initBricks()
                     player1 = new Sprite();
                     setAttributes(player1, {
                         name:"Player1",
-                        img:"tiles/spritesheet_player.png",
-                        image_src:"tiles/spritesheet_player.png",
+                        img:"tiles/spritesheet_player_v2.png",
+                        image_src:"tiles/spritesheet_player_v2.png",
                         rectOffset:{top:0,bottom:63,left:8,right:55}
                         });
 
@@ -476,6 +485,13 @@ function initBricks()
                     enemyCounter++;
 
                 }
+                if (levels[level].layers[l].objects[o].name == "Exit1")
+                 {
+                     enemies[enemyCounter] = new Exit1();
+                     enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
+                     enemyCounter++;
+
+                 }
 
 
 
@@ -502,43 +518,89 @@ function initBricks()
 
     levelPlatformData = levels[level].layers[0].data;
 
+    brickcols = levels[level].layers[0].width;
+    brickrows = levels[level].layers[0].height;
+    brickcount = brickrows * brickcols;
+
+    lastBrickX = (brickcols * 64) - 64; //furthest right brick
+
+    //Load bricks spritesheets
+    bricksSpritesheet.src = "tiles\/spritesheet_mexico.png";
+
 
     i = 0;
 
     var nB; //New Brick
 
     //set the brick positions
-    for (b=0; b < BRICKROWS; b++){
-      for (a=0; a < BRICKCOLS; a++){
+    for (b=0; b < brickrows; b++){
+      for (a=0; a < brickcols; a++){
 
-          p = b * BRICKCOLS + a;
+          p = b * brickcols + a;
 
           x = BRICKSTARTX + (a * BRICKWIDTH);
           y = BRICKSTARTY + (b * BRICKHEIGHT);
 
 
+          nB = new Brick();
+          var tileId = levels[level].layers[0].data[i];
+          var backgroundId = levels[level].layers[1].data[i];
+          var columns = levels[level].tilesets[0].columns;
 
-          switch(levelPlatformData[i])
+          switch(tileId)
           {
+            case 0:
+                    if (backgroundId == 0) //if there is no backgound, it's blank
+                    {
+                      nB.tileName="none";
+                      nB.spritesheetPosX = 0;
+                      nB.spritesheetPosY = 0;
+                      nB.type = tileId;
 
-            case 1:  nB = new Brick();   nB.tileName="rock1";   nB.rectMain = {top:y+16, bottom:y+63, left:x,   right:x+63}; nB.spritesheetPos = {x:0,y:0};   nB.deadly = false; nB.exit=false; nB.moveable=false; break;
-            case 2:  nB = new Brick();   nB.tileName="exit1";   nB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63}; nB.spritesheetPos = {x:0,y:64};  nB.deadly = false; nB.exit=true;  nB.moveable=false; break;
-            case 3:  nB = new Brick();   nB.tileName="exit2";   nB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63}; nB.spritesheetPos = {x:0,y:128}; nB.deadly = false; nB.exit=true;  nB.moveable=false; break;
-            case 4:  nB = new Brick();   nB.tileName="dirt1";   nB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63}; nB.spritesheetPos = {x:0,y:192}; nB.deadly = false; nB.exit=false; nB.moveable=false; break;
-            case 5:  nB = new Brick();   nB.tileName="brick1";  nB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63}; nB.spritesheetPos = {x:0,y:256}; nB.deadly = false; nB.exit=false; nB.moveable=false; break;
-            case 6:  nB = new Brick();   nB.tileName="spikes1"; nB.rectMain = {top:y+32, bottom:y+63, left:x+8, right:x+55}; nB.spritesheetPos = {x:0,y:320}; nB.deadly = true;  nB.exit=false; nB.moveable=false; break;
-            case 7:  nB = new Brick();   nB.tileName="stone2";  nB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63}; nB.spritesheetPos = {x:0,y:384}; nB.deadly = false; nB.exit=false; nB.moveable=false; break;
-            case 8:  nB = new Brick();   nB.tileName="stone3";  nB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63}; nB.spritesheetPos = {x:0,y:448}; nB.deadly = false; nB.exit=false; nB.moveable=false; break;
-            case 9:  nB = new Brick();   nB.tileName="stone4";  nB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63}; nB.spritesheetPos = {x:0,y:512}; nB.deadly = false; nB.exit=false; nB.moveable=false; break;
-            case 10: nB = new Brick();   nB.tileName="stone4";  nB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63}; nB.spritesheetPos = {x:0,y:576}; nB.deadly = false; nB.exit=false; nB.moveable=false; break;
-            case 11: nB = new Bridge1(); nB.tileName="bridge1"; nB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63}; nB.spritesheetPos = {x:0,y:640}; nB.deadly = false; nB.exit=false; nB.moveable=true;  break;
-            default: nB = new Brick();   nB.tileName="none";    nB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63}; nB.spritesheetPos = {x:0,y:0};   nB.deadly = false; nB.exit=false; nB.moveable=false; break;
+                    }
+                    else  //but if there is a background, load it.
+                    {
+                      nB.tileName="background";
+                      nB.type = backgroundId;
+                      nB.spritesheetPosX = Math.trunc(((backgroundId - 1) % columns)) * 64;
+                      nB.spritesheetPosY = Math.trunc((backgroundId - 1)/ columns) * 64;
+                      nB.isBackground = true;
+                    }
+                    nB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63};
+                    nB.deadly = false;
+                    nB.exit=false;
+                    nB.moveable=false;
+                    nB.x = x;
+                    nB.y = y;
 
+            break;
+
+            case 1: nB.tileName="spikes1";
+                    nB.rectMain = {top:y+32, bottom:y+63, left:x+8, right:x+55};
+                    nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+                    nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+                    nB.deadly = true;
+                    nB.exit=false;
+                    nB.moveable=false;
+                    nB.type = tileId;
+                    nB.x = x;
+                    nB.y = y;
+            break;
+
+            default: nB.tileName="brick";
+                    nB.rectMain = {top:y, bottom:y+63, left:x,   right:x+63};
+                    nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+                    nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+                    nB.deadly = false;
+                    nB.exit=false;
+                    nB.moveable=false;
+                    nB.type = tileId;
+                    nB.x = x;
+                    nB.y = y;
+            break;
           }
 
-          nB.x = x;
-          nB.y = y;
-          nB.type = level1[p];
+
 
           bricks[i] = nB;
 
@@ -563,7 +625,7 @@ function intersectRect(r1, r2)
 
 function setLocalBricks(sprite)
 {
-    currentBrick = Math.floor((((sprite.x + 32) / 64) + (Math.floor(((sprite.y + 32 + 64) / 64))-1) * BRICKCOLS));
+    currentBrick = Math.floor((((sprite.x + 32) / 64) + (Math.floor(((sprite.y + 32 + 64) / 64))-1) * brickcols));
 
     //how will this work if the sprites are moving more than one pixel at a time!
     if (((sprite.x) % 64) == 0) { sprite.localBricks.xLinedUp = true } else { sprite.localBricks.xLinedUp = false };
@@ -574,13 +636,13 @@ function setLocalBricks(sprite)
     sprite.localBricks.current = currentBrick;
     sprite.localBricks.left = currentBrick - 1;
     sprite.localBricks.right = currentBrick + 1;
-    sprite.localBricks.up = currentBrick - BRICKCOLS;
-    sprite.localBricks.down = currentBrick + BRICKCOLS;
+    sprite.localBricks.up = currentBrick - brickcols;
+    sprite.localBricks.down = currentBrick + brickcols;
 
-    sprite.localBricks.leftUp = currentBrick - BRICKCOLS - 1;
-    sprite.localBricks.leftDown = currentBrick + BRICKCOLS - 1;
-    sprite.localBricks.rightUp = currentBrick - BRICKCOLS + 1;
-    sprite.localBricks.rightDown = currentBrick + BRICKCOLS + 1;
+    sprite.localBricks.leftUp = currentBrick - brickcols - 1;
+    sprite.localBricks.leftDown = currentBrick + brickcols - 1;
+    sprite.localBricks.rightUp = currentBrick - brickcols + 1;
+    sprite.localBricks.rightDown = currentBrick + brickcols + 1;
 
 
 }
@@ -628,9 +690,9 @@ function checkWorldCollisions(sprite)
 
 
     var i = 0;
-    for (i=0; i < BRICKCOUNT; i++)
+    for (i=0; i < brickcount; i++)
     {
-        if(bricks[i].type > 0)
+        if(bricks[i].type > 0 && bricks[i].isBackground == false)
         {
             if (intersectRect(spriteTargetRect, bricks[i].rectMain))
             {
@@ -673,12 +735,8 @@ function checkWorldCollisions(sprite)
                     sprite.collisionTop = true;
                 }
 
-                if(bricks[i].exit == true)
-                {
-                    sprite.collisionExit = true;
-                    console.log("Collision - Exit");
-                }
-                else if (bricks[i].deadly == true)
+                //Do not else-if this, as will become invincible!
+                if (bricks[i].deadly == true)
                 {
                     sprite.collisionDeath = true;
                     console.log("Collision - deadly tile: " + bricks[i].tileName);
@@ -714,6 +772,12 @@ function checkEnemyCollisions(playerSprite)
     {
         var enemyRect = enemies[i].getCollisionRect();
         var enemyTopRect = enemies[i].getTopCollisionRect();
+
+        if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Exit1")
+        {
+            playerSprite.collisionExit = true;
+            console.log("Collision - Exit");
+        }
 
 
         if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Bridge1")
@@ -844,12 +908,15 @@ function movePlayerX()
             if (player1.xSpeed < 0 && player1.xSpeed > -0.1) {player1.xSpeed = 0};
         }
     }
-    player1.targetX = player1.x + (pixelmove * player1.xSpeed);
+
+    player1.targetX = Math.trunc(player1.x + (pixelmove * player1.xSpeed));
+
 
     checkWorldCollisions(player1);
-    player1.x = player1.targetX;
+    player1.x = Math.trunc(player1.targetX);
 
-   // console.log(player1.xSpeed);
+    if ( player1.x < 0 ) { player1.x = 0; };
+    if ( player1.x > lastBrickX ) { player1.x = lastBrickX; };
 
 }
 
@@ -873,7 +940,15 @@ function movePlayerY()
     }
     else
     {
-        player1.yDirection = player1.yDirection + GRAVITY;
+        if (player1_UpPressed)
+        {
+          player1.yDirection = player1.yDirection + (GRAVITY / 2);
+        }
+        else
+        {
+          player1.yDirection = player1.yDirection + GRAVITY;
+
+        }
         if (player1.yDirection > 20) {player1.yDirection = 20;}
         player1.targetY = player1.y + player1.yDirection;
     }
@@ -974,15 +1049,15 @@ function drawBricks(){
     if (player1.y - mapOffsetY < 256) { mapOffsetY = player1.y - 256; }
     if (mapOffsetY < 0) { mapOffsetY = 0; }
 
+    mapOffsetX = Math.trunc(mapOffsetX);
+    mapOffsetY = Math.trunc(mapOffsetY);
 
-
-
-    for (i=0; i < BRICKCOUNT; i++){
+    for (i=0; i < brickcount; i++){
         if(bricks[i].type != 0){
 
             if (bricks[i].tileName != "none")
             {
-               bctx.drawImage(tiles, bricks[i].spritesheetPos.x, bricks[i].spritesheetPos.y, 64, 64, bricks[i].x - mapOffsetX, bricks[i].y - mapOffsetY, 64, 64);
+               bctx.drawImage(bricksSpritesheet, bricks[i].spritesheetPosX, bricks[i].spritesheetPosY, 64, 64, bricks[i].x - mapOffsetX, bricks[i].y - mapOffsetY, 64, 64);
             }
         }
 
@@ -1022,15 +1097,16 @@ function drawPlayer()
    {
         animYOffset = 64;
         //animXOffset = player1.animFrame=gameFrame * 64;
-        animXOffset = (gameFrame % 5) * 64;
+        animXOffset = (gameFrame % 9) * 64;
    }
 
    if(player1_RightPressed)
    {
         animYOffset = 0;
         //animXOffset = player1.animFrame=gameFrame * 64;
-        animXOffset = (gameFrame % 5) * 64;
+        animXOffset = (gameFrame % 9) * 64;
    }
+
 
    bctx.drawImage(player1.image, animXOffset,animYOffset,64,64, player1.x - mapOffsetX, player1.y - mapOffsetY,64,64);
 }
@@ -1066,7 +1142,6 @@ function drawEnemies()
        }
 
        //sets position in the spritesheet
-       //the 4 is because there are only 4 animations in the enemy
        animXOffset = (gameFrame % enemies[i].animMaxFrame) * 64;
 
        bctx.drawImage(enemies[i].image, animXOffset, animYOffset,64,64, enemies[i].x - mapOffsetX, enemies[i].y - mapOffsetY,64,64);
