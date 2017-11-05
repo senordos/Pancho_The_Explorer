@@ -1,22 +1,28 @@
 function Sprite()
-{ 
+{
     this.x = 64;
     this.y = 64;
     this.h = 64;
     this.w = 64;
     this.targetX = 128;
     this.targetY = 512;
-    this.name = "GENERAL SPRITE"; 
-    this.img = "NO_IMAGE"; 
+    this.name = "GENERAL SPRITE";
+    this.img = "NO_IMAGE";
     this.image_src = "HELLO";
     this.enemyImage = new Image();
     this.animFrame = 0;
     this.animMaxFrame = 4;
     this.xDirection = 1;
     this.yDirection = 1;
-    this.xSpeed = 0; 
+    this.xSpeed = 0;
     this.ySpeed = 0;
     this.rotation = 0;
+
+    //some attributes just for Enemies
+    this.activateIfPlayerXGT = 0;  //if player greater than
+    this.activateIfPlayerXLT = 0;  //if player less than
+    this.activateIfPlayerYGT = 0;
+    this.activateIfPlayerYLT = 0;
 
     //for collision detection, these rectangles define the sprite
     this.rectMain = {top:0,bottom:0,left:0,right:0};
@@ -25,20 +31,21 @@ function Sprite()
     this.rectBottomOffset = {top:32,bottom:63,left:8,right:56};
     this.rectLeftOffset = {top:19,bottom:43,left:0,right:19};
     this.rectRightOffset = {top:19,bottom:43,left:43,right:63};
-    this.collisionWidth = 56;    
+    this.collisionWidth = 56;
     this.collisionHeight = 64;
-    
+
     this.collision = false;
 
-    this.collisionTop = false; 
+    this.collisionTop = false;
     this.collisionBottom = false;
-    this.collisionLeft = false; 
+    this.collisionLeft = false;
     this.collisionRight = false;
 
     this.collisionExit = false;
     this.collisionDeath = false;
 
-    this.alive = true; 
+    this.active = true;
+    this.alive = true;
     this.deadly = true;
     this.hit = false; //sprite is hit by something
     this.jump = false;
@@ -77,7 +84,7 @@ function Sprite()
                     };
 
                     return  leftCollisionRect;
-                },    
+                },
     this.getRightCollisionRect = function()
                 {
                     var rightCollisionRect = {
@@ -88,17 +95,17 @@ function Sprite()
                     };
 
                     return  rightCollisionRect;
-                },    
+                },
     this.update = function()
                 {
-                    
-                    if (this.collision.xOverlap !=0) 
-                    { 
+
+                    if (this.collision.xOverlap !=0)
+                    {
                                                         this.x = this.x - this.collision.xOverlap;
                                                         this.collision.xOverlap = 0;
                     }
-                    if (this.collision.yOverlap !=0) 
-                    { 
+                    if (this.collision.yOverlap !=0)
+                    {
                                                         this.y = this.y - this.collision.yOverlap;
                                                         this.collision.yOverlap = 0;
                     }
@@ -109,7 +116,7 @@ function Sprite()
 
                 }
 
-}; 
+};
 
 Sprite.prototype.init = function(level_sprite_data)
 {
@@ -119,8 +126,21 @@ Sprite.prototype.init = function(level_sprite_data)
     this.image.src = this.image_src;
 
 
-    this.x = Math.floor(level_sprite_data.x); 
+    this.x = Math.floor(level_sprite_data.x);
     this.y = Math.floor(level_sprite_data.y);
+
+    if (level_sprite_data.hasOwnProperty('properties'))
+    {
+        if (level_sprite_data.properties.hasOwnProperty('activateIfPlayerXGT'))
+        {
+          this.activateIfPlayerXGT = Math.floor(level_sprite_data.properties.activateIfPlayerXGT);
+        }
+        if (level_sprite_data.properties.hasOwnProperty('startXDirection'))
+        {
+          this.xDirection = Math.floor(level_sprite_data.properties.startXDirection);
+        }
+
+    }
 
     console.log("map x: " + this.x);
     console.log("map y: " + this.y);
@@ -143,7 +163,7 @@ Sprite.prototype.init = function(level_sprite_data)
 
 Sprite.prototype.getCollisionRect = function()
 {
-    var collisionRect = 
+    var collisionRect =
     {
           top: this.rectOffset.top + this.targetY,
           bottom: this.rectOffset.bottom + this.targetY,
@@ -157,7 +177,7 @@ Sprite.prototype.getCollisionRect = function()
 Sprite.prototype.setMoveTargetX = function()
 {
     this.targetX = this.x;
-    this.targetY = this.y; 
+    this.targetY = this.y;
 }
 
 Sprite.prototype.setMoveTargetY = function()
@@ -167,12 +187,14 @@ Sprite.prototype.setMoveTargetY = function()
 }
 
 
-Sprite.prototype.updateMoveAttributesX = function(map)
+Sprite.prototype.updateMoveAttributesX = function(map, player)
 {
     //Do nothing
 }
 
-Sprite.prototype.updateMoveAttributesY = function(map)
+
+
+Sprite.prototype.updateMoveAttributesY = function(map, player)
 {
     //Do nothing
 }

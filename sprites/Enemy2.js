@@ -53,20 +53,20 @@ Enemy2.prototype.updateMoveAttributesX = function (map)
 
     if (this.hit == false)
     {
-       if ( (   this.collisionBottom == true && 
-                this.xDirection < 0 && 
+       if ( (   this.collisionBottom == true &&
+                this.xDirection < 0 &&
                 bricks[this.localBricks.leftUp].tileName == "none" &&
-                bricks[this.localBricks.left].tileName != "none" 
+                bricks[this.localBricks.left].tileName != "none"
             )
             ||
-            (   this.collisionBottom == true && 
-                this.xDirection > 0 && 
+            (   this.collisionBottom == true &&
+                this.xDirection > 0 &&
                 bricks[this.localBricks.rightUp].tileName == "none" &&
-                bricks[this.localBricks.right].tileName != "none" 
+                bricks[this.localBricks.right].tileName != "none"
             )
-          ) 
+          )
        {
-           this.yDirection = this.yDirection = -25;
+           this.yDirection = this.yDirection = -30;
        }
     }
 }

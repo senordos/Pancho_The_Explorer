@@ -7,16 +7,18 @@ const CANVASHEIGHT = 768;
 const SND_JUMP = 0;
 const SND_STOMP = 1;
 const SND_PLAYERDIE = 2;
+const SND_CHILLI = 3;
 
 var gameStarted = false;
 
 //initialise the sound engine
-var sound = new Sound();
-sound.soundsOn();          //start the game with the sounds enabled
 gameSound = true;
 gameMusic = false;
+var sound = new Sound();
+sound.soundsOn();          //start the game with the sounds enabled
 sound.loadSound(SND_JUMP, "sounds/jump.wav");
 sound.loadSound(SND_STOMP, "sounds/stomp.wav");
+sound.loadSound(SND_CHILLI, "sounds/sound_chilli.wav");
 sound.loadSound(SND_PLAYERDIE, "sounds/sound_playerdie.wav");
 sound.loadMusic(0,"sounds/music_beachfront-celebration.mp3")
 sound.loadMusic(1,"sounds/music_robosocks-chiptune-lead.mp3");
@@ -24,232 +26,37 @@ sound.loadMusic(2,"sounds/music_bassfreak-another-chiptune.mp3");
 
 
 
+var canvasScale = 1; //initial scaling is set to 1
 
-
-var heightRatio = window.innerHeight / CANVASHEIGHT;
-if (heightRatio > 1) { heightRatio = 1 };
-
-
-var SCALE = heightRatio; ///size to scale to fit screen
-
-
-var SCALEDCANVASWIDTH = Math.floor(CANVASWIDTH * SCALE);
-var SCALEDCANVASHEIGHT = Math.floor(CANVASHEIGHT * SCALE);
-
-var margin = Math.floor((window.innerWidth - SCALEDCANVASWIDTH) / 2);
-
-var landscape = true;
-if (window.innerHeight < window.innerWidth) { landscape = true; } else { landscape = false; };
-
-//setup the intro screen
-var buttonSizeNum =  Math.trunc(96 * SCALE / 1.5);
-var textWidthNum = Math.trunc(480 * SCALE / 1.5);
-buttonSize = buttonSizeNum.toString() + "px";
-textWidth = textWidthNum.toString() + "px";
-
-//set up the intro screen position, based on the size of the buttonSize etc.
-var introX = Math.trunc((window.innerWidth / 2) - (0.5 * (buttonSizeNum + textWidthNum)));
-var introY = Math.trunc((window.innerHeight * 0.75 / 2) - (0.5 * (buttonSizeNum * 2)));
-introX = introX.toString() + "px";
-introY = introY.toString() + "px";
-
-console.log("X=" + introX + "Y=" + introY );
-
-var div_introScreen = document.createElement("div");
-    div_introScreen.id = "introscreen";
-    div_introScreen.style.position = "absolute";
-    div_introScreen.style.top = introY;
-    div_introScreen.style.left = introX;
-document.getElementById("fullscreen").appendChild(div_introScreen);
-
-var image_textSound = document.createElement("IMG");
-    image_textSound.src = "tiles/text_sound.png";
-    image_textSound.style.width = textWidth;
-    image_textSound.style.height = buttonSize;
-    image_textSound.style.display = "inline";
-document.getElementById("introscreen").appendChild(image_textSound);
-
-
-var button_toggleSound = document.createElement("button");
-    button_toggleSound.id = "button_togglesound";
-    button_toggleSound.style.width = buttonSize;
-    button_toggleSound.style.height = buttonSize;
-    button_toggleSound.style.display = "inline";
-    button_toggleSound.style.backgroundImage = "url('tiles/button_soundon.png')";
-    button_toggleSound.style.backgroundSize = buttonSize;
-    button_toggleSound.style.border = "none";
-    button_toggleSound.style.padding = "0px 0px";
-document.getElementById("introscreen").appendChild(button_toggleSound);
-
-button_toggleSound.addEventListener ("click", function() { button_toggleSoundClicked(); } );
-
-var linebreak1 = document.createElement("br");
-document.getElementById("introscreen").appendChild(linebreak1);
-
-var image_textMusic = document.createElement("IMG");
-    image_textMusic.src = "tiles/text_music.png";
-    image_textMusic.style.width = textWidth;
-    image_textMusic.style.height = buttonSize;
-    image_textMusic.style.display = "inline";
-document.getElementById("introscreen").appendChild(image_textMusic);
-
-var button_toggleMusic = document.createElement("button");
-    button_toggleMusic.id = "button_togglemusic";
-    button_toggleMusic.style.width = buttonSize;
-    button_toggleMusic.style.height = buttonSize;
-    button_toggleMusic.style.display = "inline";
-    button_toggleMusic.style.backgroundImage = "url('tiles/button_soundoff.png')";
-    button_toggleMusic.style.backgroundSize = buttonSize;
-    button_toggleMusic.style.border = "none";
-    button_toggleMusic.style.padding = "0px 0px";
-document.getElementById("introscreen").appendChild(button_toggleMusic);
-
-button_toggleMusic.addEventListener ("click", function() { button_toggleMusicClicked(); } );
-
-var linebreak2 = document.createElement("br");
-document.getElementById("introscreen").appendChild(linebreak2);
-
-
-var image_textPlay = document.createElement("IMG");
-    image_textPlay.src = "tiles/text_play.png";
-    image_textPlay.style.width = textWidth;
-    image_textPlay.style.height = buttonSize;
-    image_textPlay.style.display = "inline";
-document.getElementById("introscreen").appendChild(image_textPlay);
-
-
-var button_startGame = document.createElement("button");
-    button_startGame.id = "button_togglesound";
-    button_startGame.style.width = buttonSize;
-    button_startGame.style.height = buttonSize;
-    button_startGame.style.display = "inline";
-    button_startGame.style.backgroundImage = "url('tiles/button_go.png')";
-    button_startGame.style.backgroundSize = buttonSize;
-    button_startGame.style.border = "none";
-    button_startGame.style.padding = "0px 0px";
-document.getElementById("introscreen").appendChild(button_startGame);
-
-button_startGame.addEventListener ("click", function() { button_startGameClicked(); } );
-
-
-
-function button_startGameClicked()
-{
-    //Play a sound after the user clicks - only plays if the music is toggled.
-    var context = new window.AudioContext();
-    // create a dummy sound - and play it immediately in same 'thread'
-    var oscillator = context.createOscillator();
-    oscillator.frequency.value = 400;
-    oscillator.connect(context.destination);
-    oscillator.start(0);
-    oscillator.stop(0);
-
-    //Turn introScreen off and gameCanvas on
-    document.getElementById("introscreen").style.display = "none";
-    document.getElementById("gameCanvas").style.display = "block";
-    if (gameMusic == true)
-    {
-      sound.playMusic(0); //play level 0 music
-    }
-    gameStarted = true;
-
-}
-
-
-function button_toggleSoundClicked()
-{
-
-
-    sound.toggleSound();
-    if (gameSound == true )
-    {
-      gameSound = false;
-      button_toggleSound.style.backgroundImage = "url('tiles/button_soundoff.png')";
-    }
-    else
-    {
-      gameSound = true;
-      button_toggleSound.style.backgroundImage = "url('tiles/button_soundon.png')";
-    }
-}
-
-
-function button_toggleMusicClicked()
-{
-
-    sound.toggleMusic();
-    if (gameMusic == true )
-    {
-      gameMusic = false;
-      button_toggleMusic.style.backgroundImage = "url('tiles/button_soundoff.png')";
-    }
-    else
-    {
-      gameMusic = true;
-      button_toggleMusic.style.backgroundImage = "url('tiles/button_soundon.png')";
-    }
-}
-
-
-
-function onWindowResize()
-{
-    heightRatio = window.innerHeight / CANVASHEIGHT;
-    if (heightRatio > 1) { heightRatio = 1 };
-
-    SCALE = heightRatio; ///size to scale to fit screen
-
-    SCALEDCANVASWIDTH = Math.floor(CANVASWIDTH * SCALE);
-    SCALEDCANVASHEIGHT = Math.floor(CANVASHEIGHT * SCALE);
-
-    margin = Math.floor((window.innerWidth - SCALEDCANVASWIDTH) / 2);
-
-
-    if (window.innerHeight < window.innerWidth) { landscape = true; } else { landscape = false; };
-
-    document.getElementById("gameCanvas").setAttribute("width", SCALEDCANVASWIDTH);
-    document.getElementById("gameCanvas").setAttribute("height", SCALEDCANVASHEIGHT);
-
-    ctx.scale(SCALE,SCALE);
-
-}
-
-
-
-
-
-
-
-
-
-document.getElementById("gameCanvas").setAttribute("width", SCALEDCANVASWIDTH);
-document.getElementById("gameCanvas").setAttribute("height", SCALEDCANVASHEIGHT);
-
-window.addEventListener("resize", onWindowResize);
-
-
+//drawIntroScreen();
 
 var canvas = document.getElementById("gameCanvas");
 var ctx = canvas.getContext("2d");
 
 
 var buffer = document.createElement('canvas');
-buffer.width = 1024;
-buffer.height = 768;
+buffer.width = CANVASWIDTH;
+buffer.height = CANVASHEIGHT;
 var bctx = buffer.getContext('2d');
 
-//bctx.scale(0.,0.50);
-ctx.scale(SCALE,SCALE);
+
+//Initial call "onWindowResize" to set up window scaling
+onWindowResize();
+//Event listener if the window is resized
+window.addEventListener("resize", onWindowResize);
+
 
 
 
 
 var touchable = 'createTouch' in document;
+console.log("touchable=" + touchable);
 if(touchable)
 {
-	canvas.addEventListener( 'touchstart', onTouchStart, false );
-	canvas.addEventListener( 'touchmove', onTouchMove, false );
-	canvas.addEventListener( 'touchend', onTouchEnd, false );
+
+  document.addEventListener( 'touchstart', onTouchStart, false );
+	document.addEventListener( 'touchmove', onTouchMove, false );
+	document.addEventListener( 'touchend', onTouchEnd, false );
 }
 var touches = [];
 var t = 0;
@@ -275,6 +82,7 @@ var levelComplete=false;
 var playerDied=false;
 
 var cheatmode = false;
+var debugmode = false;
 
 
 bctx.font = "30px Arial";
@@ -342,14 +150,15 @@ bricksSpritesheet = new Image();
 
 var titletextbox = new Textbox(0,0,1024,64,"PANCHO THE EXPLORER","CENTRE");
 var messagebox = new Textbox(0,672, 1024, 64, "", "CENTRE" );
-var versionbox = new Textbox(0,600, 1024, 64, "EPISODE 1  MEXICO", "CENTRE" );
-
+var versionbox = new Textbox(0,600, 1024, 64, "EPISODE 1:  MEXICO", "CENTRE" );
+var progressbox = new Textbox(0,0,1024,54,"", "RIGHT" );
 
 
 
 
 var player1;
 var enemies = [];
+var chilliCounter = 0;
 
 
 var touch = { x:0, y:0, type:"NONE", id:0 };
@@ -429,6 +238,7 @@ function initBricks()
     maxlevel = levels.length - 1;
 
     enemies = [];
+    chilliCounter = 0;
 
     for (var l=0; l < levels[level].layers.length; l++)
     {
@@ -478,23 +288,29 @@ function initBricks()
                     enemyCounter++;
 
                 }
-               if (levels[level].layers[l].objects[o].name == "Bridge1")
+                if (levels[level].layers[l].objects[o].name == "Bridge1")
                 {
                     enemies[enemyCounter] = new Bridge1();
                     enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
                     enemyCounter++;
 
                 }
+                if (levels[level].layers[l].objects[o].name == "Chilli1")
+                {
+                    enemies[enemyCounter] = new Chilli1();
+                    enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
+                    enemyCounter++;
+
+                    chilliCounter++;
+
+                }
                 if (levels[level].layers[l].objects[o].name == "Exit1")
-                 {
+                {
                      enemies[enemyCounter] = new Exit1();
                      enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
                      enemyCounter++;
 
-                 }
-
-
-
+                }
             }
         }
     }
@@ -770,94 +586,105 @@ function checkEnemyCollisions(playerSprite)
 
     for (i=0; i < enemies.length; i++)
     {
-        var enemyRect = enemies[i].getCollisionRect();
-        var enemyTopRect = enemies[i].getTopCollisionRect();
-
-        if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Exit1")
-        {
-            playerSprite.collisionExit = true;
-            console.log("Collision - Exit");
-        }
-
-
-        if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Bridge1")
+        if (enemies[i].active)
         {
 
-            console.log("HIT BRIDGE");
-            // Has hit a bridge
+          var enemyRect = enemies[i].getCollisionRect();
+          var enemyTopRect = enemies[i].getTopCollisionRect();
+
+          if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Exit1")
+          {
+              playerSprite.collisionExit = true;
+              console.log("Collision - Exit");
+          }
+
+          if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Chilli1")
+          {
+              console.log("HIT CHILLI");
+
+              enemies[i].hit = true;
+              enemies[i].active = false;
+
+              chilliCounter--;
+
+              sound.playSound(SND_CHILLI);
+
+          }
+
+
+          if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Bridge1")
+          {
+
+              console.log("HIT BRIDGE");
+              // Has hit a bridge
 
 
 
-            if (intersectRect(playerBottomRect, enemyTopRect))
-            {
-                //Start the bridge falling
-                enemies[i].hit = true;
-                enemies[i].yDirection = 1;
-                enemies[i].ySpeed = 1;
+              if (intersectRect(playerBottomRect, enemyTopRect))
+              {
+                  //Start the bridge falling
+                  enemies[i].hit = true;
+                  enemies[i].yDirection = 1;
+                  enemies[i].ySpeed = 1;
 
-                playerSprite.yDirection = 0;
-                playerSprite.y = enemies[i].y - playerSprite.collisionHeight;
-                playerSprite.collisionBottom = true;
-            }
-            else if (intersectRect(playerTopRect, enemyRect))
-            {
-                playerSprite.yDirection = 0;
-                playerSprite.y = enemies[i].y + enemies[i].collisionHeight;
-                playerSprite.collisionTop = true;
-            }
-            else if (intersectRect(playerLeftRect, enemyRect))
-            {
-                playerSprite.xDirection = 0;
-                playerSprite.x = enemies[i].x + playerSprite.collisionWidth;
-                playerSprite.collisionLeft = true;
-            }
-            else if (intersectRect(playerRightRect, enemyRect))
-            {
-                playerSprite.xDirection = 0;
-                playerSprite.x = enemies[i].x - playerSprite.collisionWidth;
-                playerSprite.collisionRight = true;
-            }
+                  playerSprite.yDirection = 0;
+                  playerSprite.y = enemies[i].y - playerSprite.collisionHeight;
+                  playerSprite.collisionBottom = true;
+              }
+              else if (intersectRect(playerTopRect, enemyRect))
+              {
+                  playerSprite.yDirection = 0;
+                  playerSprite.y = enemies[i].y + enemies[i].collisionHeight;
+                  playerSprite.collisionTop = true;
+              }
+              else if (intersectRect(playerLeftRect, enemyRect))
+              {
+                  playerSprite.xDirection = 0;
+                  playerSprite.x = enemies[i].x + playerSprite.collisionWidth;
+                  playerSprite.collisionLeft = true;
+              }
+              else if (intersectRect(playerRightRect, enemyRect))
+              {
+                  playerSprite.xDirection = 0;
+                  playerSprite.x = enemies[i].x - playerSprite.collisionWidth;
+                  playerSprite.collisionRight = true;
+              }
 
-        }
+          }
 
-        if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Enemy3")
-        {
-            //Enemy3 cannot be killed.
-            playerSprite.hit = true;
-        }
-
-
-
-        if(intersectRect(playerRect, enemyRect) && enemies[i].deadly == true)
-        {
-
-            if(intersectRect(playerBottomRect, enemyTopRect) && enemies[i].hit == false)
-            {
-
-
-                //player on top of enemy
-
-                enemies[i].hit = true;
-                enemies[i].deadly = false;
-                enemies[i].xSpeed = 3;
-                enemies[i].xDirection = enemies[i].xDirection * -1;
-
-                sound.playSound(SND_JUMP);
-                playerSprite.yDirection = PLAYERJUMP - 4;
+          if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Enemy3")
+          {
+              //Enemy3 cannot be killed.
+              playerSprite.hit = true;
+          }
 
 
 
-            }
-            else
-            {
+          if(intersectRect(playerRect, enemyRect) && enemies[i].deadly == true)
+          {
 
-                //player hit by enemy
-                playerSprite.hit = true;
+              if(intersectRect(playerBottomRect, enemyTopRect) && enemies[i].hit == false)
+              {
 
-            }
+                  //player on top of enemy
 
+                  enemies[i].hit = true;
+                  enemies[i].deadly = false;
+                  enemies[i].xSpeed = 3;
+                  enemies[i].xDirection = enemies[i].xDirection * -1;
 
+                  sound.playSound(SND_JUMP);
+                  playerSprite.yDirection = PLAYERJUMP - 4;
 
+              }
+              else
+              {
+
+                  //player hit by enemy
+                  playerSprite.hit = true;
+
+              }
+          }
         }
     }
 }
@@ -998,7 +825,7 @@ function moveEnemiesY()
         // 5 //
         setLocalBricks(enemies[i]);
 
-        enemies[i].updateMoveAttributesY(bricks);
+        enemies[i].updateMoveAttributesY(bricks, player1);
     }
 }
 
@@ -1030,7 +857,7 @@ function moveEnemiesX()
         // 5 //
         setLocalBricks(enemies[i]);
 
-        enemies[i].updateMoveAttributesX(bricks);
+        enemies[i].updateMoveAttributesX(bricks, player1);
 
 
     }
@@ -1055,7 +882,10 @@ function drawBricks(){
     for (i=0; i < brickcount; i++){
         if(bricks[i].type != 0){
 
-            if (bricks[i].tileName != "none")
+            //only draw the bricks if they're on the screen and not blank
+            if (bricks[i].tileName != "none" &&
+                bricks[i].x < mapOffsetX + CANVASWIDTH &&
+                bricks[i].y < mapOffsetY + CANVASHEIGHT)
             {
                bctx.drawImage(bricksSpritesheet, bricks[i].spritesheetPosX, bricks[i].spritesheetPosY, 64, 64, bricks[i].x - mapOffsetX, bricks[i].y - mapOffsetY, 64, 64);
             }
@@ -1117,34 +947,38 @@ function drawEnemies()
 
    for(i=0; i < enemies.length; i++)
    {
-       var animXOffset = 0;
-       var animYOffset = 0;
+     if (enemies[i].active)
+     {
+
+         var animXOffset = 0;
+         var animYOffset = 0;
 
 
-       if (enemies[i].name == "Enemy1" || enemies[i].name == "Enemy2" )
-       {
-           if (enemies[i].hit == true)
-           {
-               animYOffset = 64;
-           }
-       }
-       if (enemies[i].name == "Enemy3" )
-       {
-           var e = enemies[i];
+         if (enemies[i].name == "Enemy1" || enemies[i].name == "Enemy2" )
+         {
+             if (enemies[i].hit == true)
+             {
+                 animYOffset = 64;
+             }
+         }
+         if (enemies[i].name == "Enemy3" )
+         {
+             var e = enemies[i];
 
-                if (e.rotation == 0) { animYOffset = 0; }
-           else if (e.rotation == 90) { animYOffset = 64; }
-           else if (e.rotation == 180) { animYOffset = 128; }
-           else if (e.rotation == 270) { animYOffset = 192; }
-           else { animYOffset == 0; }
+                  if (e.rotation == 0) { animYOffset = 0; }
+             else if (e.rotation == 90) { animYOffset = 64; }
+             else if (e.rotation == 180) { animYOffset = 128; }
+             else if (e.rotation == 270) { animYOffset = 192; }
+             else { animYOffset == 0; }
 
 
-       }
+         }
 
-       //sets position in the spritesheet
-       animXOffset = (gameFrame % enemies[i].animMaxFrame) * 64;
+         //sets position in the spritesheet
+         animXOffset = (gameFrame % enemies[i].animMaxFrame) * 64;
 
-       bctx.drawImage(enemies[i].image, animXOffset, animYOffset,64,64, enemies[i].x - mapOffsetX, enemies[i].y - mapOffsetY,64,64);
+         bctx.drawImage(enemies[i].image, animXOffset, animYOffset,64,64, enemies[i].x - mapOffsetX, enemies[i].y - mapOffsetY,64,64);
+      }
    }
 }
 
@@ -1155,9 +989,9 @@ function drawControls()
 
     if (gameState == "PLAYING")
     {
-        bctx.drawImage(controls,   0, 0, 64, 64, 32,  672, 64, 64);
-        bctx.drawImage(controls,  64, 0, 64, 64, 128, 672, 64, 64);
-        bctx.drawImage(controls, 128, 0, 64, 64, 928, 672, 64, 64);
+        bctx.drawImage(controls,   0, 0, 64, 64, 64,  672, 64, 64); //left
+        bctx.drawImage(controls,  64, 0, 64, 64, 256, 672, 64, 64); //right
+        bctx.drawImage(controls, 128, 0, 64, 64, 928, 672, 64, 64); //up
     }
     else if (gameState == "PAUSED")
     {
@@ -1204,12 +1038,22 @@ function gameLoop()
     if (!landscape)
     {
        ctx.clearRect(0, 0, CANVASWIDTH, CANVASWIDTH);
-       messagebox.setText("PLEASE ROTATE DEVICE");
+       clearIntroScreen();
+
+       //messagebox.setText("PLEASE ROTATE DEVICE");
+       messagebox.setText("HELLO");
        messagebox.draw(ctx);
 
     }
     else
     {
+        if (!gameStarted)
+        {
+          //Draw the intro screen
+          //This only draws once - if already on screen, it will remain
+          drawIntroScreen();
+        }
+
         if (!gamePaused && !levelComplete && !playerDied)
         {
             var loopTimeIndex = date.getTime();
@@ -1240,14 +1084,18 @@ function gameLoop()
 
 
             pixelmove = Math.trunc(pps * (loopTimeGap / 1000));
-                    bctx.fillStyle = "#ffffff";
+                    bctx.fillStyle = "#000000";
 
-            bctx.fillText(Math.round(pixelmove),75,50);
 
-            if (pixelmove > 10)
+            if (debugmode)
             {
-                bctx.fillStyle = "#ffffff";
-                bctx.fillText("Frame rate dropped below normal game operation!",150,50);
+              bctx.fillText(Math.round(pixelmove),75,50);
+
+              if (pixelmove > 10)
+              {
+                  bctx.fillStyle = "#000000";
+                  bctx.fillText("Frame rate dropped below normal game operation!",170,50);
+              }
             }
 
 
@@ -1289,6 +1137,8 @@ function gameLoop()
 
             calculateFrameRate();
 
+            progressbox.setText("CHILLIES: " + chilliCounter);
+            progressbox.draw(ctx);
 
             if (! cheatmode)
             {
@@ -1424,13 +1274,13 @@ function onTouchStart(event) {
 
         if (gameState == "PLAYING")
         {
-            if (x>(16 * SCALE + margin) &&  x<(112 * SCALE + margin))   { touchButtons.left.pressed = true; touchButtons.left.touchId = id }
-            if (x>(112 * SCALE + margin) &&  x<(224 * SCALE + margin))  { touchButtons.right.pressed = true; touchButtons.right.touchId = id }
-            if (x>(900 * SCALE + margin) &&  x<(1020 * SCALE + margin)) { touchButtons.up.pressed = true; touchButtons.up.touchId = id }
+            if (x>(/*16 * canvasScale + margin*/ 0 ) &&  x<=(160 * canvasScale + margin))   { touchButtons.left.pressed = true; touchButtons.left.touchId = id }
+            if (x>(160 * canvasScale + margin) &&  x<(512 * canvasScale + margin))  { touchButtons.right.pressed = true; touchButtons.right.touchId = id }
+            if (x>(512 * canvasScale + margin) /*&&  x<(1020 * canvasScale + margin)*/) { touchButtons.up.pressed = true; touchButtons.up.touchId = id }
         }
         else if (gameState == "PAUSED")
         {
-            if (x>(900 * SCALE + margin) &&  x<(1020 * SCALE + margin)) { touchButtons.resetlevel.pressed = true; touchButtons.resetlevel.touchId = id }
+            if (x>(900 * canvasScale + margin) &&  x<(1020 * canvasScale + margin)) { touchButtons.resetlevel.pressed = true; touchButtons.resetlevel.touchId = id }
         }
 
     }
@@ -1471,8 +1321,8 @@ function onTouchMove(event) {
         if ( touchButtons.right.touchId == id ) { touchButtons.right.pressed = false; }
         if ( touchButtons.up.touchId == id ) { /* do nothing - even if moves off the up button */ }
 
-        if (x>(16 * SCALE + margin) &&  x<(112 * SCALE + margin))   { touchButtons.left.pressed = true; touchButtons.left.touchId = id }
-        if (x>(112 * SCALE + margin) &&  x<(224 * SCALE + margin))  { touchButtons.right.pressed = true; touchButtons.right.touchId = id }
+        if (x>(16 * canvasScale + margin) &&  x<(112 * canvasScale + margin))   { touchButtons.left.pressed = true; touchButtons.left.touchId = id }
+        if (x>(112 * canvasScale + margin) &&  x<(224 * canvasScale + margin))  { touchButtons.right.pressed = true; touchButtons.right.touchId = id }
 
     }
 
