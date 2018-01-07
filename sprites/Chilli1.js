@@ -7,6 +7,8 @@ function Chilli1()
     this.active = true;
 
     this.image_src = "tiles/spritesheet_chilli1.png";
+    this.animXOffset = 128;
+    this.animYOffset = 832;
 
     this.deadly = false;
     this.animMaxFrame = 1;

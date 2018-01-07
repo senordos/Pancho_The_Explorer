@@ -9,7 +9,9 @@ function Sprite()
     this.name = "GENERAL SPRITE";
     this.img = "NO_IMAGE";
     this.image_src = "HELLO";
-    this.enemyImage = new Image();
+    //this.enemyImage = new Image();
+    this.animXOffset = 0;
+    this.animYOffset = 0;
     this.animFrame = 0;
     this.animMaxFrame = 4;
     this.xDirection = 1;
@@ -49,6 +51,8 @@ function Sprite()
     this.deadly = true;
     this.hit = false; //sprite is hit by something
     this.jump = false;
+
+    this.stompable = false;
 
     this.localBricks = {current:0,left:0,right:0,up:0,down:0,leftUp:0,leftDown:0,rightUp:0,rightDown:0,xLinedUp:false,yLinedUp:false};
 
@@ -122,8 +126,8 @@ Sprite.prototype.init = function(level_sprite_data)
 {
     console.log("INIT: " + this.name);
 
-    this.image = new Image();
-    this.image.src = this.image_src;
+    //this.image = new Image();
+    //this.image.src = this.image_src;
 
 
     this.x = Math.floor(level_sprite_data.x);

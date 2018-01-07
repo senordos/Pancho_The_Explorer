@@ -118,14 +118,19 @@ function drawIntroScreen()
 
 function button_startGameClicked()
 {
+    //fullscreen();
+
+
     //Play a sound after the user clicks - only plays if the music is toggled.
     var context = new window.AudioContext();
     // create a dummy sound - and play it immediately in same 'thread'
-    var oscillator = context.createOscillator();
-    oscillator.frequency.value = 400;
-    oscillator.connect(context.destination);
-    oscillator.start(0);
-    oscillator.stop(0);
+    //var oscillator = context.createOscillator();
+    //oscillator.frequency.value = 400;
+    //oscillator.connect(context.destination);
+    //oscillator.start(0);
+    //oscillator.stop(0);
+
+    sound.playSound(SND_JUMP);
 
     //Turn introScreen off and gameCanvas on
     document.getElementById("introScreen").style.display = "none";

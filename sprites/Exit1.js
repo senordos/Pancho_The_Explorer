@@ -4,16 +4,13 @@ function Exit1()
     Sprite.call(this);
 
     this.name = "Exit1";
-    this.image_src = "tiles/Exit2.png";
+
     this.animMaxFrame = 1;
 
     this.deadly = false;
 
-    this.fallWaitStartTime = 0;
-    this.falling = false;
-    this.waitingToFall = false;
-
-
+    this.animXOffset = 0;
+    this.animYOffset = 960;
 }
 
 Exit1.prototype = Object.create(Sprite.prototype);

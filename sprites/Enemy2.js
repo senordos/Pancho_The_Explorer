@@ -4,8 +4,12 @@ function Enemy2()
     Sprite.call(this);
 
     this.name = "Enemy2";
+    this.stompable = true;
 
-    this.image_src = "tiles/spritesheet_enemy2.png";
+    //this.image_src = "tiles/spritesheet_enemy2.png";
+
+    this.animXOffset = 0;
+    this.animYOffset = 256;
 
     this.xSpeed = 3;
     this.rectOffset = {top:16,bottom:63,left:8,right:55};

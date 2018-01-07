@@ -9,6 +9,8 @@ function Enemy3()
     this.ySpeed = 2;
 
     this.image_src = "tiles/spritesheet_enemy3.png";
+    this.animXOffset = 0;
+    this.animYOffset = 384;
 
 }
 
@@ -32,7 +34,7 @@ Enemy3.prototype.init = function(level_sprite_data)
     else
     {
         //X and Y direction will be defaults.
-        console.log("Enemy[] - Enemy3 - properties undefined for startXDirection / startYDirection / rotation")                                                
+        console.log("Enemy[] - Enemy3 - properties undefined for startXDirection / startYDirection / rotation")
     }
 
 };
@@ -40,7 +42,7 @@ Enemy3.prototype.init = function(level_sprite_data)
 Enemy3.prototype.setMoveTargetX = function()
 {
     Sprite.prototype.setMoveTargetX.call(this);
-    this.targetX = this.x + this.xDirection * this.xSpeed;  //this should be linked to frame rate or something   
+    this.targetX = this.x + this.xDirection * this.xSpeed;  //this should be linked to frame rate or something
 }
 
 Enemy3.prototype.setMoveTargetY = function()
@@ -65,26 +67,26 @@ Enemy3.prototype.updateMoveAttributesX = function (map)
             this.xDirection = 0;
             this.yDirection = 1;
             this.rotation = 90;
-        }   
+        }
         if (map[this.localBricks.down].type == 0 && this.xDirection == -1 && this.rotation == 0)
         {
             this.xDirection = 0;
             this.yDirection = 1;
             this.rotation = 270;
 
-        }                        
+        }
         if (map[this.localBricks.up].type == 0 && this.xDirection == -1  && this.rotation == 180)
         {
             this.xDirection = 0;
             this.yDirection = -1;
             this.rotation = 270;
-        }    
+        }
         if (map[this.localBricks.up].type == 0 && this.xDirection == 1  && this.rotation == 180 )
         {
             this.xDirection = 0;
             this.yDirection = -1;
             this.rotation = 90;
-        }                
+        }
     }
 }
 
@@ -99,28 +101,28 @@ Enemy3.prototype.updateMoveAttributesY = function (map)
     {
         if (bricks[this.localBricks.left].type == 0 && this.yDirection == 1 && this.rotation == 90)
         {
-                this.yDirection = 0;        
+                this.yDirection = 0;
                 this.xDirection = -1;
                 this.rotation = 180;
 
         }
         if (bricks[this.localBricks.left].type == 0 && this.yDirection == -1 && this.rotation == 90)
         {
-                this.yDirection = 0;        
+                this.yDirection = 0;
                 this.xDirection = -1;
                 this.rotation = 0;
 
         }
         if (bricks[this.localBricks.right].type == 0 && this.yDirection == 1 && this.rotation == 270)
         {
-                this.yDirection = 0;        
+                this.yDirection = 0;
                 this.xDirection = 1;
                 this.rotation = 180;
 
         }
         if (bricks[this.localBricks.right].type == 0 && this.yDirection == -1 && this.rotation == 270)
         {
-                this.yDirection = 0;        
+                this.yDirection = 0;
                 this.xDirection = 1;
                 this.rotation = 0;
 
