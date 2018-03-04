@@ -27,12 +27,12 @@ function Sprite()
     this.activateIfPlayerYLT = 0;
 
     //for collision detection, these rectangles define the sprite
-    this.rectMain = {top:0,bottom:0,left:0,right:0};
-    this.rectOffset = {top:0,bottom:63,left:0,right:63};
-    this.rectTopOffset = {top:0,bottom:31,left:7,right:55};
-    this.rectBottomOffset = {top:32,bottom:63,left:8,right:56};
-    this.rectLeftOffset = {top:19,bottom:43,left:0,right:19};
-    this.rectRightOffset = {top:19,bottom:43,left:43,right:63};
+    this.rectMain = {top:0,bottom:0,left:0,right:0}; //this is generated each frame based on rectOffet below
+    this.rectOffset =       {top:0,  bottom:63, left:0,  right:63};
+    this.rectTopOffset =    {top:0,  bottom:31, left:8,  right:55};
+    this.rectBottomOffset = {top:32, bottom:63, left:8,  right:55};
+    this.rectLeftOffset =   {top:19, bottom:43, left:0,  right:19};
+    this.rectRightOffset =  {top:19, bottom:43, left:43, right:63};
     this.collisionWidth = 56;
     this.collisionHeight = 64;
 
@@ -45,11 +45,12 @@ function Sprite()
 
     this.collisionExit = false;
     this.collisionDeath = false;
+    this.collisionClimb = false;
 
-    this.active = true;
-    this.alive = true;
-    this.deadly = true;
-    this.hit = false; //sprite is hit by something
+    this.active = true;  //if true, will be processed for movement getTopCollisionRect
+    this.alive = true;   //if not alive, sprite is effectively removed from level
+    this.deadly = true;  //if the player hits the sprite, will player get damage
+    this.hit = false;    //sprite is hit by something. May become unhit in future
     this.jump = false;
 
     this.stompable = false;
@@ -169,10 +170,10 @@ Sprite.prototype.getCollisionRect = function()
 {
     var collisionRect =
     {
-          top: this.rectOffset.top + this.targetY,
+          top:    this.rectOffset.top    + this.targetY,
           bottom: this.rectOffset.bottom + this.targetY,
-          left: this.rectOffset.left + this.targetX,
-          right: this.rectOffset.right + this.targetX
+          left:   this.rectOffset.left   + this.targetX,
+          right:  this.rectOffset.right  + this.targetX
     };
 
     return  collisionRect;

@@ -161,6 +161,8 @@ const BRICKSTARTY = 0;
 const SPRITESTARTCORRECTIONX = 0;
 const SPRITESTARTCORRECTIONY = -64;
 
+const MAPOFFSETY_UPPER = 158;
+const MAPOFFSETY_LOWER = 384;
 
 //game debug variables
 var showTargetRect = false;
@@ -295,6 +297,8 @@ function initBricks()
     chilliCounter = 0;
     levelTimeStart = new Date().getTime();
 
+    mapOffsetY = 0;  //set the map to start with more sky showing
+
     for (var l=0; l < levels[level].layers.length; l++)
     {
         if (levels[level].layers[l].name == "Map")
@@ -319,8 +323,12 @@ function initBricks()
                         name:"Player1",
                         img:"tiles/spritesheet_player_v2.png",
                         image_src:"tiles/spritesheet_player_v2.png",
-                        rectOffset:{top:0,bottom:63,left:8,right:55}
-                        });
+                        rectOffset:       {top:0,  bottom:63, left:7,  right:55},
+                        rectTopOffset:    {top:0,  bottom:31, left:7, right:55},
+                        rectBottomOffset: {top:32, bottom:63, left:7, right:55},
+                        rectLeftOffset:   {top:19, bottom:43, left:7,  right:19},
+                        rectRightOffset:  {top:19, bottom:43, left:43, right:55}
+                    });
 
                     player1.init(levels[level].layers[l].objects[o]);
 
@@ -346,6 +354,15 @@ function initBricks()
                 {
                     enemies[enemyCounter] = new Enemy3();
                     enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
+                    enemyCounter++;
+
+                }
+                if (levels[level].layers[l].objects[o].name == "Enemy4")
+                {
+                    enemies[enemyCounter] = new Enemy4();
+                    enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
+                    //if this enemy can be stomped, update the counter
+                    if ( enemies[enemyCounter].stompable ) { stompableEnemiesCounter++; };
                     enemyCounter++;
 
                 }
@@ -475,6 +492,20 @@ function initBricks()
                     nB.y = y;
             break;
 
+            case 2: nB.tileName="vine1";
+                    nB.rectMain = {top:y, bottom:y+63, left:x+24, right:x+38};
+                    nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+                    nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+                    nB.deadly = false;
+                    nB.exit=false;
+                    nB.moveable=false;
+                    nB.blocker=false;
+                    nB.climbable=true;
+                    nB.type = tileId;
+                    nB.x = x;
+                    nB.y = y;
+            break;
+
             default: nB.tileName="brick";
                     nB.rectMain = {top:y, bottom:y+63, left:x,   right:x+63};
                     nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
@@ -541,13 +572,17 @@ function checkWorldCollisions(sprite)
 
     //Checks a sprite's targetX and targetY positions for collisions
 
+
+
     //First, reset the sprite's collision array
     //As this will be called separately for X and Y movement, this needs to be reset separately
+    var moveAxis = "";
     if(sprite.targetX != sprite.x)
     {
         //moving in X axis
         sprite.collisionLeft = false;
         sprite.collisionRight = false;
+        moveAxis = "X";
     }
 
     if(sprite.targetY != sprite.y)
@@ -555,19 +590,29 @@ function checkWorldCollisions(sprite)
         //moving in Y axis
         sprite.collisionTop = false;
         sprite.collisionBottom = false;
+        moveAxis = "Y";
     }
 
+    sprite.collisionClimb = false;
 
 
-    spriteTargetRect=sprite.getCollisionRect();
 
+    //Get the sprites collision rectangles
+    var spriteTargetRect=sprite.getCollisionRect();
+
+    var spriteTopRect = sprite.getTopCollisionRect();
+    var spriteBottomRect = sprite.getBottomCollisionRect();
+    var spriteLeftRect = sprite.getLeftCollisionRect();
+    var spriteRightRect = sprite.getRightCollisionRect();
+
+    //draw the target on the screen if toggled
     if (showTargetRect)
     {
           bctx.beginPath();
-          bctx.rect( spriteTargetRect.left,
-                    spriteTargetRect.top,
-                    spriteTargetRect.right - spriteTargetRect.left,
-                    spriteTargetRect.bottom - spriteTargetRect.top);
+          bctx.rect( spriteTargetRect.left - mapOffsetX,
+                     spriteTargetRect.top - mapOffsetY,
+                     spriteTargetRect.right - spriteTargetRect.left,  //width
+                     spriteTargetRect.bottom - spriteTargetRect.top); //height
 
           bctx.fillStyle = "#fffaaa";
           bctx.fill();
@@ -578,68 +623,118 @@ function checkWorldCollisions(sprite)
 
 
     var i = 0;
+    var collisionHasHappened = false;
+    var collisionObjectIsBlocker = true;
+
     for (i=0; i < brickcount; i++)
     {
         if(bricks[i].type > 0 && bricks[i].isBackground == false)
         {
             if (intersectRect(spriteTargetRect, bricks[i].rectMain))
             {
+
                 bricks[i].hit = true;
 
-                if(sprite.targetX > sprite.x)
+                //only set collision and reposition sprite if the brick is a blocker
+                if ( bricks[i].blocker )
                 {
-                    //All sprites are animated from the top left corner, so need to add the width when moving right
-                    sprite.targetX = bricks[i].rectMain.left - sprite.collisionWidth;
+                    if(sprite.targetX > sprite.x)
+                    {
+                        //Find left edge of brick and the right offset of the sprite collision (e.g. 55ish) (not 64 as usually thinner)
+                        //The brick edge minus the collision thickness, plus 1 so there is no collision.
+                        sprite.targetX = bricks[i].rectMain.left - (sprite.rectOffset.right + 1);
 
-                }
-                else if(sprite.targetX < sprite.x)
-                {
-                    //the player is moving left
+                        sprite.collisionRight = true;
+                    }
+                    else if(sprite.targetX < sprite.x)
+                    {
+                        //the player is moving left
 
-                    //All sprites are animated from the top left corner, so brick right + 1 is correct
-                    sprite.targetX = bricks[i].rectMain.right - 7;
+                        //Find the right edge of the brick, the left offset of the sprite collision rect (e.g. 7 or 8)
+                        //The brick edge minus the sprite will overlap slightly with wall (e.g. 7 or 8) - add 1 so not colliding
+                        sprite.targetX = bricks[i].rectMain.right - (sprite.rectOffset.left - 1);
 
-                }
+                        sprite.collisionLeft = true;
+                    }
 
-                if(sprite.targetY > sprite.y)
-                {
-                    //if the y target is higher - so moving down
+                    if(sprite.targetY > sprite.y)
+                    {
+                        //if the y target is higher - so moving down
 
-                    //All sprites are animated from the top left corner, so need to add the hight when moving down
-                    sprite.targetY = bricks[i].rectMain.top - sprite.collisionHeight;
+                        //All sprites are animated from the top left corner, so need to add the height when moving down
+                        sprite.targetY = bricks[i].rectMain.top - sprite.collisionHeight;
 
-                    //If moving down, the collision must be below, so set collision parameter
-                    sprite.collisionBottom = true;
+                        //If moving down, the collision must be below, so set collision parameter
+                        sprite.collisionBottom = true;
 
-                }
+                    }
 
-                else if(sprite.targetY < sprite.y)
-                {
-                    //the player is moving up
+                    else if(sprite.targetY < sprite.y)
+                    {
+                        //the player is moving up
 
-                    //All sprites are animated from the top left corner, so brick bottom + 1 is correct
-                    sprite.targetY = bricks[i].rectMain.bottom + 1;
+                        //All sprites are animated from the top left corner, so brick bottom + 1 is correct
+                        sprite.targetY = bricks[i].rectMain.bottom + 1;
 
-                    sprite.collisionTop = true;
+                        sprite.collisionTop = true;
+                    }
                 }
 
                 //Do not else-if this, as will become invincible!
                 if (bricks[i].deadly == true)
                 {
-                    sprite.collisionDeath = true;
-                    console.log("Collision - deadly tile: " + bricks[i].tileName);
+                    if (bricks[i].tileName == 'spikes1')
+                    {
+
+                        //Only if player falls onto spikes does it trigger
+                        if (intersectRect(spriteBottomRect, bricks[i].rectMain) && moveAxis == "Y")
+                        {
+                          sprite.collisionDeath = true;
+                          console.log("Collision - deadly tile: " + bricks[i].tileName);
+                        }
+                    }
                 }
 
-                sprite.collision = true;
-                return true;
+
+
+                //
+                //  All checks up to this point are blocking tiles
+                //
+                collisionObjectIsBlocker = true;
+                collisionHasHappened = true;
+
+
+                //
+                //  All checks after this point are not blocking
+                //
+                if (bricks[i].climbable == true)
+                {
+                    sprite.collisionClimb = true;
+                    collisionObjectIsBlocker = false;
+                    console.log("Collision - climbable tile: " + bricks[i].tileName);
+                }
+
+
             }
 
         }
 
     }
 
-    sprite.collision = false;
-    return false;
+
+    if (collisionHasHappened && collisionObjectIsBlocker)
+    {
+      sprite.collision = true;
+      return true;
+      console.log(sprite.name);
+      console.log("hello");
+    }
+    else
+    {
+      sprite.collision = false;
+      return false;
+    }
+
 }
 
 
@@ -658,11 +753,15 @@ function checkEnemyCollisions(playerSprite)
 
     for (i=0; i < enemies.length; i++)
     {
-        if (enemies[i].active)
+        if (enemies[i].active && enemies[i].alive)
         {
 
           var enemyRect = enemies[i].getCollisionRect();
           var enemyTopRect = enemies[i].getTopCollisionRect();
+          var enemyLeftRect = enemies[i].getLeftCollisionRect();
+          var enemyRightRect = enemies[i].getRightCollisionRect();
+          var enemyBottomRect = enemies[i].getBottomCollisionRect();
+
 
           if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Exit1")
           {
@@ -676,6 +775,7 @@ function checkEnemyCollisions(playerSprite)
 
               enemies[i].hit = true;
               enemies[i].active = false;
+              enemies[i].alive = false;
 
               chilliCounter--;
 
@@ -699,31 +799,33 @@ function checkEnemyCollisions(playerSprite)
                   enemies[i].yDirection = 1;
                   enemies[i].ySpeed = 1;
 
-                  playerSprite.yDirection = 0;
-                  playerSprite.y = enemies[i].y - playerSprite.collisionHeight;
+                  playerSprite.yDirection = 1;
+                  playerSprite.ySpeed = 1;
+                  playerSprite.targetY = enemies[i].y - playerSprite.collisionHeight;
                   playerSprite.collisionBottom = true;
               }
-              else if (playerSprite.y > enemies[i].y)
+              else if (intersectRect(playerTopRect, enemyBottomRect))
               {
                   playerSprite.yDirection = 0;
-                  playerSprite.y = enemies[i].y + enemies[i].collisionHeight;
+                  playerSprite.ySpeed = 0;
+                  playerSprite.targetY = enemies[i].y + enemies[i].collisionHeight;
                   playerSprite.collisionTop = true;
               }
-              else if (playerSprite.x < enemies[i].x)
-              {
-                //Player has hit bridge from left
-                playerSprite.xDirection = 0;
-                playerSprite.x = enemies[i].x - playerSprite.collisionWidth;
-                playerSprite.collisionRight = true;
-              }
-              else if (playerSprite.x > enemies[i].x)
+              else if (intersectRect(playerLeftRect, enemyRightRect))
               {
                 //Player has hit bridge from right
                 playerSprite.xDirection = 0;
-                playerSprite.x = enemies[i].x + playerSprite.collisionWidth;
+                playerSprite.targetX = enemies[i].x + playerSprite.collisionWidth;
                 playerSprite.collisionLeft = true;
-              }
 
+              }
+              else if (intersectRect(playerRightRect, enemyLeftRect))
+              {
+                //Player has hit bridge from left
+                playerSprite.xDirection = 0;
+                playerSprite.targetX = enemies[i].x - playerSprite.collisionWidth;
+                playerSprite.collisionRight = true;
+              }
 
 
 
@@ -753,7 +855,7 @@ function checkEnemyCollisions(playerSprite)
                   if (enemies[i].stompable) { stompableEnemiesCounter--; }
 
                   sound.playSound(SND_JUMP);
-                  playerSprite.yDirection = PLAYERJUMP - 4;
+                  playerSprite.ySpeed = PLAYERJUMP - 8;
 
 
 
@@ -821,6 +923,9 @@ function movePlayerX()
 
 
     checkWorldCollisions(player1);
+    checkEnemyCollisions(player1);
+
+
     player1.x = Math.trunc(player1.targetX);
 
     if ( player1.x < 0 ) { player1.x = 0; };
@@ -842,29 +947,44 @@ function movePlayerY()
     {
       sound.playSound(SND_JUMP);
 
-      player1.yDirection = PLAYERJUMP;
-      player1.targetY = player1.y + player1.yDirection;
+      player1.ySpeed = PLAYERJUMP;
+      player1.targetY = player1.y + player1.ySpeed;
+
+    }
+    else if (player1_UpPressed && player1.collisionClimb)
+    {
+      player1.ySpeed = -8;
+      player1.targetY = player1.y + player1.ySpeed;
 
     }
     else
     {
+
         if (player1_UpPressed)
         {
-          player1.yDirection = player1.yDirection + (GRAVITY / 2);
+          //slows the effect of gravity
+          player1.ySpeed = player1.ySpeed + (GRAVITY / 2);
+        }
+        else if (player1.collisionClimb)
+        {
+          player1.ySpeed = 2;  //Player is on climbable object, but always sliding down
         }
         else
         {
-          player1.yDirection = player1.yDirection + GRAVITY;
+          //Player is falling (or player is on the ground and trying to fall)
+          player1.ySpeed = player1.ySpeed + GRAVITY;  //player speeds up
 
         }
-        if (player1.yDirection > 20) {player1.yDirection = 20;}
-        player1.targetY = player1.y + player1.yDirection;
+        if (player1.ySpeed > 20) {player1.ySpeed = 20;}
+        player1.targetY = player1.y + player1.ySpeed;
     }
 
     if (checkWorldCollisions(player1))
     {
-        player1.yDirection = 0;
+        player1.ySpeed = 0;
     }
+    checkEnemyCollisions(player1);
+
 
     player1.targetY = Math.floor(player1.targetY);
     if (player1.targetY < 0)
@@ -892,7 +1012,7 @@ function moveEnemiesY()
     {
 
         // 1 //
-        enemies[i].setMoveTargetY();
+        enemies[i].setMoveTargetY(bricks, player1);
 
 
         // 2 & 3 //
@@ -923,7 +1043,7 @@ function moveEnemiesX()
     {
 
         // 1 //
-        enemies[i].setMoveTargetX();
+        enemies[i].setMoveTargetX(bricks, player1);
 
 
 
@@ -952,14 +1072,17 @@ function drawBricks()
     var image;
 
     //This controls if the map moves while the player is moving left and right
-    if (player1.x - mapOffsetX > 576) { mapOffsetX = player1.x - 576; }
+    if (player1.x - mapOffsetX > 448) { mapOffsetX = player1.x - 448; }
     if (player1.x - mapOffsetX < 320) { mapOffsetX = player1.x - 320; }
     if (mapOffsetX < 0) { mapOffsetX = 0; }
 
 
-    if (player1.y - mapOffsetY > 512) { mapOffsetY = player1.y - 512; }
-    if (player1.y - mapOffsetY < 256) { mapOffsetY = player1.y - 256; }
-    //if (player1.y - mapOffsetY < 352) { mapOffsetY = player1.y - 352; }
+    if (player1.y - mapOffsetY > MAPOFFSETY_LOWER) { mapOffsetY = player1.y - MAPOFFSETY_LOWER; }
+    if (player1.y - mapOffsetY < MAPOFFSETY_UPPER) { mapOffsetY = player1.y - MAPOFFSETY_UPPER; }
+
+    //if (player1.y - mapOffsetY > 512) { mapOffsetY = player1.y - 512; }
+    //if (player1.y - mapOffsetY < 256) { mapOffsetY = player1.y - 256; }
+
 
     //due to lack of foresight when setting up the playable area,
     //the map offset is set to -64 rather than 0 so player doesn't
@@ -1039,14 +1162,16 @@ function drawEnemies()
 
    for(i=0; i < enemies.length; i++)
    {
-     if (enemies[i].active)
-     {
 
+      //Only draw the sprites if they are alive
+      if ( enemies[i].alive )
+      {
          var animXOffset = enemies[i].animXOffset;
          var animYOffset = enemies[i].animYOffset;
 
 
-         if (enemies[i].name == "Enemy1" || enemies[i].name == "Enemy2" )
+         if (  enemies[i].name == "Enemy1"
+            || enemies[i].name == "Enemy2" )
          {
              if (enemies[i].hit == true)
              {
@@ -1062,8 +1187,17 @@ function drawEnemies()
              else if (e.rotation == 180) { animYOffset = animYOffset + 128; }
              else if (e.rotation == 270) { animYOffset = animYOffset + 192; }
              else { animYOffset = animYOffset + 0; }
+         }
+         if ( enemies[i].name == "Enemy4" )
+         {
+             var e = enemies[i];
+                 if ( e.xDirection == 1  ) { animYOffset = animYOffset + 0; }
+            else if ( e.xDirection == -1 ) { animYOffset = animYOffset + 64; }
 
-
+            if (e.hit == true)
+            {
+                animYOffset = animYOffset + 128;
+            }
          }
 
          //sets position in the spritesheet
@@ -1201,9 +1335,6 @@ function gameLoop()
             {
                 demoMovePlayerX();
             }
-
-
-            checkEnemyCollisions(player1);
 
 
 

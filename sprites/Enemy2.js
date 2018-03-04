@@ -4,14 +4,13 @@ function Enemy2()
     Sprite.call(this);
 
     this.name = "Enemy2";
+    this.active = false;
     this.stompable = true;
-
-    //this.image_src = "tiles/spritesheet_enemy2.png";
 
     this.animXOffset = 0;
     this.animYOffset = 256;
 
-    this.xSpeed = 3;
+    this.xSpeed = 2;
     this.rectOffset = {top:16,bottom:63,left:8,right:55};
 
 
@@ -29,8 +28,10 @@ Enemy2.prototype.setMoveTargetX = function()
 {
     Sprite.prototype.setMoveTargetX.call(this);
 
-    this.targetX = this.x + ((this.xDirection) * this.xSpeed); //This is currently tied to the framerate
-
+    if (this.active == true)
+    {
+      this.targetX = this.x + ((this.xDirection) * this.xSpeed); //This is currently tied to the framerate
+    }
 }
 
 Enemy2.prototype.setMoveTargetY = function()
@@ -45,7 +46,7 @@ Enemy2.prototype.setMoveTargetY = function()
     this.targetY = this.y + this.yDirection;
 }
 
-Enemy2.prototype.updateMoveAttributesX = function (map)
+Enemy2.prototype.updateMoveAttributesX = function (map, player)
 {
 
    Sprite.prototype.updateMoveAttributesX.call(this, map);
@@ -73,6 +74,32 @@ Enemy2.prototype.updateMoveAttributesX = function (map)
            this.yDirection = this.yDirection = -30;
        }
     }
+
+
+    if (this.active != true)
+    {
+      if ( this.activateIfPlayerXGT !== undefined )
+      {
+          if ( this.activateIfPlayerXGT > 0 && player.x > this.activateIfPlayerXGT )
+          {
+              this.active = true;
+              console.log("ACTIVE CORRECT");
+          }
+          else if ( this.activateIfPlayerXGT == 0 )
+          {
+              this.active = true;
+              console.log("ACTIVE CORRECT");
+          }
+      }
+      else
+      {
+          this.active = true;
+          console.log("ACTIVE BUUUU");
+
+      }
+    }
+
+
 }
 
 Enemy2.prototype.updateMoveAttributesY = function (map)
