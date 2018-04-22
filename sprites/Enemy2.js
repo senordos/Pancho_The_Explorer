@@ -43,7 +43,7 @@ Enemy2.prototype.setMoveTargetY = function()
 
     if (this.yDirection > 5) {this.yDirection = 5;} //Y DIRECTION SHOULD ONLY BE 1 - NEED TO CHANGE TO Y SPEED
 
-    this.targetY = this.y + this.yDirection;
+    this.targetY = Math.floor(this.y + this.yDirection);
 }
 
 Enemy2.prototype.updateMoveAttributesX = function (map, player)
@@ -104,7 +104,7 @@ Enemy2.prototype.updateMoveAttributesX = function (map, player)
 
 Enemy2.prototype.updateMoveAttributesY = function (map)
 {
-    Sprite.prototype.updateMoveAttributesX.call(this, map);
+    Sprite.prototype.updateMoveAttributesY.call(this, map);
 
     if (this.collision == true)
     {

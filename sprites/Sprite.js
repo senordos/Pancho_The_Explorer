@@ -26,6 +26,9 @@ function Sprite()
     this.activateIfPlayerYGT = 0;
     this.activateIfPlayerYLT = 0;
 
+    //determine if the sprite walks off edges, or not. Default is not.
+    this.canSeeEdges = true;
+
     //for collision detection, these rectangles define the sprite
     this.rectMain = {top:0,bottom:0,left:0,right:0}; //this is generated each frame based on rectOffet below
     this.rectOffset =       {top:0,  bottom:63, left:0,  right:63};
@@ -143,6 +146,19 @@ Sprite.prototype.init = function(level_sprite_data)
         if (level_sprite_data.properties.hasOwnProperty('startXDirection'))
         {
           this.xDirection = Math.floor(level_sprite_data.properties.startXDirection);
+        }
+        if (level_sprite_data.properties.hasOwnProperty('canSeeEdges'))
+        {
+          var edgeText = level_sprite_data.properties.canSeeEdges;
+          if (edgeText == "TRUE" || edgeText == "true")
+          {
+              this.canSeeEdges = true;
+          }
+          else if (edgeText == "FALSE" || edgeText == "false" )
+          {
+              this.canSeeEdges = false;
+          }
+
         }
 
     }

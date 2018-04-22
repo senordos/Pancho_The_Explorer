@@ -33,7 +33,7 @@ function drawIntroScreen()
 
       //set up the intro screen position, based on the size of the buttonSize etc.
       var introX = Math.trunc((window.innerWidth / 2) - (0.5 * (buttonSizeNum + textWidthNum)));
-      var introY = Math.trunc((window.innerHeight * 0.75 / 2) - (0.5 * (buttonSizeNum * 2)));
+      var introY = Math.trunc((window.innerHeight * 0.75 / 2) - (0.5 * (buttonSizeNum * 2)) - buttonSizeNum);
       introX = introX.toString() + "px";
       introY = introY.toString() + "px";
 
@@ -200,8 +200,6 @@ function onWindowResize()
     document.getElementById("gameCanvas").setAttribute("height", SCALEDCANVASHEIGHT);
 
     ctx.scale(canvasScale,canvasScale);
-
-    //Also re-draw the intro game menu if it is active
 
 
 }

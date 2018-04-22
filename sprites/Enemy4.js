@@ -27,7 +27,7 @@ Enemy4.prototype.init = function(level_sprite_data)
 {
     Sprite.prototype.init.call(this, level_sprite_data);
 
-    if ( level_sprite_data.properties !== undefined &&
+  /*  if ( level_sprite_data.properties !== undefined &&
          level_sprite_data.properties.startXDirection !== undefined &&
          level_sprite_data.properties.startYDirection !== undefined &&
          level_sprite_data.properties.rotation !== undefined )
@@ -41,6 +41,7 @@ Enemy4.prototype.init = function(level_sprite_data)
         //X and Y direction will be defaults.
         console.log("Enemy[] - Enemy4 - properties undefined for startXDirection / startYDirection / rotation")
     }
+  */
 
 
 };
@@ -121,7 +122,7 @@ Enemy4.prototype.updateMoveAttributesX = function (map, player)
 
     //This enemy will not walk of edges
     //Check for an edge and turn around if found
-    if (this.localBricks.xLinedUp == true)
+    if (this.canSeeEdges == true && this.localBricks.xLinedUp == true)
     {
         //if walking left, and there is an edge on the left, turn right
         if (map[this.localBricks.leftDown].type == 0 && this.xDirection == -1)
@@ -164,7 +165,7 @@ Enemy4.prototype.updateMoveAttributesX = function (map, player)
 
 Enemy4.prototype.updateMoveAttributesY = function (map, player)
 {
-    Sprite.prototype.updateMoveAttributesX.call(this, map);
+    Sprite.prototype.updateMoveAttributesY.call(this, map);
 
     if (this.collision == true)
     {

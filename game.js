@@ -115,7 +115,7 @@ const PADDLEMOVEMENT=3;
 const PADDLESTARTXGAP=20;
 const PLAYERJUMP= -28;
 
-const GRAVITY = 3.5;
+const GRAVITY = 4;
 
 var paddle1_X=PADDLESTARTXGAP;
 var paddle1_Y=canvas.height/2;
@@ -506,6 +506,30 @@ function initBricks()
                     nB.y = y;
             break;
 
+            case 3: nB.tileName="spikes2";
+                    nB.rectMain = {top:y+32, bottom:y+63, left:x+8, right:x+55};
+                    nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+                    nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+                    nB.deadly = true;
+                    nB.exit=false;
+                    nB.moveable=false;
+                    nB.type = tileId;
+                    nB.x = x;
+                    nB.y = y;
+            break;
+
+            case 4: nB.tileName="spikes3";
+                    nB.rectMain = {top:y, bottom:y+32, left:x+8, right:x+55};
+                    nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+                    nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+                    nB.deadly = true;
+                    nB.exit=false;
+                    nB.moveable=false;
+                    nB.type = tileId;
+                    nB.x = x;
+                    nB.y = y;
+            break;
+
             default: nB.tileName="brick";
                     nB.rectMain = {top:y, bottom:y+63, left:x,   right:x+63};
                     nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
@@ -683,8 +707,9 @@ function checkWorldCollisions(sprite)
                 //Do not else-if this, as will become invincible!
                 if (bricks[i].deadly == true)
                 {
-                    if (bricks[i].tileName == 'spikes1')
+                    if (bricks[i].tileName == 'spikes1' || bricks[i].tileName == 'spikes2')
                     {
+                      //Ground Spikes
 
                         //Only if player falls onto spikes does it trigger
                         if (intersectRect(spriteBottomRect, bricks[i].rectMain) && moveAxis == "Y")
@@ -692,7 +717,16 @@ function checkWorldCollisions(sprite)
                           sprite.collisionDeath = true;
                           console.log("Collision - deadly tile: " + bricks[i].tileName);
                         }
+
                     }
+                    else if (bricks[i].tileName == 'spikes3')
+                    {
+                      //Ceiling spikes
+                      if (intersectRect(spriteTopRect, bricks[i].rectMain) && moveAxis == "Y")
+                      {
+                        sprite.collisionDeath = true;
+                        console.log("Collision - deadly tile: " + bricks[i].tileName);
+                      }                    }
                 }
 
 
@@ -744,12 +778,14 @@ function checkEnemyCollisions(playerSprite)
     //when looping through all the sprites, use "name" to check the sprite being checked isn't "this" sprites
 
     //get the Rect for this sprite
-        //Build a rectangle based on the overall sprite's collision offset
+    //Build a rectangle based on the overall sprite's collision offset
     var playerRect = playerSprite.getCollisionRect();
     var playerTopRect = playerSprite.getTopCollisionRect();
     var playerBottomRect = playerSprite.getBottomCollisionRect();
     var playerLeftRect = playerSprite.getLeftCollisionRect();
     var playerRightRect = playerSprite.getRightCollisionRect();
+
+    var playerStompedEnemy = false; //use this to check if the player hit one or more enemys
 
     for (i=0; i < enemies.length; i++)
     {
@@ -842,7 +878,7 @@ function checkEnemyCollisions(playerSprite)
           if(intersectRect(playerRect, enemyRect) && enemies[i].deadly == true)
           {
 
-              if(intersectRect(playerBottomRect, enemyTopRect) && enemies[i].hit == false)
+              if(intersectRect(playerBottomRect, enemyTopRect) && enemies[i].hit == false && playerSprite.ySpeed > 0 )
               {
 
                   //player on top of enemy
@@ -855,9 +891,11 @@ function checkEnemyCollisions(playerSprite)
                   if (enemies[i].stompable) { stompableEnemiesCounter--; }
 
                   sound.playSound(SND_JUMP);
-                  playerSprite.ySpeed = PLAYERJUMP - 8;
 
-
+                  //Set this variable so can perform post hit actions
+                  //after looping through other enemys. If do here, can
+                  //alter the mechanics of stomp
+                  playerStompedEnemy = true;
 
               }
               else
@@ -870,6 +908,13 @@ function checkEnemyCollisions(playerSprite)
           }
         }
     }
+
+    if (playerStompedEnemy)
+    {
+        //if one or more enemys are stomped, bounce the player.
+        playerSprite.ySpeed = PLAYERJUMP - 8;
+    }
+
 }
 
 
@@ -1262,16 +1307,18 @@ function gameLoop()
     text = gameLoopStart - gameLoopEnd;
     //console.log("Loop Wait Time = " + text);
 
+    /*
     if (!landscape)
     {
-       ctx.clearRect(0, 0, CANVASWIDTH, CANVASWIDTH);
+       bctx.clearRect(0, 0, CANVASWIDTH, CANVASWIDTH);
        clearIntroScreen();
 
        messagebox.updateTextAreaText(0, "PLEASE ROTATE DEVICE");
-       messagebox.draw(ctx);
+       messagebox.draw(bctx);
 
     }
     else
+    */
     {
         if (!gameStarted)
         {
@@ -1417,6 +1464,7 @@ function gameLoop()
           player1_ResetLevelPressed = false;
           attempts++;
           initBricks();
+          resetTouchButtons();
           gamePaused=false;
           gameState = "PLAYING";
         }
@@ -1477,13 +1525,14 @@ function gameLoop()
               attemptsHistory.push(attempts);
               initMusic(level);
               initBricks();
+              resetTouchButtons();
               gamePaused = false;
               gameState = "PLAYING";
           }
           else
           {
               gamePaused = true;
-
+              resetTouchButtons();
               titletextbox.setTitle("WELL DONE   GAME COMPLETED");
               titletextbox.draw(ctx);
 
@@ -1595,7 +1644,8 @@ function onTouchStart(event)
 
 }
 
-function onTouchMove(event) {
+function onTouchMove(event)
+{
 	 // Prevent the browser from doing its default thing (scroll, zoom)
 	event.preventDefault();
 
@@ -1650,6 +1700,23 @@ function onTouchEnd(event)
     if (touchButtons.right.pressed == true) { player1_RightPressed = true; } else { player1_RightPressed = false; }
     if (touchButtons.up.pressed == true) { player1_UpPressed = true; } else { player1_UpPressed = false; }
 
+}
+
+function resetTouchButtons()
+{
+
+
+  touchButtons.left.pressed = false;
+  touchButtons.right.pressed = false;
+  touchButtons.up.pressed = false;
+  touchButtons.resetlevel.pressed = false;
+  touchButtons.continue.pressed = false;
+
+  player1_LeftPressed = false;
+  player1_RightPressed = false;
+  player1_UpPressed = false;
+  player1_ContinuePressed = false;
+  player1_ResetLevelPressed = false;
 }
 
 

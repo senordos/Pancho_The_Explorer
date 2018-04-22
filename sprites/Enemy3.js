@@ -95,7 +95,7 @@ Enemy3.prototype.updateMoveAttributesX = function (map)
 
 Enemy3.prototype.updateMoveAttributesY = function (map)
 {
-    Sprite.prototype.updateMoveAttributesX.call(this, map);
+    Sprite.prototype.updateMoveAttributesY.call(this, map);
 
     if ( this.localBricks.yLinedUp == true )
     {
