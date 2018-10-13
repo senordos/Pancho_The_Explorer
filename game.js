@@ -8,6 +8,7 @@ const SND_JUMP = 0;
 const SND_STOMP = 1;
 const SND_PLAYERDIE = 2;
 const SND_CHILLI = 3;
+const SND_EXTRALIFE = 4;
 
 var gameStarted = false;
 
@@ -20,6 +21,7 @@ sound.loadSound(SND_JUMP, "sounds/jump.wav");
 sound.loadSound(SND_STOMP, "sounds/stomp.wav");
 sound.loadSound(SND_CHILLI, "sounds/sound_chilli.wav");
 sound.loadSound(SND_PLAYERDIE, "sounds/sound_playerdie.wav");
+sound.loadSound(SND_EXTRALIFE, "sounds/sound_extralife.wav");
 sound.loadMusic(0,"sounds/music_beachfront-celebration.mp3")
 sound.loadMusic(1,"sounds/music_robosocks-chiptune-lead.mp3");
 sound.loadMusic(2,"sounds/music_bassfreak-another-chiptune.mp3");
@@ -113,7 +115,7 @@ const PADDLEWIDTH=5;
 const PADDLEHEIGHT=30;
 const PADDLEMOVEMENT=3;
 const PADDLESTARTXGAP=20;
-const PLAYERJUMP= -28;
+const PLAYERJUMP= -30;
 
 const GRAVITY = 4;
 
@@ -169,7 +171,7 @@ var showTargetRect = false;
 
 
 tiles = new Image();
-tiles.src = "tiles/platform_tiles.png";
+//tiles.src = "tiles/platform_tiles.png";
 
 bricksSpritesheet = new Image();
 
@@ -182,6 +184,9 @@ var titletextbox = new Textbox(0,0, CANVASWIDTH, 64,"PANCHO THE EXPLORER","CENTR
 var messagebox = new Textbox(0,672, CANVASWIDTH, 64, "HELLO", "CENTRE",0,0 );
 var versionbox = new Textbox(0,600, CANVASWIDTH, 64, "EPISODE 1:  MEXICO", "CENTRE",0,0 );
 var progressbox = new Textbox(0,0, CANVASWIDTH, 54,"", "RIGHT",0,13);
+var livestext = progressbox.addTextArea("LIVES: ", 1, "LEFT", 1, 0);
+
+
 var levelcompletebox = new Textbox(0,0,CANVASWIDTH,CANVASHEIGHT,"INITIAL LEVEL TEXT","CENTRE",0,0);
 levelcompletebox.setBackgroundColour("#FFFFAA");
 var levelcompletebox_levelTextArea = 0;  //the title text area is always 0
@@ -214,6 +219,8 @@ levelcompletebox.addTextArea("PRESS SPACE TO CONTINUE", 21, "CENTRE",0,0);
 
 
 var player1;
+player1 = new Sprite();
+
 var enemies = [];
 var chilliCounter = 0;
 
@@ -232,6 +239,29 @@ var gameLoopStart;
 var gameLoopEnd;
 
 
+function resetGame()
+{
+    attempts = 1; //this is the number of attempts to complete current level
+    //clear all the entries in attemptsHistory
+    while ( attemptsHistory.length )
+    {
+      attemptsHistory.pop();
+    }
+
+    gameState = "PLAYING";
+    gamePaused=false;
+    levelComplete=false;
+    playerDied=false;
+
+
+
+    titletextbox.updateTextArea(0,"PANCHO THE EXPLORER", 1, "CENTRE", 0, 0);
+
+    //Start the game at the begining
+    level = 0;
+    player1.lives = 1;
+    initBricks();
+}
 
 
 
@@ -318,7 +348,6 @@ function initBricks()
 
                 if (levels[level].layers[l].objects[o].name == "Player")
                 {
-                    player1 = new Sprite();
                     setAttributes(player1, {
                         name:"Player1",
                         img:"tiles/spritesheet_player_v2.png",
@@ -331,6 +360,7 @@ function initBricks()
                     });
 
                     player1.init(levels[level].layers[l].objects[o]);
+                    player1.xSpeed = 0;
 
                 }
                 if (levels[level].layers[l].objects[o].name == "Enemy1")
@@ -380,6 +410,13 @@ function initBricks()
                     enemyCounter++;
 
                 }
+                if (levels[level].layers[l].objects[o].name == "Bridge2")
+                {
+                    enemies[enemyCounter] = new Bridge2();
+                    enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
+                    enemyCounter++;
+
+                }
                 if (levels[level].layers[l].objects[o].name == "Chilli1")
                 {
                     enemies[enemyCounter] = new Chilli1();
@@ -387,6 +424,14 @@ function initBricks()
                     enemyCounter++;
 
                     chilliCounter++;
+
+                }
+                if (levels[level].layers[l].objects[o].name == "ChilliEL")
+                {
+                    enemies[enemyCounter] = new ChilliEL();
+                    enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
+                    enemyCounter++;
+
 
                 }
                 if (levels[level].layers[l].objects[o].name == "Exit1")
@@ -726,7 +771,8 @@ function checkWorldCollisions(sprite)
                       {
                         sprite.collisionDeath = true;
                         console.log("Collision - deadly tile: " + bricks[i].tileName);
-                      }                    }
+                      }
+                    }
                 }
 
 
@@ -817,10 +863,33 @@ function checkEnemyCollisions(playerSprite)
 
               sound.playSound(SND_CHILLI);
 
+              if (chilliCounter == 0)
+              {
+                  extraLife();
+              }
+
+          }
+
+          if (intersectRect(playerRect, enemyRect) && enemies[i].name == "ChilliEL")
+          {
+              console.log("HIT CHILLI");
+
+              enemies[i].hit = true;
+              enemies[i].active = false;
+              enemies[i].alive = false;
+
+
+              sound.playSound(SND_CHILLI);
+
+
+              extraLife();
+
+
           }
 
 
-          if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Bridge1")
+          if (intersectRect(playerRect, enemyRect) &&
+                ( enemies[i].name == "Bridge1" || enemies[i].name == "Bridge2"))
           {
 
               console.log("HIT BRIDGE");
@@ -900,8 +969,25 @@ function checkEnemyCollisions(playerSprite)
               }
               else
               {
+                  //This code here from when experimenting with health
+                  //abandoned in favour of lives due to poor feel to game
+                  //and a bit Sonic like.
+                  /*if( intersectRect(playerRightRect, enemyLeftRect) )
+                  {
+                    playerSprite.health --;
+                    playerSprite.x = playerSprite.x - 32;
+                    playerSprite.ySpeed = PLAYERJUMP / 2;
+                    playerSprite.xSpeed = -1;
+                  }
+                  if ( intersectRect(playerLeftRect, enemyRightRect) )
+                  {
+                    playerSprite.health --;
+                    playerSprite.x = playerSprite.x + 32;
+                    playerSprite.ySpeed = PLAYERJUMP / 2;
+                    playerSprite.xSpeed = 1;
+                  }*/
 
-                  //player hit by enemy
+
                   playerSprite.hit = true;
 
               }
@@ -1125,8 +1211,6 @@ function drawBricks()
     if (player1.y - mapOffsetY > MAPOFFSETY_LOWER) { mapOffsetY = player1.y - MAPOFFSETY_LOWER; }
     if (player1.y - mapOffsetY < MAPOFFSETY_UPPER) { mapOffsetY = player1.y - MAPOFFSETY_UPPER; }
 
-    //if (player1.y - mapOffsetY > 512) { mapOffsetY = player1.y - 512; }
-    //if (player1.y - mapOffsetY < 256) { mapOffsetY = player1.y - 256; }
 
 
     //due to lack of foresight when setting up the playable area,
@@ -1145,7 +1229,7 @@ function drawBricks()
                 bricks[i].x < mapOffsetX + CANVASWIDTH &&
                 bricks[i].x > mapOffsetX - 64 &&
                 bricks[i].y < mapOffsetY + CANVASHEIGHT &&
-                bricks[i].y > mapOffsetY - 64 )
+                bricks[i].y > mapOffsetY )
             {
                bctx.drawImage(bricksSpritesheet, bricks[i].spritesheetPosX, bricks[i].spritesheetPosY, 64, 64, bricks[i].x - mapOffsetX, bricks[i].y - mapOffsetY, 64, 64);
             }
@@ -1246,7 +1330,7 @@ function drawEnemies()
          }
 
          //sets position in the spritesheet
-         animXOffset = (gameFrame % enemies[i].animMaxFrame) * 64;
+         animXOffset = (gameFrame % enemies[i].animMaxFrame) * 64 + enemies[i].animXOffset;
 
          //bctx.drawImage(enemies[i].image, animXOffset, animYOffset,64,64, enemies[i].x - mapOffsetX, enemies[i].y - mapOffsetY,64,64);
          bctx.drawImage(imageSprites, Math.floor(animXOffset), Math.floor(animYOffset),64,64, Math.floor(enemies[i].x - mapOffsetX), Math.floor(enemies[i].y - mapOffsetY),64,64);
@@ -1274,7 +1358,8 @@ function drawControls()
 }
 
 
-function calculateFrameRate() {
+function calculateFrameRate()
+{
     var d = new Date();
     var n = d.getTime();
 
@@ -1289,11 +1374,15 @@ function calculateFrameRate() {
     }
     bctx.fillStyle = "#000000";
 
-    bctx.fillText(framerate,10,50);
+    bctx.fillText(framerate,10,100);
 
 }
 
-
+function extraLife()
+{
+    player1.lives ++;
+    sound.playSound(SND_EXTRALIFE);
+}
 
 function gameLoop()
 {
@@ -1396,7 +1485,10 @@ function gameLoop()
             drawControls();
 
             progressbox.setTitle("CHILLIES: " + chilliCounter);
+            progressbox.updateTextArea(livestext,"LIVES: " + player1.lives, 1, "LEFT", 1, 0);
+
             progressbox.draw(bctx);
+
 
             if(level == 0)
             {
@@ -1449,14 +1541,31 @@ function gameLoop()
             titletextbox.draw(ctx);
 
             sound.playSound(SND_PLAYERDIE);
-            playerDied = false;
+
+            player1.lives --;
+
+            if ( player1.lives <= 0 )
+            {
+              gameState = "GAME_OVER";
+              titletextbox.updateTextArea(0,"GAME OVER", 1, "CENTRE", 0, 0);
+              titletextbox.draw(ctx);
+              level = 1;
+
+            }
+            else
+            {
+
+              gameState = "PLAYER_DIED";
+
+            }
+
 
             messagebox.updateTextArea(0,"PRESS R TO RESET LEVEL", 1, "CENTRE", 0, 0);
             messagebox.draw(ctx);
 
-            gameState = "PLAYER_DIED";
-
+            playerDied = false;
             drawControls();
+
 
         }
         else if (gameState == "PLAYER_DIED" && player1_ResetLevelPressed)
@@ -1467,6 +1576,12 @@ function gameLoop()
           resetTouchButtons();
           gamePaused=false;
           gameState = "PLAYING";
+        }
+        else if (gameState == "GAME_OVER" && player1_ResetLevelPressed)
+        {
+          player1_ResetLevelPressed = false;
+          resetTouchButtons();
+          resetGame();
         }
         else if (levelComplete == true)
         {
@@ -1521,8 +1636,8 @@ function gameLoop()
 
           if ( level <= maxLevel )
           {
-              attempts = 1;
               attemptsHistory.push(attempts);
+              attempts = 1;
               initMusic(level);
               initBricks();
               resetTouchButtons();

@@ -9,6 +9,8 @@ function Sprite()
     this.name = "GENERAL SPRITE";
     this.img = "NO_IMAGE";
     this.image_src = "HELLO";
+    this.health = 3;
+    this.lives = 3;
     //this.enemyImage = new Image();
     this.animXOffset = 0;
     this.animYOffset = 0;
@@ -132,6 +134,21 @@ Sprite.prototype.init = function(level_sprite_data)
 
     //this.image = new Image();
     //this.image.src = this.image_src;
+
+    this.collission = false;
+
+    this.collisionTop = false;
+    this.collisionBottom = false;
+    this.collisionLeft = false;
+    this.collisionRight = false;
+
+    this.collisionExit = false;
+    this.collisionDeath = false;
+    this.collisionClimb = false;
+
+    this.alive = true;
+    this.hit = false;
+    this.jump = false;
 
 
     this.x = Math.floor(level_sprite_data.x);

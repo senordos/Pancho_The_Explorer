@@ -123,6 +123,7 @@ function button_startGameClicked()
 
     //Play a sound after the user clicks - only plays if the music is toggled.
     var context = new window.AudioContext();
+    context.resume();
     // create a dummy sound - and play it immediately in same 'thread'
     //var oscillator = context.createOscillator();
     //oscillator.frequency.value = 400;
