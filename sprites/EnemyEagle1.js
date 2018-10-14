@@ -8,18 +8,16 @@ function EnemyEagle1()
     this.active = true;
     this.stompable = true;
 
-    //this.image_src = "tiles/spritesheet_EnemyEagle1.png";
     this.image_src = "tiles/spritesheet_Objects_64.png";
 
     this.animXOffset = 0;
     this.animYOffset = 1280;
     this.animMaxFrame = 3;
 
-    this.xSpeed = 2;
+    this.xSpeed = 4;
     this.ySpeed = 2;
-    this.rectOffset = {top:0,bottom:63,left:0,right:63};
+    this.rectOffset = {top:16,bottom:55,left:0,right:63};
 
-    this.hitTime = null;
 }
 
 EnemyEagle1.prototype = Object.create(Sprite.prototype);
@@ -50,7 +48,16 @@ EnemyEagle1.prototype.setMoveTargetY = function(map, player)
 {
     Sprite.prototype.setMoveTargetY.call(this);
 
-    this.targetY = this.y + this.yDirection * this.ySpeed;
+    if (this.active == true && this.hit == false)
+    {
+      this.targetY = this.y + this.yDirection * this.ySpeed;
+    }
+    else if (this.active == true && this.hit == true)
+    {
+      this.yDirection = 1;
+      this.ySpeed = 8;
+      this.targetY = this.y + (this.ySpeed * this.yDirection);
+    }
 
 }
 
@@ -97,8 +104,14 @@ EnemyEagle1.prototype.updateMoveAttributesY = function (map, player)
 {
     Sprite.prototype.updateMoveAttributesY.call(this, map);
 
-    if (this.collision == true)
+    if (this.collision == true && this.hit == false)
     {
         this.yDirection = this.yDirection * -1;
     }
+    if (this.collision == true && this.hit == true)
+    {
+        this.yDirection = 1;
+        this.ySpeed = 0;
+    }
+
 }

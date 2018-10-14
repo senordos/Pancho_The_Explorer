@@ -15,6 +15,8 @@ function Bridge2()
     this.animXOffset = 64;
     this.animYOffset = 896;
 
+    this.rectOffset = {top:0,  bottom:31, left:0,  right:63};
+
 
 }
 

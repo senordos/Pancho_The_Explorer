@@ -738,7 +738,7 @@ function checkWorldCollisions(sprite)
                         //if the y target is higher - so moving down
 
                         //All sprites are animated from the top left corner, so need to add the height when moving down
-                        sprite.targetY = bricks[i].rectMain.top - sprite.collisionHeight;
+                        sprite.targetY = bricks[i].rectMain.top - sprite.rectOffset.bottom - 1;
 
                         //If moving down, the collision must be below, so set collision parameter
                         sprite.collisionBottom = true;
@@ -750,7 +750,8 @@ function checkWorldCollisions(sprite)
                         //the player is moving up
 
                         //All sprites are animated from the top left corner, so brick bottom + 1 is correct
-                        sprite.targetY = bricks[i].rectMain.bottom + 1;
+                        //Plus, if there is an offet at the top, need to remove this in.
+                        sprite.targetY = bricks[i].rectMain.bottom + 1 - sprite.rectOffset.top;
 
                         sprite.collisionTop = true;
                     }
@@ -899,8 +900,7 @@ function checkEnemyCollisions(playerSprite)
                 ( enemies[i].name == "Bridge1" || enemies[i].name == "Bridge2"))
           {
 
-              console.log("HIT BRIDGE");
-              // Has hit a bridge
+              // Player has hit a bridge
 
 
 
@@ -913,14 +913,14 @@ function checkEnemyCollisions(playerSprite)
 
                   playerSprite.yDirection = 1;
                   playerSprite.ySpeed = 1;
-                  playerSprite.targetY = enemies[i].y - playerSprite.collisionHeight;
+                  playerSprite.targetY = enemies[i].y - playerSprite.rectOffset.bottom;
                   playerSprite.collisionBottom = true;
               }
               else if (intersectRect(playerTopRect, enemyBottomRect))
               {
                   playerSprite.yDirection = 0;
                   playerSprite.ySpeed = 0;
-                  playerSprite.targetY = enemies[i].y + enemies[i].collisionHeight;
+                  playerSprite.targetY = enemies[i].y + enemies[i].rectOffset.bottom - playerSprite.rectOffset.top;
                   playerSprite.collisionTop = true;
               }
               else if (intersectRect(playerLeftRect, enemyRightRect))
@@ -1335,12 +1335,26 @@ function drawEnemies()
                 animYOffset = animYOffset + 128;
             }
          }
+         if ( enemies[i].name == "EnemyEagle1" )
+         {
+             var e = enemies[i];
+                 if ( e.hit == false && e.xDirection == 1  ) { animYOffset = animYOffset + 0; }
+            else if ( e.hit == false && e.xDirection == -1 ) { animYOffset = animYOffset + 64; }
+            else if ( e.hit == true)
+            {
+                animYOffset = animYOffset + 128;
+            }
+         }
+
 
          //sets position in the spritesheet
          animXOffset = (gameFrame % enemies[i].animMaxFrame) * 64 + enemies[i].animXOffset;
 
          //bctx.drawImage(enemies[i].image, animXOffset, animYOffset,64,64, enemies[i].x - mapOffsetX, enemies[i].y - mapOffsetY,64,64);
+
          bctx.drawImage(imageSprites, Math.floor(animXOffset), Math.floor(animYOffset),64,64, Math.floor(enemies[i].x - mapOffsetX), Math.floor(enemies[i].y - mapOffsetY),64,64);
+
+
       }
    }
 }
