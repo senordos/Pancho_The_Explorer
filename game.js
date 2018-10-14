@@ -403,6 +403,13 @@ function initBricks()
                     enemyCounter++;
 
                 }
+                if (levels[level].layers[l].objects[o].name == "EnemyEagle1")
+                {
+                    enemies[enemyCounter] = new EnemyEagle1();
+                    enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
+                    enemyCounter++;
+
+                }
                 if (levels[level].layers[l].objects[o].name == "Bridge1")
                 {
                     enemies[enemyCounter] = new Bridge1();
