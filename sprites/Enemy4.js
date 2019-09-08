@@ -26,27 +26,7 @@ Enemy4.prototype = Object.create(Sprite.prototype);
 Enemy4.prototype.init = function(level_sprite_data)
 {
     Sprite.prototype.init.call(this, level_sprite_data);
-
-  /*  if ( level_sprite_data.properties !== undefined &&
-         level_sprite_data.properties.startXDirection !== undefined &&
-         level_sprite_data.properties.startYDirection !== undefined &&
-         level_sprite_data.properties.rotation !== undefined )
-    {
-
-        this.xDirection = level_sprite_data.properties.startXDirection;
-
-    }
-    else
-    {
-        //X and Y direction will be defaults.
-        console.log("Enemy[] - Enemy4 - properties undefined for startXDirection / startYDirection / rotation")
-    }
-  */
-
-
 };
-
-
 
 Enemy4.prototype.setMoveTargetX = function(map, player)
 {
@@ -171,4 +151,16 @@ Enemy4.prototype.updateMoveAttributesY = function (map, player)
     {
         this.yDirection = 0;
     }
+}
+
+Enemy4.prototype.updateAttributesAfterStomped = function(map, player)
+{
+  Sprite.prototype.updateAttributesAfterStomped.call(this, map);
+
+  this.hit = true;
+  this.deadly = false;
+
+  this.xSpeed = 3;
+  this.xDirection = this.xDirection * -1;
+
 }

@@ -1,46 +1,43 @@
-function Enemy1()
+function EnemyMonkey1()
 {
 
     Sprite.call(this);
 
 
-    this.name = "Enemy1";
-    this.active = false;
+    this.name = "EnemyMonkey1";
     this.stompable = true;
 
-    //this.image_src = "tiles/spritesheet_enemy1.png";
     this.image_src = "tiles/spritesheet_Enemies_64.png";
 
     this.animXOffset = 0;
-    this.animYOffset = 128;
+    this.animYOffset = 1600;
+    this.animMaxFrame = 2;
+    this.lastThrowTime = null;
 
-    this.xSpeed = 1;
+    this.xSpeed = 0;
     this.rectOffset = {top:16,bottom:63,left:8,right:55};
-
-
 }
 
-Enemy1.prototype = Object.create(Sprite.prototype);
+EnemyMonkey1.prototype = Object.create(Sprite.prototype);
 
-Enemy1.prototype.init = function(level_sprite_data)
+EnemyMonkey1.prototype.init = function(level_sprite_data)
 {
     Sprite.prototype.init.call(this, level_sprite_data);
-
 };
 
 
 
-Enemy1.prototype.setMoveTargetX = function()
+EnemyMonkey1.prototype.setMoveTargetX = function()
 {
     Sprite.prototype.setMoveTargetX.call(this);
 
     if (this.active == true)
     {
-      this.targetX = this.x + ((this.xDirection) * 2); //This is currently tied to the framerate
+      this.targetX = this.x + (this.xDirection * this.xSpeed); //This is currently tied to the framerate
     }
 }
 
-Enemy1.prototype.setMoveTargetY = function()
+EnemyMonkey1.prototype.setMoveTargetY = function()
 {
     Sprite.prototype.setMoveTargetY.call(this);
 
@@ -53,7 +50,7 @@ Enemy1.prototype.setMoveTargetY = function()
 }
 
 
-Enemy1.prototype.updateMoveAttributesX = function (map, player)
+EnemyMonkey1.prototype.updateMoveAttributesX = function (map, player)
 {
     Sprite.prototype.updateMoveAttributesX.call(this, map, player);
 
@@ -78,9 +75,7 @@ Enemy1.prototype.updateMoveAttributesX = function (map, player)
         }
     }
 
-
     var distance = this.x - player.x
-
     if (this.active != true)
     {
       if ( this.activateIfPlayerXGT !== undefined )
@@ -88,24 +83,20 @@ Enemy1.prototype.updateMoveAttributesX = function (map, player)
           if ( this.activateIfPlayerXGT > 0 && player.x > this.activateIfPlayerXGT )
           {
               this.active = true;
-              console.log("ACTIVE CORRECT");
           }
           else if ( this.activateIfPlayerXGT == 0 )
           {
               this.active = true;
-              console.log("ACTIVE CORRECT");
           }
       }
       else
       {
           this.active = true;
-          console.log("ACTIVE BUUUU");
-
       }
     }
 }
 
-Enemy1.prototype.updateMoveAttributesY = function (map, player)
+EnemyMonkey1.prototype.updateMoveAttributesY = function (map, player)
 {
     Sprite.prototype.updateMoveAttributesY.call(this, map);
 
@@ -115,14 +106,53 @@ Enemy1.prototype.updateMoveAttributesY = function (map, player)
     }
 }
 
-Enemy1.prototype.updateAttributesAfterStomped = function(map, player)
+EnemyMonkey1.prototype.updateAttributesAfterStomped = function(map, player)
 {
-  Sprite.prototype.updateAttributesAfterStomped.call(this, map);
+    Sprite.prototype.updateAttributesAfterStomped.call(this, map);
 
-  this.hit = true;
-  this.deadly = false;
+    this.hit = true;
+    this.deadly = false;
+    this.xSpeed = 0;
+    this.xDirection = 0;
+}
 
-  this.xSpeed = 3;
-  this.xDirection = this.xDirection * -1;
 
+EnemyMonkey1.prototype.updateActions = function()
+{
+  Sprite.prototype.updateActions.call(this);
+
+  if(! this.hit)
+  {
+    var date = new Date();
+    var shouldMonkeyThrow = false;
+
+    //Check the timing to see if Monkey should throw
+    if ( this.lastThrowTime == null )
+    {
+        this.lastThrowTime = date.getTime();
+    }
+    else
+    {
+        var currentTime = date.getTime();
+        if ( currentTime - this.lastThrowTime > 3000 )
+        {
+            shouldMonkeyThrow = true;
+            this.lastThrowTime = currentTime;
+        }
+    }
+
+    if (shouldMonkeyThrow)
+    {
+      var event = new GameEvent();
+      event.eventType="SPAWN";
+      event.eventName="Monkey Throws Rock";
+      //Rock is spawned a bit lower than the monkey's position.
+      event.parameters = new SpawnEvent("EnemyMonkeyRock1",this.x, this.y + 64);
+      return event;
+    }
+    else
+    {
+      return null;
+    }
+  }
 }

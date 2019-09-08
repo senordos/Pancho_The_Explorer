@@ -8,7 +8,7 @@ function Sprite()
     this.targetY = 512;
     this.name = "GENERAL SPRITE";
     this.img = "NO_IMAGE";
-    this.image_src = "HELLO";
+    this.image_src = "NO_IMAGE_SRC";
     this.health = 3;
     this.lives = 3;
     //this.enemyImage = new Image();
@@ -27,6 +27,10 @@ function Sprite()
     this.activateIfPlayerXLT = 0;  //if player less than
     this.activateIfPlayerYGT = 0;
     this.activateIfPlayerYLT = 0;
+    this.delayActivation = 0;
+
+    //determine if the sprite will collide with the world bricks, or ignore them
+    this.interactsWithWorld = true;
 
     //determine if the sprite walks off edges, or not. Default is not.
     this.canSeeEdges = true;
@@ -52,8 +56,9 @@ function Sprite()
     this.collisionDeath = false;
     this.collisionClimb = false;
 
-    this.active = true;  //if true, will be processed for movement getTopCollisionRect
+    this.active = true;  //if true, will be processed for movement
     this.alive = true;   //if not alive, sprite is effectively removed from level
+    this.visible = true; //does the sprite get drawn to the screen
     this.deadly = true;  //if the player hits the sprite, will player get damage
     this.hit = false;    //sprite is hit by something. May become unhit in future
     this.jump = false;
@@ -164,6 +169,10 @@ Sprite.prototype.init = function(level_sprite_data)
         {
           this.xDirection = Math.floor(level_sprite_data.properties.startXDirection);
         }
+        if (level_sprite_data.properties.hasOwnProperty('delayActivation'))
+        {
+          this.delayActivation = Math.floor(level_sprite_data.properties.delayActivation);
+        }
         if (level_sprite_data.properties.hasOwnProperty('canSeeEdges'))
         {
           var edgeText = level_sprite_data.properties.canSeeEdges;
@@ -224,6 +233,10 @@ Sprite.prototype.setMoveTargetY = function()
     this.targetY = this.y;
 }
 
+Sprite.prototype.updateActions = function()
+{
+    return null;
+}
 
 Sprite.prototype.updateMoveAttributesX = function(map, player)
 {
@@ -233,6 +246,11 @@ Sprite.prototype.updateMoveAttributesX = function(map, player)
 
 
 Sprite.prototype.updateMoveAttributesY = function(map, player)
+{
+    //Do nothing
+}
+
+Sprite.prototype.updateAttributesAfterStomped = function(map, player)
 {
     //Do nothing
 }

@@ -71,7 +71,7 @@ Enemy2.prototype.updateMoveAttributesX = function (map, player)
             )
           )
        {
-           this.yDirection = this.yDirection = -30;
+           this.yDirection = this.yDirection = -34;
        }
     }
 
@@ -83,19 +83,15 @@ Enemy2.prototype.updateMoveAttributesX = function (map, player)
           if ( this.activateIfPlayerXGT > 0 && player.x > this.activateIfPlayerXGT )
           {
               this.active = true;
-              console.log("ACTIVE CORRECT");
           }
           else if ( this.activateIfPlayerXGT == 0 )
           {
               this.active = true;
-              console.log("ACTIVE CORRECT");
           }
       }
       else
       {
           this.active = true;
-          console.log("ACTIVE BUUUU");
-
       }
     }
 
@@ -110,4 +106,16 @@ Enemy2.prototype.updateMoveAttributesY = function (map)
     {
         this.yDirection = 0;
     }
+}
+
+Enemy2.prototype.updateAttributesAfterStomped = function(map, player)
+{
+  Sprite.prototype.updateAttributesAfterStomped.call(this, map);
+
+  this.hit = true;
+  this.deadly = false;
+
+  this.xSpeed = 3;
+  this.xDirection = this.xDirection * -1;
+
 }

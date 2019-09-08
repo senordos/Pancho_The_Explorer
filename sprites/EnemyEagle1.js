@@ -14,7 +14,7 @@ function EnemyEagle1()
     this.animYOffset = 1280;
     this.animMaxFrame = 3;
 
-    this.xSpeed = 4;
+    this.xSpeed = 6;
     this.ySpeed = 2;
     this.rectOffset = {top:16,bottom:55,left:0,right:63};
 
@@ -33,15 +33,10 @@ EnemyEagle1.prototype.setMoveTargetX = function(map, player)
 {
     Sprite.prototype.setMoveTargetX.call(this);
 
-
     if (this.active == true && this.hit == false)
     {
       this.targetX = this.x + ((this.xDirection) * this.xSpeed);
     }
-
-    console.log("this.targetX = " + this.targetX);
-    console.log("xDirection   = " + this.xDirection);
-
 }
 
 EnemyEagle1.prototype.setMoveTargetY = function(map, player)
@@ -114,4 +109,15 @@ EnemyEagle1.prototype.updateMoveAttributesY = function (map, player)
         this.ySpeed = 0;
     }
 
+}
+
+EnemyEagle1.prototype.updateAttributesAfterStomped = function(map, player)
+{
+    Sprite.prototype.updateAttributesAfterStomped.call(this, map);
+
+    this.hit = true;
+    this.deadly = false;
+    this.xSpeed = 0;
+    this.ySpeed = 2;
+    this.xDirection = 0;
 }

@@ -84,7 +84,7 @@ EnemyBlock1.prototype.updateMoveAttributesX = function (map)
 
 EnemyBlock1.prototype.updateMoveAttributesY = function (map)
 {
-    Sprite.prototype.updateMoveAttributesX.call(this, map);
+    Sprite.prototype.updateMoveAttributesY.call(this, map);
 
     if (this.collisionBottom == true)
     {
@@ -93,6 +93,6 @@ EnemyBlock1.prototype.updateMoveAttributesY = function (map)
     }
     if (this.collisionTop == true)
     {
-      this.yDirection = 1;
+        this.yDirection = 1;
     }
 }
