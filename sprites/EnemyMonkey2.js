@@ -1,38 +1,39 @@
-function EnemyMonkey1()
+function EnemyMonkey2()
 {
 
     Sprite.call(this);
 
 
-    this.name = "EnemyMonkey1";
+    this.name = "EnemyMonkey2";
     this.stompable = true;
     this.positionIsLocked = true; //default is that Monkeys don't move.
 
     this.animXOffset = 0;
-    this.animYOffset = 1600;
-    this.animMaxFrame = 2;
+    this.animYOffset = 1792;
+    this.animMaxFrame = 6;
     this.lastThrowTime = null;
 
     this.xSpeed = 0;
+    this.xDirection = 1;
     this.rectOffset = {top:16,bottom:63,left:8,right:55};
 }
 
-EnemyMonkey1.prototype = Object.create(Sprite.prototype);
+EnemyMonkey2.prototype = Object.create(Sprite.prototype);
 
-EnemyMonkey1.prototype.init = function(level_sprite_data)
+EnemyMonkey2.prototype.init = function(level_sprite_data)
 {
     Sprite.prototype.init.call(this, level_sprite_data);
 };
 
 
-EnemyMonkey1.prototype.setMoveTargetX = function(map, player)
+EnemyMonkey2.prototype.setMoveTargetX = function(map, player)
 {
     Sprite.prototype.setMoveTargetX.call(this);
 
 
     if (this.positionIsLocked == false && this.active == true && this.hit == false)
     {
-      this.xSpeed = 4;
+      this.xSpeed = 8;
       if  ( this.x >= player.x + 128 ) //&& this.xDirection == 1 )
       {
         this.xDirection = -1;
@@ -46,7 +47,7 @@ EnemyMonkey1.prototype.setMoveTargetX = function(map, player)
     }
 }
 
-EnemyMonkey1.prototype.setMoveTargetY = function()
+EnemyMonkey2.prototype.setMoveTargetY = function()
 {
     Sprite.prototype.setMoveTargetY.call(this);
 
@@ -59,7 +60,7 @@ EnemyMonkey1.prototype.setMoveTargetY = function()
 }
 
 
-EnemyMonkey1.prototype.updateMoveAttributesX = function (map, player)
+EnemyMonkey2.prototype.updateMoveAttributesX = function (map, player)
 {
     Sprite.prototype.updateMoveAttributesX.call(this, map, player);
 
@@ -88,7 +89,7 @@ EnemyMonkey1.prototype.updateMoveAttributesX = function (map, player)
 
 }
 
-EnemyMonkey1.prototype.updateMoveAttributesY = function (map, player)
+EnemyMonkey2.prototype.updateMoveAttributesY = function (map, player)
 {
     Sprite.prototype.updateMoveAttributesY.call(this, map);
 
@@ -98,7 +99,7 @@ EnemyMonkey1.prototype.updateMoveAttributesY = function (map, player)
     }
 }
 
-EnemyMonkey1.prototype.updateAttributesAfterStomped = function(map, player)
+EnemyMonkey2.prototype.updateAttributesAfterStomped = function(map, player)
 {
     Sprite.prototype.updateAttributesAfterStomped.call(this, map);
 
@@ -109,7 +110,7 @@ EnemyMonkey1.prototype.updateAttributesAfterStomped = function(map, player)
 }
 
 
-EnemyMonkey1.prototype.updateActions = function()
+EnemyMonkey2.prototype.updateActions = function()
 {
   Sprite.prototype.updateActions.call(this);
 
@@ -135,11 +136,12 @@ EnemyMonkey1.prototype.updateActions = function()
 
     if (shouldMonkeyThrow)
     {
+      console.log("BANANA!!!");
+
       var event = new GameEvent();
       event.eventType="SPAWN";
-      event.eventName="Monkey Throws Rock";
-      //Rock is spawned a bit lower than the monkey's position.
-      event.parameters = new SpawnEvent("EnemyMonkeyRock1",this.x, this.y + 64);
+      event.eventName="Monkey Throws Banana";
+      event.parameters = new SpawnEvent("EnemyMonkeyBanana1",this.x, this.y);
       return event;
     }
     else

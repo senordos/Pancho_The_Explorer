@@ -425,6 +425,13 @@ function initBricks()
 										enemyCounter++;
 
 								}
+								if (levels[level].layers[l].objects[o].name == "EnemyMonkey2")
+								{
+										enemies[enemyCounter] = new EnemyMonkey2();
+										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
+										enemyCounter++;
+
+								}
 								if (levels[level].layers[l].objects[o].name == "Bridge1")
 								{
 										enemies[enemyCounter] = new Bridge1();
@@ -1204,20 +1211,29 @@ function performEmeniesActions()
 	{
 			gameEvent = enemies[i].updateActions();
 
-			if (enemies[i].name == "EnemyMonkey1" && gameEvent != null)
+			if ((enemies[i].name == "EnemyMonkey1" && gameEvent != null) ||
+			   (enemies[i].name == "EnemyMonkey2" && gameEvent != null))
+
 			{
-				spawnEnemy(gameEvent.parameters.spawnObject, gameEvent.parameters.x, gameEvent.parameters.y)
+				spawnObject(gameEvent.parameters.spawnObject, gameEvent.parameters.x, gameEvent.parameters.y)
 			}
 	}
 }
 
-function spawnEnemy(enemyType,xPos,yPos)
+function spawnObject(objectType,xPos,yPos)
 {
-	console.log(enemyType + " " + xPos + " " + yPos);
-
 	newEnemyPosition = enemies.length;
-
-	enemies[newEnemyPosition] = new EnemyMonkeyRock1();
+	switch(objectType)
+	{
+		case "EnemyMonkeyRock1":
+			enemies[newEnemyPosition] = new EnemyMonkeyRock1();
+			break;
+		case "EnemyMonkeyBanana1":
+			enemies[newEnemyPosition] = new EnemyMonkeyBanana1();
+			break;
+		default:
+			//do nothing
+	}
 	enemies[newEnemyPosition].init({"x":xPos,"y":yPos});
 }
 
@@ -1350,7 +1366,8 @@ function drawEnemies()
 
 				 if (  enemies[i].name == "Enemy1"
 						|| enemies[i].name == "Enemy2"
-						|| enemies[i].name == "EnemyMonkey1")
+						|| enemies[i].name == "EnemyMonkey1"
+					  || enemies[i].name == "EnemyMonkey2")
 				 {
 						 if (enemies[i].hit == true)
 						 {

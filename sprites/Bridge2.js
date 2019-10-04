@@ -22,18 +22,10 @@ function Bridge2()
 
 Bridge2.prototype = Object.create(Sprite.prototype);
 
-Bridge2.prototype.init = function(level_sprite_data)
-{
-    Sprite.prototype.init.call(this, level_sprite_data);
-
-};
-
 
 Bridge2.prototype.setMoveTargetY = function()
 {
     Sprite.prototype.setMoveTargetY.call(this);
-
-
 
     if(this.hit)
     {
@@ -66,8 +58,6 @@ Bridge2.prototype.setMoveTargetY = function()
                     this.falling = true;
                 }
             }
-
         }
     }
-
 }

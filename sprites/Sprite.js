@@ -22,18 +22,27 @@ function Sprite()
     this.ySpeed = 0;
     this.rotation = 0;
 
+    this.active = true;  //if true, will be processed for movement
+    this.positionIsLocked = false; //blocks movement 
+    this.alive = true;   //if not alive, sprite is effectively removed from level
+    this.visible = true; //does the sprite get drawn to the screen
+    this.deadly = true;  //if the player hits the sprite, will player get damage
+    this.hit = false;    //sprite is hit by something. May become unhit in future
+    this.jump = false;
+    this.stompable = false;
+
+    //determine if the sprite will collide with the world bricks, or ignore them
+    this.interactsWithWorld = true;
+
     //some attributes just for Enemies
+    this.canSeeEdges = true; //determine if the sprite walks off edges, or not. Default is not.
     this.activateIfPlayerXGT = 0;  //if player greater than
     this.activateIfPlayerXLT = 0;  //if player less than
     this.activateIfPlayerYGT = 0;
     this.activateIfPlayerYLT = 0;
     this.delayActivation = 0;
 
-    //determine if the sprite will collide with the world bricks, or ignore them
-    this.interactsWithWorld = true;
 
-    //determine if the sprite walks off edges, or not. Default is not.
-    this.canSeeEdges = true;
 
     //for collision detection, these rectangles define the sprite
     this.rectMain = {top:0,bottom:0,left:0,right:0}; //this is generated each frame based on rectOffet below
@@ -56,14 +65,7 @@ function Sprite()
     this.collisionDeath = false;
     this.collisionClimb = false;
 
-    this.active = true;  //if true, will be processed for movement
-    this.alive = true;   //if not alive, sprite is effectively removed from level
-    this.visible = true; //does the sprite get drawn to the screen
-    this.deadly = true;  //if the player hits the sprite, will player get damage
-    this.hit = false;    //sprite is hit by something. May become unhit in future
-    this.jump = false;
 
-    this.stompable = false;
 
     this.localBricks = {current:0,left:0,right:0,up:0,down:0,leftUp:0,leftDown:0,rightUp:0,rightDown:0,xLinedUp:false,yLinedUp:false};
 
@@ -184,8 +186,20 @@ Sprite.prototype.init = function(level_sprite_data)
           {
               this.canSeeEdges = false;
           }
-
         }
+        if (level_sprite_data.properties.hasOwnProperty('positionIsLocked'))
+        {
+            var lockedText = level_sprite_data.properties.positionIsLocked;
+            if (lockedText == "TRUE" || lockedText == "true")
+            {
+              this.positionIsLocked = true;
+            }
+            else
+            {
+              this.positionIsLocked = false;
+            }
+        }
+
 
     }
 
@@ -240,7 +254,25 @@ Sprite.prototype.updateActions = function()
 
 Sprite.prototype.updateMoveAttributesX = function(map, player)
 {
-    //Do nothing
+  var distance = this.x - player.x
+  if (this.active != true)
+  {
+    if ( this.activateIfPlayerXGT !== undefined )
+    {
+        if ( this.activateIfPlayerXGT > 0 && player.x > this.activateIfPlayerXGT )
+        {
+            this.active = true;
+        }
+        else if ( this.activateIfPlayerXGT == 0 )
+        {
+            this.active = true;
+        }
+    }
+    //else
+    //{
+    //    this.active = true;
+    //}
+  }
 }
 
 

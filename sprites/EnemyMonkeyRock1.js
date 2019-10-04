@@ -6,7 +6,6 @@ function EnemyMonkeyRock1()
 
     this.interactsWithWorld = false;
 
-
     this.animXOffset = 0;
     this.animYOffset = 1728;
     this.animMaxFrame = 2;
@@ -17,18 +16,6 @@ function EnemyMonkeyRock1()
 }
 
 EnemyMonkeyRock1.prototype = Object.create(Sprite.prototype);
-
-EnemyMonkeyRock1.prototype.init = function(level_sprite_data)
-{
-    Sprite.prototype.init.call(this, level_sprite_data);
-};
-
-
-
-EnemyMonkeyRock1.prototype.setMoveTargetX = function()
-{
-    Sprite.prototype.setMoveTargetX.call(this);
-}
 
 EnemyMonkeyRock1.prototype.setMoveTargetY = function()
 {
@@ -42,17 +29,6 @@ EnemyMonkeyRock1.prototype.setMoveTargetY = function()
 
     this.targetY = this.y + this.ySpeed;
 
-}
-
-
-EnemyMonkeyRock1.prototype.updateMoveAttributesX = function (map, player)
-{
-    Sprite.prototype.updateMoveAttributesX.call(this, map, player);
-}
-
-EnemyMonkeyRock1.prototype.updateMoveAttributesY = function (map, player)
-{
-    Sprite.prototype.updateMoveAttributesY.call(this, map);
 }
 
 EnemyMonkeyRock1.prototype.updateAttributesAfterStomped = function(map, player)

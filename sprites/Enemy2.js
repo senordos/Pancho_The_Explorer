@@ -49,7 +49,7 @@ Enemy2.prototype.setMoveTargetY = function()
 Enemy2.prototype.updateMoveAttributesX = function (map, player)
 {
 
-   Sprite.prototype.updateMoveAttributesX.call(this, map);
+   Sprite.prototype.updateMoveAttributesX.call(this, map, player);
 
     if ( this.collision == true )
     {
@@ -98,9 +98,9 @@ Enemy2.prototype.updateMoveAttributesX = function (map, player)
 
 }
 
-Enemy2.prototype.updateMoveAttributesY = function (map)
+Enemy2.prototype.updateMoveAttributesY = function (map, player)
 {
-    Sprite.prototype.updateMoveAttributesY.call(this, map);
+    Sprite.prototype.updateMoveAttributesY.call(this, map, player);
 
     if (this.collision == true)
     {
