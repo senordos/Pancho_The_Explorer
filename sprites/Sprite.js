@@ -23,7 +23,7 @@ function Sprite()
     this.rotation = 0;
 
     this.active = true;  //if true, will be processed for movement
-    this.positionIsLocked = false; //blocks movement 
+    this.positionIsLocked = false; //blocks movement
     this.alive = true;   //if not alive, sprite is effectively removed from level
     this.visible = true; //does the sprite get drawn to the screen
     this.deadly = true;  //if the player hits the sprite, will player get damage
@@ -142,7 +142,7 @@ Sprite.prototype.init = function(level_sprite_data)
     //this.image = new Image();
     //this.image.src = this.image_src;
 
-    this.collission = false;
+    this.collision = false;
 
     this.collisionTop = false;
     this.collisionBottom = false;
@@ -163,6 +163,8 @@ Sprite.prototype.init = function(level_sprite_data)
 
     if (level_sprite_data.hasOwnProperty('properties'))
     {
+      if(level_sprite_data.properties != null)
+      {
         if (level_sprite_data.properties.hasOwnProperty('activateIfPlayerXGT'))
         {
           this.activateIfPlayerXGT = Math.floor(level_sprite_data.properties.activateIfPlayerXGT);
@@ -200,7 +202,7 @@ Sprite.prototype.init = function(level_sprite_data)
             }
         }
 
-
+      }
     }
 
     console.log("map x: " + this.x);
@@ -285,4 +287,15 @@ Sprite.prototype.updateMoveAttributesY = function(map, player)
 Sprite.prototype.updateAttributesAfterStomped = function(map, player)
 {
     //Do nothing
+}
+
+Sprite.prototype.getDrawYCoord = function(gameFrame)
+{
+    return 0;
+}
+
+Sprite.prototype.getDrawXCoord = function(gameFrame)
+{
+
+    return (gameFrame % this.animMaxFrame) * 64 + this.animXOffset;
 }

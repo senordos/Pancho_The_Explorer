@@ -432,6 +432,13 @@ function initBricks()
 										enemyCounter++;
 
 								}
+								if (levels[level].layers[l].objects[o].name == "EnemySpikes1")
+								{
+										enemies[enemyCounter] = new EnemySpikes1();
+										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
+										enemyCounter++;
+
+								}
 								if (levels[level].layers[l].objects[o].name == "Bridge1")
 								{
 										enemies[enemyCounter] = new Bridge1();
@@ -618,6 +625,20 @@ function initBricks()
 										nB.y = y;
 						break;
 
+						case 7: nB.tileName="enemyboundary";
+										nB.rectMain = {top:y, bottom:y+63, left:x,   right:x+63};
+										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+										nB.deadly = false;
+										nB.exit=false;
+										nB.moveable=false;
+										nB.type = tileId;
+										nB.enemyBoundary = true;
+										nB.blocker = true;
+										nB.x = x;
+										nB.y = y;
+						break;
+
 						case 8: nB.tileName="water1";
 										nB.rectMain = {top:y+32, bottom:y+63, left:x+8, right:x+55};
 										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
@@ -765,7 +786,8 @@ function checkWorldCollisions(sprite)
 
 			for (i=0; i < brickcount; i++)
 			{
-					if(bricks[i].type > 0 && bricks[i].isBackground == false)
+					if((bricks[i].type > 0 && bricks[i].isBackground == false && bricks[i].enemyBoundary == false)
+						|| (bricks[i].enemyBoundary == true && sprite.name != "Player1"))
 					{
 							if (intersectRect(spriteTargetRect, bricks[i].rectMain))
 							{
@@ -876,8 +898,6 @@ function checkWorldCollisions(sprite)
 			{
 				sprite.collision = true;
 				return true;
-				console.log(sprite.name);
-				console.log("hello");
 			}
 			else
 			{
@@ -1211,16 +1231,17 @@ function performEmeniesActions()
 	{
 			gameEvent = enemies[i].updateActions();
 
-			if ((enemies[i].name == "EnemyMonkey1" && gameEvent != null) ||
-			   (enemies[i].name == "EnemyMonkey2" && gameEvent != null))
-
+			if (gameEvent != null)
 			{
-				spawnObject(gameEvent.parameters.spawnObject, gameEvent.parameters.x, gameEvent.parameters.y)
+				if(gameEvent.eventType == "SPAWN")
+				{
+					spawnObject(gameEvent.eventObject.spawnObject, gameEvent.eventObject.x, gameEvent.eventObject.y, gameEvent.eventObject.params);
+				}
 			}
 	}
 }
 
-function spawnObject(objectType,xPos,yPos)
+function spawnObject(objectType,xPos,yPos,params)
 {
 	newEnemyPosition = enemies.length;
 	switch(objectType)
@@ -1234,7 +1255,7 @@ function spawnObject(objectType,xPos,yPos)
 		default:
 			//do nothing
 	}
-	enemies[newEnemyPosition].init({"x":xPos,"y":yPos});
+	enemies[newEnemyPosition].init({"x":xPos,"y":yPos,"properties":params});
 }
 
 function cleanEnemyArray()
@@ -1290,6 +1311,7 @@ function drawBricks()
 
 						//only draw the bricks if they're on the screen and not blank
 						if (bricks[i].tileName != "none" &&
+							  bricks[i].tileName != "enemyboundary" &&   //enemyBoundary tiles are not drawn
 								bricks[i].x < mapOffsetX + CANVASWIDTH &&
 								bricks[i].x > mapOffsetX - 64 &&
 								bricks[i].y < mapOffsetY + CANVASHEIGHT &&
@@ -1366,8 +1388,7 @@ function drawEnemies()
 
 				 if (  enemies[i].name == "Enemy1"
 						|| enemies[i].name == "Enemy2"
-						|| enemies[i].name == "EnemyMonkey1"
-					  || enemies[i].name == "EnemyMonkey2")
+						)
 				 {
 						 if (enemies[i].hit == true)
 						 {
@@ -1406,11 +1427,18 @@ function drawEnemies()
 				 {
 						if ( e.yDirection == 1 ) { animYOffset = animYOffset + 64; }
 				 }
+				 if (enemies[i].name == "EnemyMonkey1"
+				  || enemies[i].name == "EnemyMonkey2"
+  			  || enemies[i].name == "EnemySpikes1")
+				 {
+					 animYOffset = enemies[i].getDrawYCoord(gameFrame);
+				 }
 
 
 				 //sets position in the spritesheet
-				 animXOffset = (gameFrame % enemies[i].animMaxFrame) * 64 + enemies[i].animXOffset;
+				 //animXOffset = (gameFrame % enemies[i].animMaxFrame) * 64 + enemies[i].animXOffset;
 
+				 animXOffset = enemies[i].getDrawXCoord(gameFrame);
 				 //bctx.drawImage(enemies[i].image, animXOffset, animYOffset,64,64, enemies[i].x - mapOffsetX, enemies[i].y - mapOffsetY,64,64);
 
 				 bctx.drawImage(imageSprites, Math.floor(animXOffset), Math.floor(animYOffset),64,64, Math.floor(enemies[i].x - mapOffsetX), Math.floor(enemies[i].y - mapOffsetY),64,64);

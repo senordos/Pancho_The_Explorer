@@ -139,12 +139,25 @@ EnemyMonkey1.prototype.updateActions = function()
       event.eventType="SPAWN";
       event.eventName="Monkey Throws Rock";
       //Rock is spawned a bit lower than the monkey's position.
-      event.parameters = new SpawnEvent("EnemyMonkeyRock1",this.x, this.y + 64);
+      event.eventObject = new SpawnEvent("EnemyMonkeyRock1",this.x, this.y + 64,null);
       return event;
     }
     else
     {
       return null;
     }
+  }
+}
+
+EnemyMonkey1.prototype.getDrawYCoord = function()
+{
+  if (!this.hit)
+  {
+    return this.animYOffset;
+  }
+  else
+  {
+    //if object is hit...
+    return this.animYOffset + 64;
   }
 }

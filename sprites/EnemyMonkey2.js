@@ -66,7 +66,6 @@ EnemyMonkey2.prototype.updateMoveAttributesX = function (map, player)
 
     if ( this.collision == true )
     {
-        this.xDirection = 0;
         this.xSpeed = 0;
     }
 
@@ -77,12 +76,12 @@ EnemyMonkey2.prototype.updateMoveAttributesX = function (map, player)
         //if walking left, and there is an edge on the left, turn right
         if (map[this.localBricks.leftDown].type == 0 && this.xDirection == -1)
         {
-            this.xDirection = 0;
+            this.xSpeed = 0;
         }
         //if walking right, and there is an edge on the right, turn left
         if (map[this.localBricks.rightDown].type == 0 && this.xDirection == 1)
         {
-            this.xDirection = 0;
+            this.xSpeed = 0;
         }
     }
 
@@ -136,17 +135,29 @@ EnemyMonkey2.prototype.updateActions = function()
 
     if (shouldMonkeyThrow)
     {
-      console.log("BANANA!!!");
-
       var event = new GameEvent();
       event.eventType="SPAWN";
       event.eventName="Monkey Throws Banana";
-      event.parameters = new SpawnEvent("EnemyMonkeyBanana1",this.x, this.y);
+      event.eventObject = new SpawnEvent("EnemyMonkeyBanana1",this.x, this.y,{"startXDirection":this.xDirection});
       return event;
     }
     else
     {
       return null;
     }
+  }
+}
+
+EnemyMonkey2.prototype.getDrawYCoord = function()
+{
+  if (!this.hit)
+  {
+    if (this.xDirection >= 0) { return this.animYOffset; }
+    else { return this.animYOffset + 64; }
+  }
+  else
+  {
+    //if object is hit...
+    return this.animYOffset + 128;
   }
 }
