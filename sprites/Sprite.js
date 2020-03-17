@@ -137,7 +137,7 @@ function Sprite()
 
 Sprite.prototype.init = function(level_sprite_data)
 {
-    console.log("INIT: " + this.name);
+    //console.log("INIT: " + this.name);
 
     //this.image = new Image();
     //this.image.src = this.image_src;
@@ -205,8 +205,8 @@ Sprite.prototype.init = function(level_sprite_data)
       }
     }
 
-    console.log("map x: " + this.x);
-    console.log("map y: " + this.y);
+    //console.log("map x: " + this.x);
+    //console.log("map y: " + this.y);
 
     var xAlignGap = this.x % 64;
     var yAlignGap = this.y % 64;
@@ -217,8 +217,8 @@ Sprite.prototype.init = function(level_sprite_data)
     if ( yAlignGap > 32 ) { this.y = this.y + (64 - yAlignGap); }
     else                  { this.y = this.y - yAlignGap; }
 
-    console.log("aligned x: " + this.x);
-    console.log("aligned y: " + this.y);
+    //console.log("aligned x: " + this.x);
+    //console.log("aligned y: " + this.y);
 
 
 

@@ -401,7 +401,13 @@ function initBricks()
 										enemies[enemyCounter] = new EnemyBlock1();
 										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
 										enemyCounter++;
-
+								}
+								if (levels[level].layers[l].objects[o].name == "EnemyBlock2")
+								{
+										eval("enemies[enemyCounter] = new " + levels[level].layers[l].objects[o].name + "()");
+										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
+										if ( enemies[enemyCounter].stompable ) { stompableEnemiesCounter++; };
+										enemyCounter++;
 								}
 								if (levels[level].layers[l].objects[o].name == "EnemyEagle1")
 								{
@@ -423,7 +429,6 @@ function initBricks()
 										enemies[enemyCounter] = new EnemyMonkey1();
 										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
 										enemyCounter++;
-
 								}
 								if (levels[level].layers[l].objects[o].name == "EnemyMonkey2")
 								{
@@ -431,6 +436,12 @@ function initBricks()
 										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
 										enemyCounter++;
 
+								}
+								if (levels[level].layers[l].objects[o].name == "EnemyArrowTrap1")
+								{
+										enemies[enemyCounter] = new EnemyArrowTrap1();
+										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
+										enemyCounter++;
 								}
 								if (levels[level].layers[l].objects[o].name == "EnemySpikes1")
 								{
@@ -1252,6 +1263,9 @@ function spawnObject(objectType,xPos,yPos,params)
 		case "EnemyMonkeyBanana1":
 			enemies[newEnemyPosition] = new EnemyMonkeyBanana1();
 			break;
+		case "EnemyArrow1":
+			enemies[newEnemyPosition] = new EnemyArrow1();
+			break;
 		default:
 			//do nothing
 	}
@@ -1429,7 +1443,8 @@ function drawEnemies()
 				 }
 				 if (enemies[i].name == "EnemyMonkey1"
 				  || enemies[i].name == "EnemyMonkey2"
-  			  || enemies[i].name == "EnemySpikes1")
+  			  || enemies[i].name == "EnemySpikes1"
+					|| enemies[i].name == "EnemyArrowTrap1")
 				 {
 					 animYOffset = enemies[i].getDrawYCoord(gameFrame);
 				 }
@@ -1566,10 +1581,8 @@ function gameLoop()
 							}
 						}
 
-
-
-
 						moveEnemiesY();
+						performEmeniesActions();
 						moveEnemiesX();
 						performEmeniesActions();
 						cleanEnemyArray();   //garbage collects the enemy array
