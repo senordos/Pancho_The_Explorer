@@ -345,7 +345,6 @@ function initBricks()
 
 						for (var o=0; o < levels[level].layers[l].objects.length; o++)
 						{
-
 								if (levels[level].layers[l].objects[o].name == "Player")
 								{
 										setAttributes(player1, {
@@ -361,138 +360,18 @@ function initBricks()
 
 										player1.init(levels[level].layers[l].objects[o]);
 										player1.xSpeed = 0;
-
 								}
-								if (levels[level].layers[l].objects[o].name == "Enemy1")
-								{
-										enemies[enemyCounter] = new Enemy1();
-										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										//if this enemy can be stomped, update the counter
-										if ( enemies[enemyCounter].stompable ) { stompableEnemiesCounter++; };
-										enemyCounter++;
-
-								}
-								if (levels[level].layers[l].objects[o].name == "Enemy2")
-								{
-										enemies[enemyCounter] = new Enemy2();
-										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										if ( enemies[enemyCounter].stompable ) { stompableEnemiesCounter++; };
-										enemyCounter++;
-								}
-
-								if (levels[level].layers[l].objects[o].name == "Enemy3")
-								{
-										enemies[enemyCounter] = new Enemy3();
-										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										enemyCounter++;
-
-								}
-								if (levels[level].layers[l].objects[o].name == "Enemy4")
-								{
-										enemies[enemyCounter] = new Enemy4();
-										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										//if this enemy can be stomped, update the counter
-										if ( enemies[enemyCounter].stompable ) { stompableEnemiesCounter++; };
-										enemyCounter++;
-
-								}
-								if (levels[level].layers[l].objects[o].name == "EnemyBlock1")
-								{
-										enemies[enemyCounter] = new EnemyBlock1();
-										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										enemyCounter++;
-								}
-								if (levels[level].layers[l].objects[o].name == "EnemyBlock2")
+								else
 								{
 										eval("enemies[enemyCounter] = new " + levels[level].layers[l].objects[o].name + "()");
 										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
 										if ( enemies[enemyCounter].stompable ) { stompableEnemiesCounter++; };
+										if ( enemies[enemyCounter].name == "Chilli1") { chilliCounter++; }
 										enemyCounter++;
-								}
-								if (levels[level].layers[l].objects[o].name == "EnemyEagle1")
-								{
-										enemies[enemyCounter] = new EnemyEagle1();
-										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										if ( enemies[enemyCounter].stompable ) { stompableEnemiesCounter++; };
-										enemyCounter++;
-
-								}
-								if (levels[level].layers[l].objects[o].name == "EnemyPiranha1")
-								{
-										enemies[enemyCounter] = new EnemyPiranha1();
-										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										enemyCounter++;
-
-								}
-								if (levels[level].layers[l].objects[o].name == "EnemyMonkey1")
-								{
-										enemies[enemyCounter] = new EnemyMonkey1();
-										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										enemyCounter++;
-								}
-								if (levels[level].layers[l].objects[o].name == "EnemyMonkey2")
-								{
-										enemies[enemyCounter] = new EnemyMonkey2();
-										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										enemyCounter++;
-
-								}
-								if (levels[level].layers[l].objects[o].name == "EnemyArrowTrap1")
-								{
-										enemies[enemyCounter] = new EnemyArrowTrap1();
-										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										enemyCounter++;
-								}
-								if (levels[level].layers[l].objects[o].name == "EnemySpikes1")
-								{
-										enemies[enemyCounter] = new EnemySpikes1();
-										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										enemyCounter++;
-
-								}
-								if (levels[level].layers[l].objects[o].name == "Bridge1")
-								{
-										enemies[enemyCounter] = new Bridge1();
-										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										enemyCounter++;
-
-								}
-								if (levels[level].layers[l].objects[o].name == "Bridge2")
-								{
-										enemies[enemyCounter] = new Bridge2();
-										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										enemyCounter++;
-
-								}
-								if (levels[level].layers[l].objects[o].name == "Chilli1")
-								{
-										enemies[enemyCounter] = new Chilli1();
-										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										enemyCounter++;
-
-										chilliCounter++;
-
-								}
-								if (levels[level].layers[l].objects[o].name == "ChilliEL")
-								{
-										enemies[enemyCounter] = new ChilliEL();
-										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										enemyCounter++;
-
-
-								}
-								if (levels[level].layers[l].objects[o].name == "Exit1")
-								{
-										 enemies[enemyCounter] = new Exit1();
-										 enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										 enemyCounter++;
-
 								}
 						}
-
 						maxStompableEnemyCounter = stompableEnemiesCounter;
 						maxChilliCounter = chilliCounter;
-
 				}
 		}
 
@@ -501,12 +380,14 @@ function initBricks()
 		//Game engine requires that all rendering starts in the top left corner, so positions are updated here to compensate if necessary
 		for (e=0; e < enemies.length; e++)
 		{
-				enemies[e].x = enemies[e].x + SPRITESTARTCORRECTIONX;
-				enemies[e].y = enemies[e].y + SPRITESTARTCORRECTIONY;
+				//enemies[e].x = enemies[e].x + SPRITESTARTCORRECTIONX;
+				//enemies[e].y = enemies[e].y + SPRITESTARTCORRECTIONY;
+				//enemies[e].startXPosition = enemies[e].x;
+				//enemies[e].startYPosition = enemies[e].y;
 		}
 
-		player1.x = player1.x + SPRITESTARTCORRECTIONX;
-		player1.y = player1.y + SPRITESTARTCORRECTIONY;
+		//player1.x = player1.x + SPRITESTARTCORRECTIONX;
+		//player1.y = player1.y + SPRITESTARTCORRECTIONY;
 		//end of sprite update.
 
 
@@ -524,6 +405,8 @@ function initBricks()
 		//Load bricks spritesheets
 		bricksSpritesheet.src = "tiles\/spritesheet_mexico.png";
 
+		//reset the array
+		bricks = [];
 
 		i = 0;
 
@@ -1274,6 +1157,8 @@ function spawnObject(objectType,xPos,yPos,params)
 
 function cleanEnemyArray()
 {
+
+
 	for(i=0; i < enemies.length; i++)
 	{
 		maxX = bricks[bricks.length-1].x + 64;
@@ -1286,7 +1171,7 @@ function cleanEnemyArray()
 			|| enemies[i].y < 0 )
 		{
 			enemies.splice(i,1);
-			i--; //the array will now be shorter at the point just removed!
+			i--; //the array will now be shorter at the point just removed
 		}
 	}
 }

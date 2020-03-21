@@ -39,7 +39,7 @@ EnemySpikes1.prototype.updateMoveAttributesX = function(map, player)
 
   //the spikes don't move, but using this function
   //to check the spikes position relative to the player
-  if (player.y > this.y - 64 && player.y < this.y + 64)
+  if (player.y > this.y - 80 && player.y < this.y + 64)
   {
     if (player.x < this.x && this.x - player.x < 196)
     {

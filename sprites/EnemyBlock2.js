@@ -24,19 +24,12 @@ EnemyBlock2.prototype = Object.create(Sprite.prototype);
 EnemyBlock2.prototype.init = function(level_sprite_data)
 {
     Sprite.prototype.init.call(this, level_sprite_data);
-
-    this.startXPosition = this.x;
-    this.startYPosition = this.y;
 };
 
 
 EnemyBlock2.prototype.setMoveTargetX = function(map, player)
 {
     Sprite.prototype.setMoveTargetX.call(this);
-
-    console.log("startX " + this.startXPosition +
-                "\nmaxX   " + (this.startXPosition + this.maxTravel) +
-                "\nX " + this.x );
 
     if (this.xDirection == 1)
     {

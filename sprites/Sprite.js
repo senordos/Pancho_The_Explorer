@@ -2,6 +2,8 @@ function Sprite()
 {
     this.x = 64;
     this.y = 64;
+    this.startXPosition = this.x;
+    this.startYPosition = this.y;
     this.h = 64;
     this.w = 64;
     this.targetX = 128;
@@ -137,10 +139,6 @@ function Sprite()
 
 Sprite.prototype.init = function(level_sprite_data)
 {
-    //console.log("INIT: " + this.name);
-
-    //this.image = new Image();
-    //this.image.src = this.image_src;
 
     this.collision = false;
 
@@ -158,8 +156,10 @@ Sprite.prototype.init = function(level_sprite_data)
     this.jump = false;
 
 
-    this.x = Math.floor(level_sprite_data.x);
-    this.y = Math.floor(level_sprite_data.y);
+    this.x = Math.floor(level_sprite_data.x + SPRITESTARTCORRECTIONX);
+    this.y = Math.floor(level_sprite_data.y + SPRITESTARTCORRECTIONY);
+    this.startXPosition = this.x;
+    this.startYPosition = this.y;
 
     if (level_sprite_data.hasOwnProperty('properties'))
     {
@@ -201,12 +201,8 @@ Sprite.prototype.init = function(level_sprite_data)
               this.positionIsLocked = false;
             }
         }
-
       }
     }
-
-    //console.log("map x: " + this.x);
-    //console.log("map y: " + this.y);
 
     var xAlignGap = this.x % 64;
     var yAlignGap = this.y % 64;
@@ -216,12 +212,6 @@ Sprite.prototype.init = function(level_sprite_data)
 
     if ( yAlignGap > 32 ) { this.y = this.y + (64 - yAlignGap); }
     else                  { this.y = this.y - yAlignGap; }
-
-    //console.log("aligned x: " + this.x);
-    //console.log("aligned y: " + this.y);
-
-
-
 };
 
 Sprite.prototype.getCollisionRect = function()
@@ -256,7 +246,7 @@ Sprite.prototype.updateActions = function()
 
 Sprite.prototype.updateMoveAttributesX = function(map, player)
 {
-  var distance = this.x - player.x
+  var distance = this.x - player.x;
   if (this.active != true)
   {
     if ( this.activateIfPlayerXGT !== undefined )
@@ -270,10 +260,6 @@ Sprite.prototype.updateMoveAttributesX = function(map, player)
             this.active = true;
         }
     }
-    //else
-    //{
-    //    this.active = true;
-    //}
   }
 }
 
@@ -295,6 +281,12 @@ Sprite.prototype.getDrawYCoord = function(gameFrame)
 }
 
 Sprite.prototype.getDrawXCoord = function(gameFrame)
+{
+
+    return (gameFrame % this.animMaxFrame) * 64 + this.animXOffset;
+}
+
+Sprite.prototype.onPlayerCollision = function(player)
 {
 
     return (gameFrame % this.animMaxFrame) * 64 + this.animXOffset;
