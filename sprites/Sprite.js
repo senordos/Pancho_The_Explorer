@@ -2,13 +2,17 @@ function Sprite()
 {
     this.x = 64;
     this.y = 64;
+    this.startXPosition = this.x;
+    this.startYPosition = this.y;
     this.h = 64;
     this.w = 64;
     this.targetX = 128;
     this.targetY = 512;
     this.name = "GENERAL SPRITE";
     this.img = "NO_IMAGE";
-    this.image_src = "HELLO";
+    this.image_src = "NO_IMAGE_SRC";
+    this.health = 3;
+    this.lives = 3;
     //this.enemyImage = new Image();
     this.animXOffset = 0;
     this.animYOffset = 0;
@@ -20,19 +24,35 @@ function Sprite()
     this.ySpeed = 0;
     this.rotation = 0;
 
+    this.active = true;  //if true, will be processed for movement
+    this.positionIsLocked = false; //blocks movement
+    this.alive = true;   //if not alive, sprite is effectively removed from level
+    this.visible = true; //does the sprite get drawn to the screen
+    this.deadly = true;  //if the player hits the sprite, will player get damage
+    this.hit = false;    //sprite is hit by something. May become unhit in future
+    this.jump = false;
+    this.stompable = false;
+
+    //determine if the sprite will collide with the world bricks, or ignore them
+    this.interactsWithWorld = true;
+
     //some attributes just for Enemies
+    this.canSeeEdges = true; //determine if the sprite walks off edges, or not. Default is not.
     this.activateIfPlayerXGT = 0;  //if player greater than
     this.activateIfPlayerXLT = 0;  //if player less than
     this.activateIfPlayerYGT = 0;
     this.activateIfPlayerYLT = 0;
+    this.delayActivation = 0;
+
+
 
     //for collision detection, these rectangles define the sprite
-    this.rectMain = {top:0,bottom:0,left:0,right:0};
-    this.rectOffset = {top:0,bottom:63,left:0,right:63};
-    this.rectTopOffset = {top:0,bottom:31,left:7,right:55};
-    this.rectBottomOffset = {top:32,bottom:63,left:8,right:56};
-    this.rectLeftOffset = {top:19,bottom:43,left:0,right:19};
-    this.rectRightOffset = {top:19,bottom:43,left:43,right:63};
+    this.rectMain = {top:0,bottom:0,left:0,right:0}; //this is generated each frame based on rectOffet below
+    this.rectOffset =       {top:0,  bottom:63, left:0,  right:63};
+    this.rectTopOffset =    {top:0,  bottom:31, left:8,  right:55};
+    this.rectBottomOffset = {top:32, bottom:63, left:8,  right:55};
+    this.rectLeftOffset =   {top:19, bottom:43, left:0,  right:19};
+    this.rectRightOffset =  {top:19, bottom:43, left:43, right:63};
     this.collisionWidth = 56;
     this.collisionHeight = 64;
 
@@ -45,14 +65,9 @@ function Sprite()
 
     this.collisionExit = false;
     this.collisionDeath = false;
+    this.collisionClimb = false;
 
-    this.active = true;
-    this.alive = true;
-    this.deadly = true;
-    this.hit = false; //sprite is hit by something
-    this.jump = false;
 
-    this.stompable = false;
 
     this.localBricks = {current:0,left:0,right:0,up:0,down:0,leftUp:0,leftDown:0,rightUp:0,rightDown:0,xLinedUp:false,yLinedUp:false};
 
@@ -124,17 +139,32 @@ function Sprite()
 
 Sprite.prototype.init = function(level_sprite_data)
 {
-    console.log("INIT: " + this.name);
 
-    //this.image = new Image();
-    //this.image.src = this.image_src;
+    this.collision = false;
+
+    this.collisionTop = false;
+    this.collisionBottom = false;
+    this.collisionLeft = false;
+    this.collisionRight = false;
+
+    this.collisionExit = false;
+    this.collisionDeath = false;
+    this.collisionClimb = false;
+
+    this.alive = true;
+    this.hit = false;
+    this.jump = false;
 
 
-    this.x = Math.floor(level_sprite_data.x);
-    this.y = Math.floor(level_sprite_data.y);
+    this.x = Math.floor(level_sprite_data.x + SPRITESTARTCORRECTIONX);
+    this.y = Math.floor(level_sprite_data.y + SPRITESTARTCORRECTIONY);
+    this.startXPosition = this.x;
+    this.startYPosition = this.y;
 
     if (level_sprite_data.hasOwnProperty('properties'))
     {
+      if(level_sprite_data.properties != null)
+      {
         if (level_sprite_data.properties.hasOwnProperty('activateIfPlayerXGT'))
         {
           this.activateIfPlayerXGT = Math.floor(level_sprite_data.properties.activateIfPlayerXGT);
@@ -143,11 +173,36 @@ Sprite.prototype.init = function(level_sprite_data)
         {
           this.xDirection = Math.floor(level_sprite_data.properties.startXDirection);
         }
-
+        if (level_sprite_data.properties.hasOwnProperty('delayActivation'))
+        {
+          this.delayActivation = Math.floor(level_sprite_data.properties.delayActivation);
+        }
+        if (level_sprite_data.properties.hasOwnProperty('canSeeEdges'))
+        {
+          var edgeText = level_sprite_data.properties.canSeeEdges;
+          if (edgeText == "TRUE" || edgeText == "true")
+          {
+              this.canSeeEdges = true;
+          }
+          else if (edgeText == "FALSE" || edgeText == "false" )
+          {
+              this.canSeeEdges = false;
+          }
+        }
+        if (level_sprite_data.properties.hasOwnProperty('positionIsLocked'))
+        {
+            var lockedText = level_sprite_data.properties.positionIsLocked;
+            if (lockedText == "TRUE" || lockedText == "true")
+            {
+              this.positionIsLocked = true;
+            }
+            else
+            {
+              this.positionIsLocked = false;
+            }
+        }
+      }
     }
-
-    console.log("map x: " + this.x);
-    console.log("map y: " + this.y);
 
     var xAlignGap = this.x % 64;
     var yAlignGap = this.y % 64;
@@ -157,22 +212,16 @@ Sprite.prototype.init = function(level_sprite_data)
 
     if ( yAlignGap > 32 ) { this.y = this.y + (64 - yAlignGap); }
     else                  { this.y = this.y - yAlignGap; }
-
-    console.log("aligned x: " + this.x);
-    console.log("aligned y: " + this.y);
-
-
-
 };
 
 Sprite.prototype.getCollisionRect = function()
 {
     var collisionRect =
     {
-          top: this.rectOffset.top + this.targetY,
+          top:    this.rectOffset.top    + this.targetY,
           bottom: this.rectOffset.bottom + this.targetY,
-          left: this.rectOffset.left + this.targetX,
-          right: this.rectOffset.right + this.targetX
+          left:   this.rectOffset.left   + this.targetX,
+          right:  this.rectOffset.right  + this.targetX
     };
 
     return  collisionRect;
@@ -190,10 +239,28 @@ Sprite.prototype.setMoveTargetY = function()
     this.targetY = this.y;
 }
 
+Sprite.prototype.updateActions = function()
+{
+    return null;
+}
 
 Sprite.prototype.updateMoveAttributesX = function(map, player)
 {
-    //Do nothing
+  var distance = this.x - player.x;
+  if (this.active != true)
+  {
+    if ( this.activateIfPlayerXGT !== undefined )
+    {
+        if ( this.activateIfPlayerXGT > 0 && player.x > this.activateIfPlayerXGT )
+        {
+            this.active = true;
+        }
+        else if ( this.activateIfPlayerXGT == 0 )
+        {
+            this.active = true;
+        }
+    }
+  }
 }
 
 
@@ -201,4 +268,26 @@ Sprite.prototype.updateMoveAttributesX = function(map, player)
 Sprite.prototype.updateMoveAttributesY = function(map, player)
 {
     //Do nothing
+}
+
+Sprite.prototype.updateAttributesAfterStomped = function(map, player)
+{
+    //Do nothing
+}
+
+Sprite.prototype.getDrawYCoord = function(gameFrame)
+{
+    return 0;
+}
+
+Sprite.prototype.getDrawXCoord = function(gameFrame)
+{
+
+    return (gameFrame % this.animMaxFrame) * 64 + this.animXOffset;
+}
+
+Sprite.prototype.onPlayerCollision = function(player)
+{
+
+    return (gameFrame % this.animMaxFrame) * 64 + this.animXOffset;
 }

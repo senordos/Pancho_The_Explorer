@@ -33,7 +33,7 @@ function drawIntroScreen()
 
       //set up the intro screen position, based on the size of the buttonSize etc.
       var introX = Math.trunc((window.innerWidth / 2) - (0.5 * (buttonSizeNum + textWidthNum)));
-      var introY = Math.trunc((window.innerHeight * 0.75 / 2) - (0.5 * (buttonSizeNum * 2)));
+      var introY = Math.trunc((window.innerHeight * 0.75 / 2) - (0.5 * (buttonSizeNum * 2)) - buttonSizeNum);
       introX = introX.toString() + "px";
       introY = introY.toString() + "px";
 
@@ -123,6 +123,7 @@ function button_startGameClicked()
 
     //Play a sound after the user clicks - only plays if the music is toggled.
     var context = new window.AudioContext();
+    context.resume();
     // create a dummy sound - and play it immediately in same 'thread'
     //var oscillator = context.createOscillator();
     //oscillator.frequency.value = 400;
@@ -200,8 +201,6 @@ function onWindowResize()
     document.getElementById("gameCanvas").setAttribute("height", SCALEDCANVASHEIGHT);
 
     ctx.scale(canvasScale,canvasScale);
-
-    //Also re-draw the intro game menu if it is active
 
 
 }

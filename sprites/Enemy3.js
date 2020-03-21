@@ -55,10 +55,10 @@ Enemy3.prototype.setMoveTargetY = function()
 
 
 
-Enemy3.prototype.updateMoveAttributesX = function (map)
+Enemy3.prototype.updateMoveAttributesX = function (map, player)
 {
 
-    Sprite.prototype.updateMoveAttributesX.call(this, map);
+    Sprite.prototype.updateMoveAttributesX.call(this, map, player);
 
     if (this.localBricks.xLinedUp == true)
     {
@@ -93,9 +93,9 @@ Enemy3.prototype.updateMoveAttributesX = function (map)
 
 
 
-Enemy3.prototype.updateMoveAttributesY = function (map)
+Enemy3.prototype.updateMoveAttributesY = function (map, player)
 {
-    Sprite.prototype.updateMoveAttributesX.call(this, map);
+    Sprite.prototype.updateMoveAttributesY.call(this, map, player);
 
     if ( this.localBricks.yLinedUp == true )
     {

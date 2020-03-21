@@ -4,14 +4,13 @@ function Enemy2()
     Sprite.call(this);
 
     this.name = "Enemy2";
+    this.active = false;
     this.stompable = true;
-
-    //this.image_src = "tiles/spritesheet_enemy2.png";
 
     this.animXOffset = 0;
     this.animYOffset = 256;
 
-    this.xSpeed = 3;
+    this.xSpeed = 2;
     this.rectOffset = {top:16,bottom:63,left:8,right:55};
 
 
@@ -29,8 +28,10 @@ Enemy2.prototype.setMoveTargetX = function()
 {
     Sprite.prototype.setMoveTargetX.call(this);
 
-    this.targetX = this.x + ((this.xDirection) * this.xSpeed); //This is currently tied to the framerate
-
+    if (this.active == true)
+    {
+      this.targetX = this.x + ((this.xDirection) * this.xSpeed); //This is currently tied to the framerate
+    }
 }
 
 Enemy2.prototype.setMoveTargetY = function()
@@ -42,13 +43,13 @@ Enemy2.prototype.setMoveTargetY = function()
 
     if (this.yDirection > 5) {this.yDirection = 5;} //Y DIRECTION SHOULD ONLY BE 1 - NEED TO CHANGE TO Y SPEED
 
-    this.targetY = this.y + this.yDirection;
+    this.targetY = Math.floor(this.y + this.yDirection);
 }
 
-Enemy2.prototype.updateMoveAttributesX = function (map)
+Enemy2.prototype.updateMoveAttributesX = function (map, player)
 {
 
-   Sprite.prototype.updateMoveAttributesX.call(this, map);
+   Sprite.prototype.updateMoveAttributesX.call(this, map, player);
 
     if ( this.collision == true )
     {
@@ -70,17 +71,51 @@ Enemy2.prototype.updateMoveAttributesX = function (map)
             )
           )
        {
-           this.yDirection = this.yDirection = -30;
+           this.yDirection = this.yDirection = -34;
        }
     }
+
+
+    if (this.active != true)
+    {
+      if ( this.activateIfPlayerXGT !== undefined )
+      {
+          if ( this.activateIfPlayerXGT > 0 && player.x > this.activateIfPlayerXGT )
+          {
+              this.active = true;
+          }
+          else if ( this.activateIfPlayerXGT == 0 )
+          {
+              this.active = true;
+          }
+      }
+      else
+      {
+          this.active = true;
+      }
+    }
+
+
 }
 
-Enemy2.prototype.updateMoveAttributesY = function (map)
+Enemy2.prototype.updateMoveAttributesY = function (map, player)
 {
-    Sprite.prototype.updateMoveAttributesX.call(this, map);
+    Sprite.prototype.updateMoveAttributesY.call(this, map, player);
 
     if (this.collision == true)
     {
         this.yDirection = 0;
     }
+}
+
+Enemy2.prototype.updateAttributesAfterStomped = function(map, player)
+{
+  Sprite.prototype.updateAttributesAfterStomped.call(this, map);
+
+  this.hit = true;
+  this.deadly = false;
+
+  this.xSpeed = 3;
+  this.xDirection = this.xDirection * -1;
+
 }

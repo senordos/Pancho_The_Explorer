@@ -9,6 +9,8 @@ function Brick()
     this.deadly = false;
     this.exit = false;
     this.moveable = false;
+    this.blocker = true; //will the tile block player or baddy movement
+    this.enemyBoundary = false; //if set, this will block enemies, but not the player
     this.hit = false;
     this.isBackground = false;
 

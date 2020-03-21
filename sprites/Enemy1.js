@@ -62,6 +62,23 @@ Enemy1.prototype.updateMoveAttributesX = function (map, player)
         this.xDirection = this.xDirection * -1;
     }
 
+    //This enemy will not walk of edges
+    //Check for an edge and turn around if found
+    if (this.localBricks.xLinedUp == true)
+    {
+        //if walking left, and there is an edge on the left, turn right
+        if (map[this.localBricks.leftDown].type == 0 && this.xDirection == -1)
+        {
+            this.xDirection = 1;
+        }
+        //if walking right, and there is an edge on the right, turn left
+        if (map[this.localBricks.rightDown].type == 0 && this.xDirection == 1)
+        {
+            this.xDirection = -1;
+        }
+    }
+
+
     var distance = this.x - player.x
 
     if (this.active != true)
@@ -90,10 +107,22 @@ Enemy1.prototype.updateMoveAttributesX = function (map, player)
 
 Enemy1.prototype.updateMoveAttributesY = function (map, player)
 {
-    Sprite.prototype.updateMoveAttributesX.call(this, map);
+    Sprite.prototype.updateMoveAttributesY.call(this, map);
 
     if (this.collision == true)
     {
         this.yDirection = 0;
     }
+}
+
+Enemy1.prototype.updateAttributesAfterStomped = function(map, player)
+{
+  Sprite.prototype.updateAttributesAfterStomped.call(this, map);
+
+  this.hit = true;
+  this.deadly = false;
+
+  this.xSpeed = 3;
+  this.xDirection = this.xDirection * -1;
+
 }
