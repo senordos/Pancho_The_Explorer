@@ -1,7 +1,7 @@
 function Enemy4()
 {
 
-    Sprite.call(this);
+    _Sprite.call(this);
 
 
     this.name = "Enemy4";
@@ -21,16 +21,16 @@ function Enemy4()
     this.hitTime = null;
 }
 
-Enemy4.prototype = Object.create(Sprite.prototype);
+Enemy4.prototype = Object.create(_Sprite.prototype);
 
 Enemy4.prototype.init = function(level_sprite_data)
 {
-    Sprite.prototype.init.call(this, level_sprite_data);
+    _Sprite.prototype.init.call(this, level_sprite_data);
 };
 
 Enemy4.prototype.setMoveTargetX = function(map, player)
 {
-    Sprite.prototype.setMoveTargetX.call(this);
+    _Sprite.prototype.setMoveTargetX.call(this);
 
     var speed = 2;
     var chargeSpeed = 8;
@@ -56,7 +56,7 @@ Enemy4.prototype.setMoveTargetX = function(map, player)
 
 Enemy4.prototype.setMoveTargetY = function(map, player)
 {
-    Sprite.prototype.setMoveTargetY.call(this);
+    _Sprite.prototype.setMoveTargetY.call(this);
 
     //enemies fall due to gravity
     this.yDirection = this.yDirection + GRAVITY;
@@ -69,7 +69,7 @@ Enemy4.prototype.setMoveTargetY = function(map, player)
 
 Enemy4.prototype.updateMoveAttributesX = function (map, player)
 {
-    Sprite.prototype.updateMoveAttributesX.call(this, map, player);
+    _Sprite.prototype.updateMoveAttributesX.call(this, map, player);
 
 
     //If the enemy has been hit, it may be ready to be back to life!
@@ -145,7 +145,7 @@ Enemy4.prototype.updateMoveAttributesX = function (map, player)
 
 Enemy4.prototype.updateMoveAttributesY = function (map, player)
 {
-    Sprite.prototype.updateMoveAttributesY.call(this, map);
+    _Sprite.prototype.updateMoveAttributesY.call(this, map);
 
     if (this.collision == true)
     {
@@ -155,7 +155,7 @@ Enemy4.prototype.updateMoveAttributesY = function (map, player)
 
 Enemy4.prototype.updateAttributesAfterStomped = function(map, player)
 {
-  Sprite.prototype.updateAttributesAfterStomped.call(this, map);
+  _Sprite.prototype.updateAttributesAfterStomped.call(this, map);
 
   this.hit = true;
   this.deadly = false;

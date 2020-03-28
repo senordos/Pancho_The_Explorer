@@ -1,6 +1,6 @@
 function EnemyMonkeyRock1()
 {
-    Sprite.call(this);
+    _Sprite.call(this);
 
     this.name = "EnemyMonkeyRock1";
 
@@ -15,11 +15,11 @@ function EnemyMonkeyRock1()
     this.rectOffset = {top:16,bottom:47,left:16,right:47};
 }
 
-EnemyMonkeyRock1.prototype = Object.create(Sprite.prototype);
+EnemyMonkeyRock1.prototype = Object.create(_Sprite.prototype);
 
 EnemyMonkeyRock1.prototype.setMoveTargetY = function()
 {
-    Sprite.prototype.setMoveTargetY.call(this);
+    _Sprite.prototype.setMoveTargetY.call(this);
 
     //enemies fall due to gravity
 
@@ -33,7 +33,7 @@ EnemyMonkeyRock1.prototype.setMoveTargetY = function()
 
 EnemyMonkeyRock1.prototype.updateAttributesAfterStomped = function(map, player)
 {
-  Sprite.prototype.updateAttributesAfterStomped.call(this, map);
+  _Sprite.prototype.updateAttributesAfterStomped.call(this, map);
 
   this.hit = true;
   this.deadly = false;

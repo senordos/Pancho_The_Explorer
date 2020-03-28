@@ -1,7 +1,7 @@
 function ChilliEL()
 {
 
-    Sprite.call(this);
+    _Sprite.call(this);
 
     this.name = "ChilliEL";
     this.active = true;
@@ -15,4 +15,25 @@ function ChilliEL()
 
 }
 
-ChilliEL.prototype = Object.create(Sprite.prototype);
+ChilliEL.prototype = Object.create(_Sprite.prototype);
+
+ChilliEL.prototype.getCollisionStats = function(player)
+{
+    if (this.checkPlayerCollision(player))
+    {
+      //default collision behaviour if method not overridden.
+      //acts like a basic chilli
+      this.active = false;
+      this.alive = false;
+
+      var colevt = new CollisionEvent();
+      colevt.name = this.name;
+      colevt.collision = true;
+      colevt.enemyHit = false;
+      colevt.playerHit = false;
+      colevt.sound="SND_CHILLI";
+
+      return colevt;
+    }
+    return false;
+}

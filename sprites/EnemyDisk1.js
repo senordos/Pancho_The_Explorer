@@ -1,10 +1,10 @@
-function EnemyBlock2()
+function EnemyDisk1()
 {
 
-    Sprite.call(this);
+    _Sprite.call(this);
 
 
-    this.name = "EnemyBlock2";
+    this.name = "EnemyDisk1";
     this.stompable = false;
 
     this.animXOffset = 0;
@@ -19,17 +19,17 @@ function EnemyBlock2()
     this.rectOffset = {top:16,bottom:63,left:8,right:55};
 }
 
-EnemyBlock2.prototype = Object.create(Sprite.prototype);
+EnemyDisk1.prototype = Object.create(_Sprite.prototype);
 
-EnemyBlock2.prototype.init = function(level_sprite_data)
+EnemyDisk1.prototype.init = function(level_sprite_data)
 {
-    Sprite.prototype.init.call(this, level_sprite_data);
+    _Sprite.prototype.init.call(this, level_sprite_data);
 };
 
 
-EnemyBlock2.prototype.setMoveTargetX = function(map, player)
+EnemyDisk1.prototype.setMoveTargetX = function(map, player)
 {
-    Sprite.prototype.setMoveTargetX.call(this);
+    _Sprite.prototype.setMoveTargetX.call(this);
 
     if (this.xDirection == 1)
     {
@@ -55,9 +55,9 @@ EnemyBlock2.prototype.setMoveTargetX = function(map, player)
     this.targetX = this.x + (this.xDirection * this.xSpeed);
 }
 
-EnemyBlock2.prototype.updateMoveAttributesX = function (map, player)
+EnemyDisk1.prototype.updateMoveAttributesX = function (map, player)
 {
-    Sprite.prototype.updateMoveAttributesX.call(this, map, player);
+    _Sprite.prototype.updateMoveAttributesX.call(this, map, player);
 
     if ( this.collision == true )
     {
@@ -65,9 +65,9 @@ EnemyBlock2.prototype.updateMoveAttributesX = function (map, player)
     }
 }
 
-EnemyBlock2.prototype.updateMoveAttributesY = function (map, player)
+EnemyDisk1.prototype.updateMoveAttributesY = function (map, player)
 {
-    Sprite.prototype.updateMoveAttributesY.call(this, map);
+    _Sprite.prototype.updateMoveAttributesY.call(this, map);
 
     if (this.collision == true)
     {
@@ -75,15 +75,30 @@ EnemyBlock2.prototype.updateMoveAttributesY = function (map, player)
     }
 }
 
-EnemyBlock2.prototype.updateActions = function()
+EnemyDisk1.prototype.updateActions = function()
 {
-  Sprite.prototype.updateActions.call(this);
+  _Sprite.prototype.updateActions.call(this);
 
   //maybe this block spits out upwards projectiles....
   //Check the Monkey throwing code.
 }
 
-EnemyBlock2.prototype.getDrawYCoord = function()
+EnemyDisk1.prototype.getDrawYCoord = function()
 {
   return this.animYOffset + 64;
+}
+
+EnemyDisk1.prototype.getCollisionStats = function(player)
+{
+    if (this.checkPlayerCollision(player))
+    {
+      var colevt = new CollisionEvent();
+      colevt.name = this.name;
+      colevt.collision = true;
+      colevt.enemyHit = false;
+      colevt.playerHit = true;
+
+      return colevt;
+    }
+    return false;
 }

@@ -1,7 +1,7 @@
 function EnemyEagle1()
 {
 
-    Sprite.call(this);
+    _Sprite.call(this);
 
 
     this.name = "EnemyEagle1";
@@ -20,18 +20,18 @@ function EnemyEagle1()
 
 }
 
-EnemyEagle1.prototype = Object.create(Sprite.prototype);
+EnemyEagle1.prototype = Object.create(_Sprite.prototype);
 
 EnemyEagle1.prototype.init = function(level_sprite_data)
 {
-    Sprite.prototype.init.call(this, level_sprite_data);
+    _Sprite.prototype.init.call(this, level_sprite_data);
 };
 
 
 
 EnemyEagle1.prototype.setMoveTargetX = function(map, player)
 {
-    Sprite.prototype.setMoveTargetX.call(this);
+    _Sprite.prototype.setMoveTargetX.call(this);
 
     if (this.active == true && this.hit == false)
     {
@@ -41,7 +41,7 @@ EnemyEagle1.prototype.setMoveTargetX = function(map, player)
 
 EnemyEagle1.prototype.setMoveTargetY = function(map, player)
 {
-    Sprite.prototype.setMoveTargetY.call(this);
+    _Sprite.prototype.setMoveTargetY.call(this);
 
     if (this.active == true && this.hit == false)
     {
@@ -59,7 +59,7 @@ EnemyEagle1.prototype.setMoveTargetY = function(map, player)
 
 EnemyEagle1.prototype.updateMoveAttributesX = function (map, player)
 {
-    Sprite.prototype.updateMoveAttributesX.call(this, map, player);
+    _Sprite.prototype.updateMoveAttributesX.call(this, map, player);
 
 
     //Check if the enemy has had a collision
@@ -97,7 +97,7 @@ EnemyEagle1.prototype.updateMoveAttributesX = function (map, player)
 
 EnemyEagle1.prototype.updateMoveAttributesY = function (map, player)
 {
-    Sprite.prototype.updateMoveAttributesY.call(this, map);
+    _Sprite.prototype.updateMoveAttributesY.call(this, map);
 
     if (this.collision == true && this.hit == false)
     {
@@ -113,7 +113,7 @@ EnemyEagle1.prototype.updateMoveAttributesY = function (map, player)
 
 EnemyEagle1.prototype.updateAttributesAfterStomped = function(map, player)
 {
-    Sprite.prototype.updateAttributesAfterStomped.call(this, map);
+    _Sprite.prototype.updateAttributesAfterStomped.call(this, map);
 
     this.hit = true;
     this.deadly = false;

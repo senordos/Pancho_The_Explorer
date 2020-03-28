@@ -1,4 +1,4 @@
-function Sprite()
+function _Sprite()
 {
     this.x = 64;
     this.y = 64;
@@ -137,7 +137,7 @@ function Sprite()
 
 };
 
-Sprite.prototype.init = function(level_sprite_data)
+_Sprite.prototype.init = function(level_sprite_data)
 {
 
     this.collision = false;
@@ -156,8 +156,8 @@ Sprite.prototype.init = function(level_sprite_data)
     this.jump = false;
 
 
-    this.x = Math.floor(level_sprite_data.x + SPRITESTARTCORRECTIONX);
-    this.y = Math.floor(level_sprite_data.y + SPRITESTARTCORRECTIONY);
+    this.x = Math.floor(level_sprite_data.x);
+    this.y = Math.floor(level_sprite_data.y);
     this.startXPosition = this.x;
     this.startYPosition = this.y;
 
@@ -214,7 +214,7 @@ Sprite.prototype.init = function(level_sprite_data)
     else                  { this.y = this.y - yAlignGap; }
 };
 
-Sprite.prototype.getCollisionRect = function()
+_Sprite.prototype.getCollisionRect = function()
 {
     var collisionRect =
     {
@@ -227,24 +227,24 @@ Sprite.prototype.getCollisionRect = function()
     return  collisionRect;
 };
 
-Sprite.prototype.setMoveTargetX = function()
+_Sprite.prototype.setMoveTargetX = function()
 {
     this.targetX = this.x;
     this.targetY = this.y;
 }
 
-Sprite.prototype.setMoveTargetY = function()
+_Sprite.prototype.setMoveTargetY = function()
 {
     this.targetX = this.x;
     this.targetY = this.y;
 }
 
-Sprite.prototype.updateActions = function()
+_Sprite.prototype.updateActions = function()
 {
     return null;
 }
 
-Sprite.prototype.updateMoveAttributesX = function(map, player)
+_Sprite.prototype.updateMoveAttributesX = function(map, player)
 {
   var distance = this.x - player.x;
   if (this.active != true)
@@ -265,29 +265,67 @@ Sprite.prototype.updateMoveAttributesX = function(map, player)
 
 
 
-Sprite.prototype.updateMoveAttributesY = function(map, player)
+_Sprite.prototype.updateMoveAttributesY = function(map, player)
 {
     //Do nothing
 }
 
-Sprite.prototype.updateAttributesAfterStomped = function(map, player)
+_Sprite.prototype.updateAttributesAfterStomped = function(map, player)
 {
     //Do nothing
 }
 
-Sprite.prototype.getDrawYCoord = function(gameFrame)
+_Sprite.prototype.getDrawYCoord = function(gameFrame)
 {
     return 0;
 }
 
-Sprite.prototype.getDrawXCoord = function(gameFrame)
+_Sprite.prototype.getDrawXCoord = function(gameFrame)
 {
 
     return (gameFrame % this.animMaxFrame) * 64 + this.animXOffset;
 }
 
-Sprite.prototype.onPlayerCollision = function(player)
+_Sprite.prototype.checkPlayerCollision = function(player)
 {
+    if (intersectRect(player.getCollisionRect(), this.getCollisionRect()))
+    {
+      console.log("_Sprite.js --- Player hit " + this.name);
+      return true;
+    }
+    return false;
+}
 
-    return (gameFrame % this.animMaxFrame) * 64 + this.animXOffset;
+_Sprite.prototype.getCollisionStats = function(player)
+{
+    if (this.checkPlayerCollision(player))
+    {
+      //default collision behaviour if method not overridden.
+      //acts like a basic enemy
+      var colevt = new CollisionEvent();
+      colevt.name = this.name;
+      colevt.collision = true;
+
+      if(this.deadly)
+      {
+        if (intersectRect(player.getBottomCollisionRect(), this.getTopCollisionRect())
+            && this.hit == false
+            && player.ySpeed > 0)
+        {
+          //if object is killed by player jumping on top of them
+          this.hit = true;
+
+          colevt.enemyHit = true;
+          colevt.playerHit = false;
+        }
+        else
+        {
+            //Else the player is hit
+            colevt.enemyHit = false;
+            colevt.playerHit = true;
+        }
+      }
+      return colevt;
+    }
+    return false;
 }

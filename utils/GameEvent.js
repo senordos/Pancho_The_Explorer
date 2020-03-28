@@ -15,5 +15,13 @@ function SpawnEvent(spawnObject, atX, atY, objectParams)
   this.y = atY;
 
   this.params = objectParams
+};
 
-}
+function CollisionEvent()
+{
+  this.name = "NAME_NOT_SET";
+  this.collision = false;
+  this.enemyHit = false;
+  this.playerHit = false;
+  this.sound = "NO_SOUND";
+};

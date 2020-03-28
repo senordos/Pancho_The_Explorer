@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 
 if len(sys.argv) < 2:
     print("WARNING: Missing command line args")
@@ -22,10 +23,28 @@ for levelCounter in range(startLevel, maxLevel+1):
     filename = "./levels/" + episodeName
     if levelCounter < 10:
         filename = filename + "0"
-    filename = filename + str(levelCounter) + ".json"
+    filename = filename + str(levelCounter)
+    fixedfilename = filename + "_fixed_y.json"
+    filename = filename + ".json"
     if os.path.isfile(filename):
         print(filename)
-        fr = open(filename,"r")
+        #Reposition Y
+        #The level editor positions y at the bottom of the object
+        #The game engine expects it at the top left, so reposition Y
+        with open(filename) as json_file:
+            data = json.load(json_file)
+            for l in data['layers']:
+                if l['name'] == "Objects":
+                    for o in l['objects']:
+
+                        oldY = o['y']
+                        o['y'] = oldY - 64                  
+            with open(fixedfilename, 'w') as fixedfile:
+                json.dump(data, fixedfile)
+                fixedfile.close()
+            json_file.close() 
+        #END of Reposition Y             
+        fr = open(fixedfilename,"r")    #use updated filename   
         fw.write("levels[" + str(levelArrayCounter) + "] = ")
         fw.write(fr.read());
         fw.write(";\n")

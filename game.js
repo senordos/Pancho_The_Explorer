@@ -219,7 +219,7 @@ levelcompletebox.addTextArea("PRESS SPACE TO CONTINUE", 21, "CENTRE",0,0);
 
 
 var player1;
-player1 = new Sprite();
+player1 = new Player();
 
 var enemies = [];
 var chilliCounter = 0;
@@ -802,151 +802,42 @@ function checkWorldCollisions(sprite)
 }
 
 
-function checkEnemyCollisions(playerSprite)
+function checkEnemyCollisions(player)
 {
-
-		//when looping through all the sprites, use "name" to check the sprite being checked isn't "this" sprites
-
-		//get the Rect for this sprite
-		//Build a rectangle based on the overall sprite's collision offset
-		var playerRect = playerSprite.getCollisionRect();
-		var playerTopRect = playerSprite.getTopCollisionRect();
-		var playerBottomRect = playerSprite.getBottomCollisionRect();
-		var playerLeftRect = playerSprite.getLeftCollisionRect();
-		var playerRightRect = playerSprite.getRightCollisionRect();
-
-		var playerStompedEnemy = false; //use this to check if the player hit one or more enemys
+		var colevt = false; //variable for the CollisionEvent
 
 		for (i=0; i < enemies.length; i++)
 		{
 				if (enemies[i].active && enemies[i].alive)
 				{
-
-					var enemyRect = enemies[i].getCollisionRect();
-					var enemyTopRect = enemies[i].getTopCollisionRect();
-					var enemyLeftRect = enemies[i].getLeftCollisionRect();
-					var enemyRightRect = enemies[i].getRightCollisionRect();
-					var enemyBottomRect = enemies[i].getBottomCollisionRect();
-
-
-					if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Exit1")
+					colevt = enemies[i].getCollisionStats(player);
+					if (colevt)
 					{
-							playerSprite.collisionExit = true;
-							console.log("Collision - Exit");
-					}
-
-					if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Chilli1")
-					{
-							console.log("HIT CHILLI");
-
-							enemies[i].hit = true;
-							enemies[i].active = false;
-							enemies[i].alive = false;
-
-							chilliCounter--;
-
-							sound.playSound(SND_CHILLI);
-
-							if (chilliCounter == 0)
-							{
-									extraLife();
-							}
-
-					}
-
-					if (intersectRect(playerRect, enemyRect) && enemies[i].name == "ChilliEL")
-					{
-							console.log("HIT CHILLI");
-
-							enemies[i].hit = true;
-							enemies[i].active = false;
-							enemies[i].alive = false;
-
-							sound.playSound(SND_CHILLI);
-							extraLife();
-					}
-
-
-					if (intersectRect(playerRect, enemyRect) &&
-								( enemies[i].name == "Bridge1" || enemies[i].name == "Bridge2"))
-					{
-
-							// Player has hit a bridge
-
-
-
-							if (intersectRect(playerBottomRect, enemyTopRect))
-							{
-									//Start the bridge falling
-									enemies[i].hit = true;
-									enemies[i].yDirection = 1;
-									enemies[i].ySpeed = 1;
-
-									playerSprite.yDirection = 1;
-									playerSprite.ySpeed = 1;
-									playerSprite.targetY = enemies[i].y - playerSprite.rectOffset.bottom -1;
-									playerSprite.collisionBottom = true;
-							}
-							else if (intersectRect(playerTopRect, enemyBottomRect))
-							{
-									playerSprite.yDirection = 0;
-									playerSprite.ySpeed = 0;
-									playerSprite.targetY = enemies[i].y + enemies[i].rectOffset.bottom - playerSprite.rectOffset.top;
-									playerSprite.collisionTop = true;
-							}
-							else if (intersectRect(playerLeftRect, enemyRightRect))
-							{
-								//Player has hit bridge from right
-								playerSprite.xDirection = 0;
-								playerSprite.targetX = enemies[i].x + playerSprite.collisionWidth;
-								playerSprite.collisionLeft = true;
-
-							}
-							else if (intersectRect(playerRightRect, enemyLeftRect))
-							{
-								//Player has hit bridge from left
-								playerSprite.xDirection = 0;
-								playerSprite.targetX = enemies[i].x - playerSprite.collisionWidth;
-								playerSprite.collisionRight = true;
-							}
-					}
-
-					if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Enemy3" ||
-							intersectRect(playerRect, enemyRect) && enemies[i].name == "EnemyPiranha1" )
-					{
-							//These enemies cannot be killed.
-							playerSprite.hit = true;
-					}
-
-					if(intersectRect(playerRect, enemyRect) && enemies[i].deadly == true)
-					{
-
-							if(intersectRect(playerBottomRect, enemyTopRect) && enemies[i].hit == false && playerSprite.ySpeed > 0 )
-							{
-
-									//player on top of enemy
-									enemies[i].updateAttributesAfterStomped(bricks, player1);
-
-									if (enemies[i].stompable) { stompableEnemiesCounter--; }
-
-									sound.playSound(SND_JUMP);
-									playerStompedEnemy = true;
-
-							}
-							else
-							{
-									playerSprite.hit = true;
-							}
+						switch(colevt.name)
+						{
+							case "Chilli1":
+										chilliCounter--;
+										break;
+							case "ChilliEL":
+										extraLife();
+										break;
+							case "Exit1":
+										player.collisionExit = true;
+										break;
+						}
+						if (colevt.sound != "NO_SOUND") { sound.playSound(SND_CHILLI); }
+						if (colevt.playerHit) { player.hit = true; }
+						if (colevt.enemyHit)
+						{
+							enemies[i].updateAttributesAfterStomped(bricks, player1);
+							sound.playSound(SND_JUMP);
+							playerStompedEnemy = true;
+							player.ySpeed = PLAYERJUMP - 8;
+							if (enemies[i].stompable) { stompableEnemiesCounter--; }
+						}
 					}
 				}
 		}
-
-		if (playerStompedEnemy)
-		{
-				//if one or more enemys are stomped, bounce the player.
-				playerSprite.ySpeed = PLAYERJUMP - 8;
-		}
-
 }
 
 
@@ -1072,7 +963,6 @@ function movePlayerY()
 		{
 				player1.y = player1.targetY;
 		}
-
 }
 
 
