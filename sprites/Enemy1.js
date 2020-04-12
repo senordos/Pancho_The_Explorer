@@ -64,7 +64,7 @@ Enemy1.prototype.updateMoveAttributesX = function (map, player)
 
     //This enemy will not walk of edges
     //Check for an edge and turn around if found
-    if (this.localBricks.xLinedUp == true)
+    if (this.localBricks.xLinedUp == true && this.collisionBottom)
     {
         //if walking left, and there is an edge on the left, turn right
         if (map[this.localBricks.leftDown].type == 0 && this.xDirection == -1)

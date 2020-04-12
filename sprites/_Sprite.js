@@ -20,6 +20,8 @@ function _Sprite()
     this.animMaxFrame = 4;
     this.xDirection = 1;
     this.yDirection = 1;
+    this.startXDirection = this.xDirection;
+    this.startYDirection = this.yDirection;
     this.xSpeed = 0;
     this.ySpeed = 0;
     this.rotation = 0;
@@ -160,6 +162,9 @@ _Sprite.prototype.init = function(level_sprite_data)
     this.y = Math.floor(level_sprite_data.y);
     this.startXPosition = this.x;
     this.startYPosition = this.y;
+    this.targetX = this.x;
+    this.targetY = this.y;
+
 
     if (level_sprite_data.hasOwnProperty('properties'))
     {
@@ -172,6 +177,10 @@ _Sprite.prototype.init = function(level_sprite_data)
         if (level_sprite_data.properties.hasOwnProperty('startXDirection'))
         {
           this.xDirection = Math.floor(level_sprite_data.properties.startXDirection);
+        }
+        if (level_sprite_data.properties.hasOwnProperty('startYDirection'))
+        {
+          this.xDirection = Math.floor(level_sprite_data.properties.startYDirection);
         }
         if (level_sprite_data.properties.hasOwnProperty('delayActivation'))
         {
@@ -290,7 +299,6 @@ _Sprite.prototype.checkPlayerCollision = function(player)
 {
     if (intersectRect(player.getCollisionRect(), this.getCollisionRect()))
     {
-      console.log("_Sprite.js --- Player hit " + this.name);
       return true;
     }
     return false;

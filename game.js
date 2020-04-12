@@ -10,6 +10,12 @@ const SND_PLAYERDIE = 2;
 const SND_CHILLI = 3;
 const SND_EXTRALIFE = 4;
 
+//some direction constants for general use
+const DOWN = 0;
+const UP = 1;
+const LEFT = 2;
+const RIGHT = 3;
+
 var gameStarted = false;
 
 //initialise the sound engine
@@ -363,35 +369,24 @@ function initBricks()
 								}
 								else
 								{
-										eval("enemies[enemyCounter] = new " + levels[level].layers[l].objects[o].name + "()");
-										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										if ( enemies[enemyCounter].stompable ) { stompableEnemiesCounter++; };
-										if ( enemies[enemyCounter].name == "Chilli1") { chilliCounter++; }
-										enemyCounter++;
+										if (levels[level].layers[l].objects[o].name != "")
+										{
+											eval("enemies[enemyCounter] = new " + levels[level].layers[l].objects[o].name + "()");
+											enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
+											if ( enemies[enemyCounter].stompable ) { stompableEnemiesCounter++; };
+											if ( enemies[enemyCounter].name == "Chilli1") { chilliCounter++; }
+											enemyCounter++;
+										}
+										else
+										{
+												console.log("WARNING game.js --- Enemy Object creation attempt with no name set - cannot create object");
+										}
 								}
 						}
 						maxStompableEnemyCounter = stompableEnemiesCounter;
 						maxChilliCounter = chilliCounter;
 				}
 		}
-
-
-		//Due to the level editor being used, sprite start positions may not be as expected.
-		//Game engine requires that all rendering starts in the top left corner, so positions are updated here to compensate if necessary
-		for (e=0; e < enemies.length; e++)
-		{
-				//enemies[e].x = enemies[e].x + SPRITESTARTCORRECTIONX;
-				//enemies[e].y = enemies[e].y + SPRITESTARTCORRECTIONY;
-				//enemies[e].startXPosition = enemies[e].x;
-				//enemies[e].startYPosition = enemies[e].y;
-		}
-
-		//player1.x = player1.x + SPRITESTARTCORRECTIONX;
-		//player1.y = player1.y + SPRITESTARTCORRECTIONY;
-		//end of sprite update.
-
-
-
 
 
 		levelPlatformData = levels[level].layers[0].data;
@@ -436,6 +431,7 @@ function initBricks()
 											nB.spritesheetPosX = 0;
 											nB.spritesheetPosY = 0;
 											nB.type = tileId;
+											nB.isBackground = true;
 
 										}
 										else  //but if there is a background, load it.
@@ -696,17 +692,11 @@ function checkWorldCollisions(sprite)
 													//Find left edge of brick and the right offset of the sprite collision (e.g. 55ish) (not 64 as usually thinner)
 													//The brick edge minus the collision thickness, plus 1 so there is no collision.
 													sprite.targetX = bricks[i].rectMain.left - (sprite.rectOffset.right + 1);
-
 													sprite.collisionRight = true;
 											}
 											else if(sprite.targetX < sprite.x)
 											{
-													//the player is moving left
-
-													//Find the right edge of the brick, the left offset of the sprite collision rect (e.g. 7 or 8)
-													//The brick edge minus the sprite will overlap slightly with wall (e.g. 7 or 8) - add 1 so not colliding
 													sprite.targetX = bricks[i].rectMain.right - (sprite.rectOffset.left - 1);
-
 													sprite.collisionLeft = true;
 											}
 
@@ -729,7 +719,6 @@ function checkWorldCollisions(sprite)
 													//All sprites are animated from the top left corner, so brick bottom + 1 is correct
 													//Plus, if there is an offet at the top, need to remove this in.
 													sprite.targetY = bricks[i].rectMain.bottom + 1 - sprite.rectOffset.top;
-
 													sprite.collisionTop = true;
 											}
 									}
@@ -1028,6 +1017,7 @@ function performEmeniesActions()
 function spawnObject(objectType,xPos,yPos,params)
 {
 	newEnemyPosition = enemies.length;
+/*
 	switch(objectType)
 	{
 		case "EnemyMonkeyRock1":
@@ -1042,6 +1032,12 @@ function spawnObject(objectType,xPos,yPos,params)
 		default:
 			//do nothing
 	}
+*/
+	eval("enemies[newEnemyPosition] = new " + objectType + "()");
+	if ( enemies[newEnemyPosition].stompable ) { stompableEnemiesCounter++; };
+	if ( enemies[newEnemyPosition].name == "Chilli1") { chilliCounter++; }
+	//enemyCounter++;
+
 	enemies[newEnemyPosition].init({"x":xPos,"y":yPos,"properties":params});
 }
 

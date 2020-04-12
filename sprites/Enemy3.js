@@ -62,26 +62,34 @@ Enemy3.prototype.updateMoveAttributesX = function (map, player)
 
     if (this.localBricks.xLinedUp == true)
     {
-        if (map[this.localBricks.down].type == 0 && this.xDirection == 1 && this.rotation == 0)
+        if (map[this.localBricks.down].isBackground == true
+         && this.xDirection == 1
+         && this.rotation == 0)
         {
             this.xDirection = 0;
             this.yDirection = 1;
             this.rotation = 90;
         }
-        if (map[this.localBricks.down].type == 0 && this.xDirection == -1 && this.rotation == 0)
+        if (map[this.localBricks.down].isBackground == true
+         && this.xDirection == -1
+         && this.rotation == 0)
         {
             this.xDirection = 0;
             this.yDirection = 1;
             this.rotation = 270;
 
         }
-        if (map[this.localBricks.up].type == 0 && this.xDirection == -1  && this.rotation == 180)
+        if (map[this.localBricks.up].isBackground == true
+         && this.xDirection == -1
+         && this.rotation == 180)
         {
             this.xDirection = 0;
             this.yDirection = -1;
             this.rotation = 270;
         }
-        if (map[this.localBricks.up].type == 0 && this.xDirection == 1  && this.rotation == 180 )
+        if (map[this.localBricks.up].isBackground == true
+         && this.xDirection == 1
+         && this.rotation == 180 )
         {
             this.xDirection = 0;
             this.yDirection = -1;
@@ -99,28 +107,28 @@ Enemy3.prototype.updateMoveAttributesY = function (map, player)
 
     if ( this.localBricks.yLinedUp == true )
     {
-        if (bricks[this.localBricks.left].type == 0 && this.yDirection == 1 && this.rotation == 90)
+        if (bricks[this.localBricks.left].isBackground == true && this.yDirection == 1 && this.rotation == 90)
         {
                 this.yDirection = 0;
                 this.xDirection = -1;
                 this.rotation = 180;
 
         }
-        if (bricks[this.localBricks.left].type == 0 && this.yDirection == -1 && this.rotation == 90)
+        if (bricks[this.localBricks.left].isBackground == true && this.yDirection == -1 && this.rotation == 90)
         {
                 this.yDirection = 0;
                 this.xDirection = -1;
                 this.rotation = 0;
 
         }
-        if (bricks[this.localBricks.right].type == 0 && this.yDirection == 1 && this.rotation == 270)
+        if (bricks[this.localBricks.right].isBackground == true && this.yDirection == 1 && this.rotation == 270)
         {
                 this.yDirection = 0;
                 this.xDirection = 1;
                 this.rotation = 180;
 
         }
-        if (bricks[this.localBricks.right].type == 0 && this.yDirection == -1 && this.rotation == 270)
+        if (bricks[this.localBricks.right].isBackground == true && this.yDirection == -1 && this.rotation == 270)
         {
                 this.yDirection = 0;
                 this.xDirection = 1;
@@ -139,7 +147,7 @@ Enemy3.prototype.getCollisionStats = function(player)
       colevt.collision = true;
       colevt.enemyHit = false;
       colevt.playerHit = true;
-      
+
       return colevt;
     }
     return false;

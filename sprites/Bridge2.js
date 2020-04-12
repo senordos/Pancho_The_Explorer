@@ -1,6 +1,6 @@
 //
 //
-//  NOTE: Bridge2 extends Bridge1, not _Sprite.
+//  NOTE: Bridge2 extends _Bridge
 //
 //
 
@@ -15,4 +15,4 @@ function Bridge2()
 
 }
 
-Bridge2.prototype = Object.create(Bridge1.prototype);
+Bridge2.prototype = Object.create(_Bridge.prototype);
