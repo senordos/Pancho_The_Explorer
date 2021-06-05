@@ -62,6 +62,7 @@ EnemyDisk1.prototype.updateMoveAttributesX = function (map, player)
     if ( this.collision == true )
     {
         this.xSpeed = 0;
+        this.xDirection = this.xDirection * -1;
     }
 }
 

@@ -144,7 +144,7 @@ EnemyPiranha1.prototype.setMoveTargetY = function(map, player)
 
 EnemyPiranha1.prototype.getCollisionStats = function(player)
 {
-    if (this.checkPlayerCollision(player))
+    if (this.checkPlayerCollision(player) && this.waitingToJump == true)
     {
       var colevt = new CollisionEvent();
       colevt.name = this.name;

@@ -198,6 +198,10 @@ _Sprite.prototype.init = function(level_sprite_data)
               this.canSeeEdges = false;
           }
         }
+        if (level_sprite_data.properties.hasOwnProperty('maxTravel'))
+        {
+          this.maxTravel = Math.floor(level_sprite_data.properties.maxTravel);
+        }
         if (level_sprite_data.properties.hasOwnProperty('positionIsLocked'))
         {
             var lockedText = level_sprite_data.properties.positionIsLocked;

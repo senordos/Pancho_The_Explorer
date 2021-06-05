@@ -105,12 +105,16 @@ Enemy4.prototype.updateMoveAttributesX = function (map, player)
     if (this.canSeeEdges == true && this.localBricks.xLinedUp == true)
     {
         //if walking left, and there is an edge on the left, turn right
-        if (map[this.localBricks.leftDown].type == 0 && this.xDirection == -1)
+        if (this.xDirection == -1 &&
+            (map[this.localBricks.leftDown].type == 0 || bricks[this.localBricks.leftDown].isBackground == true)
+           )
         {
             this.xDirection = 1;
         }
         //if walking right, and there is an edge on the right, turn left
-        if (map[this.localBricks.rightDown].type == 0 && this.xDirection == 1)
+        if (this.xDirection == 1 &&
+            (map[this.localBricks.rightDown].type == 0 || bricks[this.localBricks.rightDown].isBackground == true)
+           )
         {
             this.xDirection = -1;
         }

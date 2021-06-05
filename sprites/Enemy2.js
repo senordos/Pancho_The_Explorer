@@ -67,7 +67,8 @@ Enemy2.prototype.updateMoveAttributesX = function (map, player)
             (   this.collisionBottom == true &&
                 this.xDirection > 0 &&
                 bricks[this.localBricks.rightUp].tileName == "none" &&
-                bricks[this.localBricks.right].tileName != "none"
+                bricks[this.localBricks.right].tileName != "none" &&
+                bricks[this.localBricks.right].isBackground != true
             )
           )
        {
