@@ -201,3 +201,9 @@ function drawControls()
 				ctx.drawImage(controls, 192, 0, 64, 64, 928, 672, 64, 64);
 		}
 }
+
+
+function drawTextBoxes()
+{
+	
+}

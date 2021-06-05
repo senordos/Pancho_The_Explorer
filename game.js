@@ -260,7 +260,7 @@ function resetGame()
 		//Start the game at the begining
 		level = 0;
 		player1.lives = 1;
-		initBricks();
+		loadLevel();
 }
 
 
@@ -294,258 +294,46 @@ function initMusic(level)
 					sound.playNextTrack();
 					break;
 
-			default:
-
-					//Do nothing
+			default: //Do nothing
 
 		}
-
 }
 
 
 
 
-function initBricks()
+function loadLevel()
 {
+		var foregroundMap = []; //holds the map data integers before creating objects
+		var backgroundMap = []; //holds the map data integers before creating objects
 
-		var i = 0; //array counter
-		var a = 0; //array x
-		var b = 0; //array y
-		var x = 0; //target brick x
-		var y = 0; //target brick y
-		var p = 0; //Position in the level array
-		var c = 0; //the type of the brick
-
-		brickcols = 0;
-		brickrows = 0;
-
-		var rectMain; //to be the collision rectangle
-		var tileName;
-
-		enemies = [];
-		chilliCounter = 0;
 		levelTimeStart = new Date().getTime();
-
-		mapOffsetY = 0;  //set the map to start with more sky showing
-
-		var foregroundGrid = [];
-		var backgroundGrid = [];
-
 
 		for (var l=0; l < levels[level].layers.length; l++)
 		{
 			switch( levels[level].layers[l].name )
 			{
-				case "Map": 				foregroundGrid = levels[level].layers[l].data;
+				case "Map": 				foregroundMap = levels[level].layers[l];
 														break;
 
-				case "Background": 	backgroundGrid = levels[level].layers[l].data;
+				case "Background": 	backgroundMap = levels[level].layers[l];
 														break;
 
 				case "Objects":     loadObjects( levels[level].layers[l].objects );
 														break;
 			}
 		}
-
-
-		levelPlatformData = levels[level].layers[0].data;
-
-		brickcols = levels[level].layers[0].width;
-		brickrows = levels[level].layers[0].height;
-		brickcount = brickrows * brickcols;
-
-		lastBrickX = (brickcols * 64) - 64; //furthest right brick
-
-		//Load bricks spritesheets
-		bricksSpritesheet.src = "tiles\/spritesheet_mexico.png";
-
-		//reset the arrays
-		bricks = [];
-		background = [];
-
-		i = 0;
-
-		var nB; //New Brick
-		var nBB; //New Background Brick
-
-		//set the brick positions
-		for (b=0; b < brickrows; b++)
-		{
-			for (a=0; a < brickcols; a++)
-			{
-
-					p = b * brickcols + a;
-
-					x = BRICKSTARTX + (a * BRICKWIDTH);
-					y = BRICKSTARTY + (b * BRICKHEIGHT);
-
-
-					nB = new Brick();
-					nBB = new Brick();
-
-					var tileId = foregroundGrid[i];
-					var backgroundId = backgroundGrid[i];
-					var columns = levels[level].tilesets[0].columns;
-
-					switch(tileId)
-					{
-						case 0: //set a blank tile
-
-										nB.tileName="none";
-										nB.spritesheetPosX = 0;
-										nB.spritesheetPosY = 0;
-										nB.type = tileId;
-										nB.isBackground = true;
-										nB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63};
-										nB.deadly = false;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.x = x;
-										nB.y = y;
-
-						break;
-
-						case 1: nB.tileName="spikes1";
-										nB.rectMain = {top:y+32, bottom:y+63, left:x+8, right:x+55};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = true;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.type = tileId;
-										nB.x = x;
-										nB.y = y;
-						break;
-
-						case 2: nB.tileName="vine1";
-										nB.rectMain = {top:y, bottom:y+63, left:x+24, right:x+38};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = false;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.blocker=false;
-										nB.climbable=true;
-										nB.type = tileId;
-										nB.x = x;
-										nB.y = y;
-						break;
-
-						case 3: nB.tileName="spikes2";
-										nB.rectMain = {top:y+32, bottom:y+63, left:x+8, right:x+55};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = true;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.type = tileId;
-										nB.x = x;
-										nB.y = y;
-						break;
-
-						case 4: nB.tileName="spikes3";
-										nB.rectMain = {top:y, bottom:y+32, left:x+8, right:x+55};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = true;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.type = tileId;
-										nB.x = x;
-										nB.y = y;
-						break;
-
-						case 5: nB.tileName="vine1";
-										nB.rectMain = {top:y, bottom:y+63, left:x+24, right:x+38};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = false;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.blocker=false;
-										nB.climbable=true;
-										nB.type = tileId;
-										nB.x = x;
-										nB.y = y;
-						break;
-
-						case 7: nB.tileName="enemyboundary";
-										nB.rectMain = {top:y, bottom:y+63, left:x,   right:x+63};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = false;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.type = tileId;
-										nB.enemyBoundary = true;
-										nB.blocker = true;
-										nB.x = x;
-										nB.y = y;
-						break;
-
-						case 8: nB.tileName="water1";
-										nB.rectMain = {top:y+32, bottom:y+63, left:x+8, right:x+55};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = true;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.type = tileId;
-										nB.x = x;
-										nB.y = y;
-						break;
-
-						case 9: nB.tileName="water2";
-										nB.rectMain = {top:y, bottom:y+63, left:x+8, right:x+55};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = true;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.type = tileId;
-										nB.x = x;
-										nB.y = y;
-						break;
-
-						default: nB.tileName="brick";
-										nB.rectMain = {top:y, bottom:y+63, left:x,   right:x+63};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = false;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.type = tileId;
-										nB.x = x;
-										nB.y = y;
-						break;
-					}
-
-					//Set Background Structure
-					nBB.tileName="background";
-					nBB.type = backgroundId;
-					nBB.spritesheetPosX = Math.trunc(((backgroundId - 1) % columns)) * 64;
-					nBB.spritesheetPosY = Math.trunc((backgroundId - 1)/ columns) * 64;
-					nBB.isBackground = true;
-					nBB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63};
-					nBB.deadly = false;
-					nBB.exit=false;
-					nBB.moveable=false;
-					nBB.x = x;
-					nBB.y = y;
-
-
-					bricks[i] = nB;
-					background[i] = nBB;
-
-					i++;
-			}
-		}
+		loadMap(foregroundMap,backgroundMap);
 }
 
 
 function loadObjects(objects)
 {
 	var enemyCounter = 0;
+
+	//reset global variables
+	enemies = [];
+	chilliCounter = 0;
 	stompableEnemiesCounter = 0;
 	maxStompableEnemyCounter = 0;
 	maxChilliCounter = 0;
@@ -586,6 +374,219 @@ function loadObjects(objects)
 	}
 	maxStompableEnemyCounter = stompableEnemiesCounter;
 	maxChilliCounter = chilliCounter;
+}
+
+
+function loadMap(foregroundMap, backgroundMap)
+{
+	var i = 0; //array counter
+	var a = 0; //array x
+	var b = 0; //array y
+	var x = 0; //target brick x
+	var y = 0; //target brick y
+	var p = 0; //Position in the level array
+	var c = 0; //the type of the brick
+
+	var rectMain; //to be the collision rectangle
+	var tileName;
+
+
+	//reset global variables
+	brickcols = 0;
+	brickrows = 0;
+	mapOffsetY = 0;  //set the map to start with more sky showing
+
+
+	brickcols = foregroundMap.width;
+	brickrows = foregroundMap.height;
+	brickcount = brickrows * brickcols;
+
+	lastBrickX = (brickcols * 64) - 64; //furthest right brick
+
+	//Load spritesheet images and set the total columns in sheet
+	bricksSpritesheet.src = "tiles\/spritesheet_mexico.png";
+	var columns = levels[level].tilesets[0].columns;
+
+	//reset the arrays
+	bricks = [];
+	background = [];
+
+	i = 0;
+
+	var nB; //New Brick
+	var nBB; //New Background Brick
+
+	//set the brick positions
+	for (b=0; b < brickrows; b++)
+	{
+		for (a=0; a < brickcols; a++)
+		{
+
+				p = b * brickcols + a;
+
+				x = BRICKSTARTX + (a * BRICKWIDTH);
+				y = BRICKSTARTY + (b * BRICKHEIGHT);
+
+
+				nB = new Brick();
+				nBB = new Brick();
+
+				var tileId = foregroundMap.data[i];
+				var backgroundId = backgroundMap.data[i];
+
+				switch(tileId)
+				{
+					case 0: //set a blank tile
+
+									nB.tileName="none";
+									nB.spritesheetPosX = 0;
+									nB.spritesheetPosY = 0;
+									nB.type = tileId;
+									nB.isBackground = true;
+									nB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63};
+									nB.deadly = false;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.x = x;
+									nB.y = y;
+
+					break;
+
+					case 1: nB.tileName="spikes1";
+									nB.rectMain = {top:y+32, bottom:y+63, left:x+8, right:x+55};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = true;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.type = tileId;
+									nB.x = x;
+									nB.y = y;
+					break;
+
+					case 2: nB.tileName="vine1";
+									nB.rectMain = {top:y, bottom:y+63, left:x+24, right:x+38};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = false;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.blocker=false;
+									nB.climbable=true;
+									nB.type = tileId;
+									nB.x = x;
+									nB.y = y;
+					break;
+
+					case 3: nB.tileName="spikes2";
+									nB.rectMain = {top:y+32, bottom:y+63, left:x+8, right:x+55};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = true;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.type = tileId;
+									nB.x = x;
+									nB.y = y;
+					break;
+
+					case 4: nB.tileName="spikes3";
+									nB.rectMain = {top:y, bottom:y+32, left:x+8, right:x+55};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = true;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.type = tileId;
+									nB.x = x;
+									nB.y = y;
+					break;
+
+					case 5: nB.tileName="vine1";
+									nB.rectMain = {top:y, bottom:y+63, left:x+24, right:x+38};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = false;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.blocker=false;
+									nB.climbable=true;
+									nB.type = tileId;
+									nB.x = x;
+									nB.y = y;
+					break;
+
+					case 7: nB.tileName="enemyboundary";
+									nB.rectMain = {top:y, bottom:y+63, left:x,   right:x+63};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = false;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.type = tileId;
+									nB.enemyBoundary = true;
+									nB.blocker = true;
+									nB.x = x;
+									nB.y = y;
+					break;
+
+					case 8: nB.tileName="water1";
+									nB.rectMain = {top:y+32, bottom:y+63, left:x+8, right:x+55};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = true;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.type = tileId;
+									nB.x = x;
+									nB.y = y;
+					break;
+
+					case 9: nB.tileName="water2";
+									nB.rectMain = {top:y, bottom:y+63, left:x+8, right:x+55};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = true;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.type = tileId;
+									nB.x = x;
+									nB.y = y;
+					break;
+
+					default: nB.tileName="brick";
+									nB.rectMain = {top:y, bottom:y+63, left:x,   right:x+63};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = false;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.type = tileId;
+									nB.x = x;
+									nB.y = y;
+					break;
+				}
+
+				//Set Background Structure
+				nBB.tileName="background";
+				nBB.type = backgroundId;
+				nBB.spritesheetPosX = Math.trunc(((backgroundId - 1) % columns)) * 64;
+				nBB.spritesheetPosY = Math.trunc((backgroundId - 1)/ columns) * 64;
+				nBB.isBackground = true;
+				nBB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63};
+				nBB.deadly = false;
+				nBB.exit=false;
+				nBB.moveable=false;
+				nBB.x = x;
+				nBB.y = y;
+
+
+				bricks[i] = nB;
+				background[i] = nBB;
+
+				i++;
+		}
+	}
 }
 
 
@@ -1183,6 +1184,8 @@ function gameLoop()
 						drawPlayer();
 						drawControls();
 
+						drawTextBoxes();
+
 						progressbox.setTitle("CHILLIES: " + chilliCounter);
 						progressbox.updateTextArea(livestext,"LIVES: " + player1.lives, 1, "LEFT", 1, 0);
 
@@ -1271,7 +1274,7 @@ function gameLoop()
 				{
 					player1_ResetLevelPressed = false;
 					attempts++;
-					initBricks();
+					loadLevel();
 					resetTouchButtons();
 					gamePaused=false;
 					gameState = "PLAYING";
@@ -1338,7 +1341,7 @@ function gameLoop()
 							attemptsHistory.push(attempts);
 							attempts = 1;
 							initMusic(level);
-							initBricks();
+							loadLevel();
 							resetTouchButtons();
 							gamePaused = false;
 							gameState = "PLAYING";
@@ -1362,5 +1365,5 @@ function gameLoop()
 }
 
 
-initBricks();
+loadLevel();
 setInterval(gameLoop, 20);
