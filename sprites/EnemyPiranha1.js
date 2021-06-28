@@ -65,17 +65,11 @@ EnemyPiranha1.prototype.setMoveTargetY = function(map, player)
 {
     _Sprite.prototype.setMoveTargetY.call(this);
 
-    console.log("startY = " + this.startY );
-    console.log("     Y = " + this.y );
-    console.log("yspeed = " + this.ySpeed );
-
-
     if (this.active == true && this.hit == false && this.yDirection <= 0 )
     {
       //_Sprite is above the starting position
       this.targetY = this.y + (this.ySpeed * -1);
       this.ySpeed = this.ySpeed - 1;
-      console.log("yspeed " + this.ySpeed);
       //if (this.targetY < this.startY - 256) { this.yDirection = 1;
       if (this.ySpeed < 0) { this.yDirection = 1; this.ySpeed = 0; }
 
@@ -123,9 +117,6 @@ EnemyPiranha1.prototype.setMoveTargetY = function(map, player)
         var date = new Date();
         //Waiting to jump - set wait time in milliseconds
 
-        console.log ("waiting:" + this.activationWaitingSince);
-        console.log ("delay:" + this.delayActivation);
-
         if ((date.getTime() - this.activationWaitingSince) > this.delayActivation)
         {
             this.waitingToActivate = false;
@@ -142,9 +133,9 @@ EnemyPiranha1.prototype.setMoveTargetY = function(map, player)
     }
 }
 
-EnemyPiranha1.prototype.getCollisionStats = function(player)
+EnemyPiranha1.prototype.getCollisionEvent = function(player)
 {
-    if (this.checkPlayerCollision(player) && this.waitingToJump == true)
+    if (this.checkPlayerCollision(player) && this.waitingToJump == false)
     {
       var colevt = new CollisionEvent();
       colevt.name = this.name;

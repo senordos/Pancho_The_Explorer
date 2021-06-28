@@ -56,7 +56,7 @@ EnemyBlock1.prototype.updateMoveAttributesY = function (map, player)
     }
 }
 
-EnemyBlock1.prototype.getCollisionStats = function(player)
+EnemyBlock1.prototype.getCollisionEvent = function(player)
 {
   if (this.checkPlayerCollision(player))
   {

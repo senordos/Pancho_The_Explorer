@@ -18,7 +18,7 @@ function Chilli1()
 
 Chilli1.prototype = Object.create(_Sprite.prototype);
 
-Chilli1.prototype.getCollisionStats = function(player)
+Chilli1.prototype.getCollisionEvent = function(player)
 {
     if (this.checkPlayerCollision(player))
     {

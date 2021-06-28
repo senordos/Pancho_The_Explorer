@@ -62,7 +62,7 @@ _Bridge.prototype.setMoveTargetY = function()
     }
 }
 
-_Bridge.prototype.getCollisionStats = function(player)
+_Bridge.prototype.getCollisionEvent = function(player)
 {
   if (this.checkPlayerCollision(player))
   {

@@ -17,7 +17,7 @@ function ChilliEL()
 
 ChilliEL.prototype = Object.create(_Sprite.prototype);
 
-ChilliEL.prototype.getCollisionStats = function(player)
+ChilliEL.prototype.getCollisionEvent = function(player)
 {
     if (this.checkPlayerCollision(player))
     {

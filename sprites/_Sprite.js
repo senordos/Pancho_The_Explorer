@@ -308,7 +308,7 @@ _Sprite.prototype.checkPlayerCollision = function(player)
     return false;
 }
 
-_Sprite.prototype.getCollisionStats = function(player)
+_Sprite.prototype.getCollisionEvent = function(player)
 {
     if (this.checkPlayerCollision(player))
     {
@@ -321,8 +321,8 @@ _Sprite.prototype.getCollisionStats = function(player)
       if(this.deadly)
       {
         if (intersectRect(player.getBottomCollisionRect(), this.getTopCollisionRect())
-            && this.hit == false
-            && player.ySpeed > 0)
+            && this.hit == false)
+            //&& player.ySpeed > 0)
         {
           //if object is killed by player jumping on top of them
           this.hit = true;

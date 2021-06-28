@@ -138,7 +138,7 @@ Enemy3.prototype.updateMoveAttributesY = function (map, player)
     }
 }
 
-Enemy3.prototype.getCollisionStats = function(player)
+Enemy3.prototype.getCollisionEvent = function(player)
 {
     if (this.checkPlayerCollision(player))
     {

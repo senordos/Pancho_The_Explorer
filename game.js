@@ -13,7 +13,6 @@ const UP = 1;
 const LEFT = 2;
 const RIGHT = 3;
 
-var gameStarted = false;
 
 //initialise the sound engine
 gameSound = true;
@@ -74,10 +73,6 @@ var touches = [];
 var t = 0;
 
 
-var pps = 500; //pixels movement per second
-var dx = 2;
-var dy = -2;
-
 var framerate;
 var timeindex=0;
 var counter=0;
@@ -89,20 +84,20 @@ var gameTimeInFrame=0;
 //Progress tracking variables
 var level = 0; //current level, beginning at 0.
 var maxLevel = levels.length - 1; //the last level, after which you win
-
 var maxStompableEnemyCounter = 0;
 var stompableEnemiesCounter = 0;
 var maxChilliCounter = 0;
 var levelTimeStart = 0;
+var levelTimeTaken = 0;
 var attempts = 1; //this is the number of attempts to complete current level
-var attemptsHistory = new Array(); // history of attempts
+
+//Can't remember why I put this in, but possibly so that at the end of the
+//game it can show how many attempts it took to complete each level in game.
+//var attemptsHistory = new Array(); // history of attempts
 
 
 
-var gameState = "PLAYING";
-var gamePaused=false;
-var levelComplete=false;
-var playerDied=false;
+var gameState = "INTRO";
 
 var cheatmode = false;
 var debugmode = false;
@@ -245,15 +240,14 @@ function resetGame()
 {
 		attempts = 1; //this is the number of attempts to complete current level
 		//clear all the entries in attemptsHistory
+		/*
 		while ( attemptsHistory.length )
 		{
 			attemptsHistory.pop();
 		}
+		*/
 
 		gameState = "PLAYING";
-		gamePaused=false;
-		levelComplete=false;
-		playerDied=false;
 
 		titletextbox.updateTextArea(0,"PANCHO THE EXPLORER", 1, "CENTRE", 0, 0);
 
@@ -261,6 +255,14 @@ function resetGame()
 		level = 0;
 		player1.lives = 1;
 		loadLevel();
+}
+
+function resetLevel()
+{
+	player1_ResetLevelPressed = false;
+	attempts++;
+	loadLevel();
+	resetTouchButtons();
 }
 
 
@@ -776,12 +778,8 @@ function checkWorldCollisions(sprite)
 											collisionObjectIsBlocker = false;
 											console.log("Collision - climbable tile: " + bricks[i].tileName);
 									}
-
-
 							}
-
 					}
-
 			}
 
 
@@ -807,7 +805,7 @@ function checkEnemyCollisions(player)
 		{
 				if (enemies[i].active && enemies[i].alive)
 				{
-					colevt = enemies[i].getCollisionStats(player);
+					colevt = enemies[i].getCollisionEvent(player);
 					if (colevt)
 					{
 						switch(colevt.name)
@@ -884,7 +882,7 @@ function movePlayerX()
 				}
 		}
 
-		player1.targetX = Math.trunc(player1.x + (pixelmove * player1.xSpeed));
+		player1.targetX = Math.trunc(player1.x + (10 * player1.xSpeed));
 
 
 		checkWorldCollisions(player1);
@@ -1084,45 +1082,88 @@ function extraLife()
 		sound.playSound(SND_EXTRALIFE);
 }
 
+function checkPlayerReachedLevelEnd()
+{
+	if (player1.collisionExit == true)
+	{
+			return true;
+	}
+	return false;
+}
+
+function checkIfLandscape()
+{
+   if (window.innerHeight < window.innerWidth)
+	 {
+		 return true;
+	 }
+	 else
+	 {
+		 return false;
+	 }
+}
+
+function checkPlayerKilled()
+{
+	if (! cheatmode)
+	{
+			if (player1.hit)
+			{
+				  //player hit by a baddie
+					return true;
+			}
+			else if (player1.collisionDeath == true)
+			{
+				  //player walked into an obstacle, like spikes
+					return true;
+			}
+			return false;
+	}
+	else
+	{
+			//cheatmode is on
+			player1.hit = false;
+			player1.collisionDeath = false;
+
+			bctx.fillStyle = "#AAAAAA";
+			bctx.fillText("Cheat Mode On", 100, 50);
+
+			return false;
+	}
+}
+
+function handleStatePlayerDied()
+{
+	sound.playSound(SND_PLAYERDIE);
+	player1.lives --;
+}
+
 function gameLoop()
 {
-
 
 		var date = new Date();
 		var text;
 		gameLoopStart = date.getTime();
 
-
 		text = gameLoopStart - gameLoopEnd;
-		//console.log("Loop Wait Time = " + text);
 
-		/*
-		if (!landscape)
+		if (!checkIfLandscape())
 		{
-			 bctx.clearRect(0, 0, CANVASWIDTH, CANVASWIDTH);
-			 clearIntroScreen();
-
-			 messagebox.updateTextAreaText(0, "PLEASE ROTATE DEVICE");
-			 messagebox.draw(bctx);
-
+			gameState == "NOT_LANDSCAPE";
 		}
 		else
-		*/
 		{
-				if (!gameStarted)
+				if (gameState == "INTRO")
 				{
 					//Draw the intro screen
-					//This only draws once - if already on screen, it will remain
-					drawIntroScreen();
+					drawIntroScreen(); //this function will only draw if not already there
+					demoMovePlayerX();
 				}
-
-				if (!gamePaused && !levelComplete && !playerDied)
+				else if ( gameState == "PLAYING" )
 				{
 						var loopTimeIndex = date.getTime();
-
 						loopTimeGap = loopTimeIndex - lastTimeIndex;
 						lastTimeIndex = loopTimeIndex;
-
 						gameTimeInFrame = gameTimeInFrame + loopTimeGap;
 
 						if(gameTimeInFrame > ANIMATIONSPEED)
@@ -1134,150 +1175,39 @@ function gameLoop()
 										gameFrame=0;
 								}
 						}
-
-
-
-						bctx.clearRect(0, 0, CANVASWIDTH, CANVASHEIGHT);
-						ctx.clearRect(0, 0, CANVASWIDTH, CANVASWIDTH);
-
-
-						pixelmove = Math.trunc(pps * (loopTimeGap / 1000));
-										bctx.fillStyle = "#000000";
-
-
-						if (debugmode)
-						{
-							bctx.fillText(Math.round(pixelmove),75,50);
-
-							if (pixelmove > 10)
-							{
-									bctx.fillStyle = "#000000";
-									bctx.fillText("Frame rate dropped below normal game operation!",170,50);
-							}
-						}
-
 						moveEnemiesY();
 						performEnemiesActions();
 						moveEnemiesX();
 						performEnemiesActions();
 						cleanEnemyArray();   //garbage collects the enemy array
 
-						if (gameStarted)
-						{
-								movePlayerX();
-								movePlayerY();
-						}
-						else
-						{
-								demoMovePlayerX();
-						}
+						movePlayerX();
+						movePlayerY();
 
-
-
-						if (player1.collisionExit == true)
-						{
-								levelComplete = true;
-						}
-
-						drawBricks();
-						drawEnemies();  //and other sprites
-						drawPlayer();
-						drawControls();
-
-						drawTextBoxes();
-
-						progressbox.setTitle("CHILLIES: " + chilliCounter);
-						progressbox.updateTextArea(livestext,"LIVES: " + player1.lives, 1, "LEFT", 1, 0);
-
-						progressbox.draw(bctx);
-
-
-						if(level == 0)
-						{
-								titletextbox.draw(bctx);
-								versionbox.draw(bctx);
-						}
-
-						calculateFrameRate();
-
-
-
-						if (! cheatmode)
-						{
-								if (player1.hit)
-								{
-										gamePaused = true;
-										gameState = "PAUSED";
-										playerDied = true;
-								}
-								else if (player1.collisionDeath == true)
-								{
-										gamePaused = true;
-										gameState = "PAUSED";
-										playerDied = true;
-								}
-						}
-						else
-						{
-								//cheatmode is on
-								playerDied = false;
-								player1.hit = false;
-								player1.collisionDeath = false;
-
-								bctx.fillStyle = "#AAAAAA";
-								bctx.fillText("Cheat Mode On", 100, 50);
-						}
-
-
-						ctx.drawImage(buffer, 0, 0, 1024, 768, 0, 0, 1024, 768);
-
-
-
+						if ( checkPlayerReachedLevelEnd() ) { gameState = "LEVEL_COMPLETE"; }
+						else if ( checkPlayerKilled() ) { gameState = "PLAYER_DIED"; }
 				}
-				else if (playerDied == true)
+				else if (gameState == "PLAYER_DIED")
 				{
-						var text = "Oooops";
-						if (player1.collisionDeath) { titletextbox.updateTextArea(0,"CAREFUL WHERE YOU STAND", 1, "CENTRE", 0, 0); }
-						if (player1.hit)            { titletextbox.updateTextArea(0, "WATCH OUT FOR THE BADDIES", 1, "CENTRE", 0, 0); }
-
-						titletextbox.draw(ctx);
-
-						sound.playSound(SND_PLAYERDIE);
-
-						player1.lives --;
+					  handleStatePlayerDied();
 
 						if ( player1.lives <= 0 )
 						{
 							gameState = "GAME_OVER";
-							titletextbox.updateTextArea(0,"GAME OVER", 1, "CENTRE", 0, 0);
-							titletextbox.draw(ctx);
-							level = 1;
 
+							level = 1;
+							console.log("setting GAME OVER");
 						}
 						else
 						{
-
-							gameState = "PLAYER_DIED";
-
+							gameState = "PLAYER_DIED_WAIT_FOR_RESETLEVEL";
+							console.log("setting PLAYER_DIED_WAIT_FOR_RESETLEVEL");
 						}
-
-
-						messagebox.updateTextArea(0,"PRESS R TO RESET LEVEL", 1, "CENTRE", 0, 0);
-						messagebox.draw(ctx);
-
-						playerDied = false;
-						drawControls();
-
-
 				}
-				else if (gameState == "PLAYER_DIED" && player1_ResetLevelPressed)
+		    else if (gameState == "PLAYER_DIED_WAIT_FOR_RESETLEVEL" && player1_ResetLevelPressed)
 				{
-					player1_ResetLevelPressed = false;
-					attempts++;
-					loadLevel();
-					resetTouchButtons();
-					gamePaused=false;
-					gameState = "PLAYING";
+					resetLevel();
+					gameState = "PLAYING"
 				}
 				else if (gameState == "GAME_OVER" && player1_ResetLevelPressed)
 				{
@@ -1285,85 +1215,50 @@ function gameLoop()
 					resetTouchButtons();
 					resetGame();
 				}
-				else if (levelComplete == true)
+				else if (gameState == "LEVEL_COMPLETE")
 				{
-						var chilliPercent = Math.round(100-(chilliCounter / maxChilliCounter) * 100);
-						var baddiesPercent = Math.round(100-(stompableEnemiesCounter / maxStompableEnemyCounter) * 100);
+					  var timeNow = new Date().getTime();
+					  levelTimeTaken = Math.floor((timeNow - levelTimeStart) / 1000);
 
-						if ( isNaN(chilliPercent) ) { chilliPercent = 100; }
-						if ( isNaN(baddiesPercent) ) { baddiesPercent = 100; }
-
-						var attemptsText = "ST";
-						if      ( attempts == 2 ) { attemptsText = "ND"; }
-						else if ( attempts == 3 ) { attemptsText = "RD"; }
-						else if ( attempts >= 4 ) { attemptsText = "TH"; }
-						attemptsText = attempts + attemptsText;
-
-						var timeNow = new Date().getTime();
-						var timeTaken = Math.floor((timeNow - levelTimeStart) / 1000);
-						var timeMins = Math.floor(timeTaken / 60);
-						var timeSecs = Math.floor(timeTaken % 60);
-
-
-						levelcompletebox.updateTextAreaText(levelcompletebox_levelTextArea,   "LEVEL " + level + " COMPLETE");
-						levelcompletebox.updateTextAreaText(levelcompletebox_chilliTextArea,  chilliPercent + "%");
-						levelcompletebox.updateTextAreaText(levelcompletebox_baddiesTextArea, baddiesPercent + "%");
-						levelcompletebox.updateTextAreaText(levelcompletebox_attemptsTextArea, attemptsText );
-						levelcompletebox.updateTextAreaText(levelcompletebox_timeTextArea,    timeMins + " MIN " + timeSecs + " SECS");
-
-						if (level > 0 ) // don't draw the completion screen for startup level
+						if ( level == 0 ) // don't draw the completion screen for startup level
 						{
-							levelcompletebox.draw(ctx);
+							  player1_ContinuePressed = true; //automatically continue to level 1
+						}
 
+						if (level == maxLevel)
+						{
+								gameState = "GAME_COMPLETE";
+								resetTouchButtons();
 						}
 						else
 						{
-								player1_ContinuePressed = true; //automatically continue to level 1
+							  gameState = "LEVEL_COMPLETE_WAIT_FOR_RESET";
 						}
 
-						levelComplete = false;
-						gamePaused = true;
-						gameState = "LEVEL_COMPLETE";
-
 				}
-				else if ( gameState == "LEVEL_COMPLETE" && player1_ContinuePressed == true )
+				else if ( gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET" && player1_ContinuePressed == true )
 				{
-
-					console.log("SPACE CONT...");
-
 					level++;
-
 					player1_ContinuePressed = false;
-
-
-					if ( level <= maxLevel )
-					{
-							attemptsHistory.push(attempts);
-							attempts = 1;
-							initMusic(level);
-							loadLevel();
-							resetTouchButtons();
-							gamePaused = false;
-							gameState = "PLAYING";
-					}
-					else
-					{
-							gamePaused = true;
-							resetTouchButtons();
-							titletextbox.setTitle("WELL DONE   GAME COMPLETED");
-							titletextbox.draw(ctx);
-
-					}
+					//attemptsHistory.push(attempts);
+					attempts = 1;
+					initMusic(level);
+					loadLevel();
+					resetTouchButtons();
+					gameState = "PLAYING";
 				}
-		//end landscape check
+
+				calculateFrameRate();
+				renderScreen();
 		}
+
 
 		var date2 = new Date();
 		gameLoopEnd = date2.getTime();
 		text = gameLoopEnd - gameLoopStart;
+		console.log("Gameloop time: " + text);
 
 }
-
 
 loadLevel();
 setInterval(gameLoop, 20);

@@ -89,7 +89,7 @@ EnemyDisk1.prototype.getDrawYCoord = function()
   return this.animYOffset + 64;
 }
 
-EnemyDisk1.prototype.getCollisionStats = function(player)
+EnemyDisk1.prototype.getCollisionEvent = function(player)
 {
     if (this.checkPlayerCollision(player))
     {
