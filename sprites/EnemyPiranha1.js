@@ -1,6 +1,6 @@
 function EnemyPiranha1()
 {
-    Sprite.call(this);
+    _Sprite.call(this);
 
     this.interactsWithWorld = false;
 
@@ -32,11 +32,11 @@ function EnemyPiranha1()
     this.rectOffset = {top:16,bottom:55,left:0,right:63};
 }
 
-EnemyPiranha1.prototype = Object.create(Sprite.prototype);
+EnemyPiranha1.prototype = Object.create(_Sprite.prototype);
 
 EnemyPiranha1.prototype.init = function(level_sprite_data)
 {
-    Sprite.prototype.init.call(this, level_sprite_data);
+    _Sprite.prototype.init.call(this, level_sprite_data);
 
     //Set the startY position so the sprite recognises the start position
     this.startY = this.y;
@@ -55,7 +55,7 @@ EnemyPiranha1.prototype.init = function(level_sprite_data)
 
 EnemyPiranha1.prototype.setMoveTargetX = function(map, player)
 {
-    Sprite.prototype.setMoveTargetX.call(this);
+    _Sprite.prototype.setMoveTargetX.call(this);
 
     //The piranhas don't move in the x axis
 
@@ -63,19 +63,13 @@ EnemyPiranha1.prototype.setMoveTargetX = function(map, player)
 
 EnemyPiranha1.prototype.setMoveTargetY = function(map, player)
 {
-    Sprite.prototype.setMoveTargetY.call(this);
-
-    console.log("startY = " + this.startY );
-    console.log("     Y = " + this.y );
-    console.log("yspeed = " + this.ySpeed );
-
+    _Sprite.prototype.setMoveTargetY.call(this);
 
     if (this.active == true && this.hit == false && this.yDirection <= 0 )
     {
-      //Sprite is above the starting position
+      //_Sprite is above the starting position
       this.targetY = this.y + (this.ySpeed * -1);
       this.ySpeed = this.ySpeed - 1;
-      console.log("yspeed " + this.ySpeed);
       //if (this.targetY < this.startY - 256) { this.yDirection = 1;
       if (this.ySpeed < 0) { this.yDirection = 1; this.ySpeed = 0; }
 
@@ -123,9 +117,6 @@ EnemyPiranha1.prototype.setMoveTargetY = function(map, player)
         var date = new Date();
         //Waiting to jump - set wait time in milliseconds
 
-        console.log ("waiting:" + this.activationWaitingSince);
-        console.log ("delay:" + this.delayActivation);
-
         if ((date.getTime() - this.activationWaitingSince) > this.delayActivation)
         {
             this.waitingToActivate = false;
@@ -142,21 +133,17 @@ EnemyPiranha1.prototype.setMoveTargetY = function(map, player)
     }
 }
 
-
-EnemyPiranha1.prototype.updateMoveAttributesX = function (map, player)
+EnemyPiranha1.prototype.getCollisionEvent = function(player)
 {
-    Sprite.prototype.updateMoveAttributesX.call(this, map, player);
-
-}
-
-EnemyPiranha1.prototype.updateMoveAttributesY = function (map, player)
-{
-    Sprite.prototype.updateMoveAttributesY.call(this, map);
-/*
-    if ( this.y > this.startY )
+    if (this.checkPlayerCollision(player) && this.waitingToJump == false)
     {
-        this.y = this.startY - 64;
-        this.ySpeed = - 64;
+      var colevt = new CollisionEvent();
+      colevt.name = this.name;
+      colevt.collision = true;
+      colevt.enemyHit = false;
+      colevt.playerHit = true;
+
+      return colevt;
     }
-*/
+    return false;
 }

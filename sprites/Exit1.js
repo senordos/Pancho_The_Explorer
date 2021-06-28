@@ -1,7 +1,7 @@
 function Exit1()
 {
 
-    Sprite.call(this);
+    _Sprite.call(this);
 
     this.name = "Exit1";
 
@@ -13,10 +13,10 @@ function Exit1()
     this.animYOffset = 960;
 }
 
-Exit1.prototype = Object.create(Sprite.prototype);
+Exit1.prototype = Object.create(_Sprite.prototype);
 
 Exit1.prototype.init = function(level_sprite_data)
 {
-    Sprite.prototype.init.call(this, level_sprite_data);
+    _Sprite.prototype.init.call(this, level_sprite_data);
 
 };

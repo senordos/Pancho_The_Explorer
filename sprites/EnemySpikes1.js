@@ -1,6 +1,6 @@
 function EnemySpikes1()
 {
-    Sprite.call(this);
+    _Sprite.call(this);
 
     this.name = "EnemySpikes1";
     this.stompable = false;
@@ -26,16 +26,16 @@ function EnemySpikes1()
     this.rectOffset = {top:16,bottom:63,left:8,right:55};
 }
 
-EnemySpikes1.prototype = Object.create(Sprite.prototype);
+EnemySpikes1.prototype = Object.create(_Sprite.prototype);
 
 EnemySpikes1.prototype.init = function(level_sprite_data)
 {
-    Sprite.prototype.init.call(this, level_sprite_data);
+    _Sprite.prototype.init.call(this, level_sprite_data);
 }
 
 EnemySpikes1.prototype.updateMoveAttributesX = function(map, player)
 {
-  Sprite.prototype.updateMoveAttributesX.call(this,map,player);
+  _Sprite.prototype.updateMoveAttributesX.call(this,map,player);
 
   //the spikes don't move, but using this function
   //to check the spikes position relative to the player
@@ -59,7 +59,7 @@ EnemySpikes1.prototype.updateMoveAttributesX = function(map, player)
 
 EnemySpikes1.prototype.updateActions = function()
 {
-  Sprite.prototype.updateActions.call(this);
+  _Sprite.prototype.updateActions.call(this);
 
   if (this.playerNearSpikes && ! this.spikesUp
       && ! this.spikesGoingUp && ! this.spikesGoingDown)

@@ -1,7 +1,7 @@
 function Enemy1()
 {
 
-    Sprite.call(this);
+    _Sprite.call(this);
 
 
     this.name = "Enemy1";
@@ -20,11 +20,11 @@ function Enemy1()
 
 }
 
-Enemy1.prototype = Object.create(Sprite.prototype);
+Enemy1.prototype = Object.create(_Sprite.prototype);
 
 Enemy1.prototype.init = function(level_sprite_data)
 {
-    Sprite.prototype.init.call(this, level_sprite_data);
+    _Sprite.prototype.init.call(this, level_sprite_data);
 
 };
 
@@ -32,7 +32,7 @@ Enemy1.prototype.init = function(level_sprite_data)
 
 Enemy1.prototype.setMoveTargetX = function()
 {
-    Sprite.prototype.setMoveTargetX.call(this);
+    _Sprite.prototype.setMoveTargetX.call(this);
 
     if (this.active == true)
     {
@@ -42,7 +42,7 @@ Enemy1.prototype.setMoveTargetX = function()
 
 Enemy1.prototype.setMoveTargetY = function()
 {
-    Sprite.prototype.setMoveTargetY.call(this);
+    _Sprite.prototype.setMoveTargetY.call(this);
 
     //enemies fall due to gravity
     this.yDirection = this.yDirection + GRAVITY;
@@ -55,7 +55,7 @@ Enemy1.prototype.setMoveTargetY = function()
 
 Enemy1.prototype.updateMoveAttributesX = function (map, player)
 {
-    Sprite.prototype.updateMoveAttributesX.call(this, map, player);
+    _Sprite.prototype.updateMoveAttributesX.call(this, map, player);
 
     if ( this.collision == true )
     {
@@ -64,7 +64,7 @@ Enemy1.prototype.updateMoveAttributesX = function (map, player)
 
     //This enemy will not walk of edges
     //Check for an edge and turn around if found
-    if (this.localBricks.xLinedUp == true)
+    if (this.localBricks.xLinedUp == true && this.collisionBottom)
     {
         //if walking left, and there is an edge on the left, turn right
         if (map[this.localBricks.leftDown].type == 0 && this.xDirection == -1)
@@ -107,7 +107,7 @@ Enemy1.prototype.updateMoveAttributesX = function (map, player)
 
 Enemy1.prototype.updateMoveAttributesY = function (map, player)
 {
-    Sprite.prototype.updateMoveAttributesY.call(this, map);
+    _Sprite.prototype.updateMoveAttributesY.call(this, map);
 
     if (this.collision == true)
     {
@@ -117,7 +117,7 @@ Enemy1.prototype.updateMoveAttributesY = function (map, player)
 
 Enemy1.prototype.updateAttributesAfterStomped = function(map, player)
 {
-  Sprite.prototype.updateAttributesAfterStomped.call(this, map);
+  _Sprite.prototype.updateAttributesAfterStomped.call(this, map);
 
   this.hit = true;
   this.deadly = false;

@@ -1,7 +1,7 @@
 function EnemyArrowTrap1()
 {
 
-    Sprite.call(this);
+    _Sprite.call(this);
 
 
     this.name = "EnemyArrowTrap1";
@@ -18,17 +18,17 @@ function EnemyArrowTrap1()
     this.rectOffset = {top:16,bottom:63,left:8,right:55};
 }
 
-EnemyArrowTrap1.prototype = Object.create(Sprite.prototype);
+EnemyArrowTrap1.prototype = Object.create(_Sprite.prototype);
 
 EnemyArrowTrap1.prototype.init = function(level_sprite_data)
 {
-    Sprite.prototype.init.call(this, level_sprite_data);
+    _Sprite.prototype.init.call(this, level_sprite_data);
 };
 
 
 EnemyArrowTrap1.prototype.updateActions = function()
 {
-  Sprite.prototype.updateActions.call(this);
+  _Sprite.prototype.updateActions.call(this);
   var date = new Date();
   var shouldArrowFire = false;
 

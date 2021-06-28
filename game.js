@@ -1,6 +1,3 @@
-
-
-
 const CANVASWIDTH = 1024;
 const CANVASHEIGHT = 768;
 
@@ -10,7 +7,12 @@ const SND_PLAYERDIE = 2;
 const SND_CHILLI = 3;
 const SND_EXTRALIFE = 4;
 
-var gameStarted = false;
+//some direction constants for general use
+const DOWN = 0;
+const UP = 1;
+const LEFT = 2;
+const RIGHT = 3;
+
 
 //initialise the sound engine
 gameSound = true;
@@ -59,14 +61,10 @@ onWindowResize();
 window.addEventListener("resize", onWindowResize);
 
 
-
-
-
 var touchable = 'createTouch' in document;
 console.log("screen touchable status=" + touchable);
 if(touchable)
 {
-
 	document.addEventListener( 'touchstart', onTouchStart, false );
 	document.addEventListener( 'touchmove', onTouchMove, false );
 	document.addEventListener( 'touchend', onTouchEnd, false );
@@ -74,10 +72,6 @@ if(touchable)
 var touches = [];
 var t = 0;
 
-
-var pps = 500; //pixels movement per second
-var dx = 2;
-var dy = -2;
 
 var framerate;
 var timeindex=0;
@@ -90,20 +84,20 @@ var gameTimeInFrame=0;
 //Progress tracking variables
 var level = 0; //current level, beginning at 0.
 var maxLevel = levels.length - 1; //the last level, after which you win
-
 var maxStompableEnemyCounter = 0;
 var stompableEnemiesCounter = 0;
 var maxChilliCounter = 0;
 var levelTimeStart = 0;
+var levelTimeTaken = 0;
 var attempts = 1; //this is the number of attempts to complete current level
-var attemptsHistory = new Array(); // history of attempts
+
+//Can't remember why I put this in, but possibly so that at the end of the
+//game it can show how many attempts it took to complete each level in game.
+//var attemptsHistory = new Array(); // history of attempts
 
 
 
-var gameState = "PLAYING";
-var gamePaused=false;
-var levelComplete=false;
-var playerDied=false;
+var gameState = "INTRO";
 
 var cheatmode = false;
 var debugmode = false;
@@ -139,6 +133,8 @@ var player2_UpPressed=false;
 var player2_DownPressed=false;
 
 var bricks = [];
+var background = [];
+
 
 var compareRect = [];
 
@@ -219,7 +215,7 @@ levelcompletebox.addTextArea("PRESS SPACE TO CONTINUE", 21, "CENTRE",0,0);
 
 
 var player1;
-player1 = new Sprite();
+player1 = new Player();
 
 var enemies = [];
 var chilliCounter = 0;
@@ -239,28 +235,34 @@ var gameLoopStart;
 var gameLoopEnd;
 
 
+
 function resetGame()
 {
 		attempts = 1; //this is the number of attempts to complete current level
 		//clear all the entries in attemptsHistory
+		/*
 		while ( attemptsHistory.length )
 		{
 			attemptsHistory.pop();
 		}
+		*/
 
 		gameState = "PLAYING";
-		gamePaused=false;
-		levelComplete=false;
-		playerDied=false;
-
-
 
 		titletextbox.updateTextArea(0,"PANCHO THE EXPLORER", 1, "CENTRE", 0, 0);
 
 		//Start the game at the begining
 		level = 0;
 		player1.lives = 1;
-		initBricks();
+		loadLevel();
+}
+
+function resetLevel()
+{
+	player1_ResetLevelPressed = false;
+	attempts++;
+	loadLevel();
+	resetTouchButtons();
 }
 
 
@@ -294,292 +296,300 @@ function initMusic(level)
 					sound.playNextTrack();
 					break;
 
-			default:
-
-					//Do nothing
+			default: //Do nothing
 
 		}
-
 }
 
 
 
 
-function initBricks()
+function loadLevel()
 {
+		var foregroundMap = []; //holds the map data integers before creating objects
+		var backgroundMap = []; //holds the map data integers before creating objects
 
-
-		var i = 0; //array counter
-		var a = 0; //array x
-		var b = 0; //array y
-		var x = 0; //target brick x
-		var y = 0; //target brick y
-		var p = 0; //Position in the level array
-		var c = 0; //the type of the brick
-
-		brickcols = 0;
-		brickrows = 0;
-
-		var rectMain; //to be the collision rectangle
-		var tileName;
-
-		enemies = [];
-		chilliCounter = 0;
 		levelTimeStart = new Date().getTime();
-
-		mapOffsetY = 0;  //set the map to start with more sky showing
 
 		for (var l=0; l < levels[level].layers.length; l++)
 		{
-				if (levels[level].layers[l].name == "Map")
-				{
-						level1 = levels[level].layers[l].data;
-				}
+			switch( levels[level].layers[l].name )
+			{
+				case "Map": 				foregroundMap = levels[level].layers[l];
+														break;
 
-				if (levels[level].layers[l].name == "Objects")
-				{
-						var enemyCounter = 0;
-						stompableEnemiesCounter = 0;
-						maxStompableEnemyCounter = 0;
-						maxChilliCounter = 0;
+				case "Background": 	backgroundMap = levels[level].layers[l];
+														break;
 
-						for (var o=0; o < levels[level].layers[l].objects.length; o++)
-						{
-								if (levels[level].layers[l].objects[o].name == "Player")
-								{
-										setAttributes(player1, {
-												name:"Player1",
-												img:"tiles/spritesheet_player_v2.png",
-												image_src:"tiles/spritesheet_player_v2.png",
-												rectOffset:       {top:0,  bottom:63, left:7,  right:55},
-												rectTopOffset:    {top:0,  bottom:31, left:7, right:55},
-												rectBottomOffset: {top:32, bottom:63, left:7, right:55},
-												rectLeftOffset:   {top:19, bottom:43, left:7,  right:19},
-												rectRightOffset:  {top:19, bottom:43, left:43, right:55}
-										});
-
-										player1.init(levels[level].layers[l].objects[o]);
-										player1.xSpeed = 0;
-								}
-								else
-								{
-										eval("enemies[enemyCounter] = new " + levels[level].layers[l].objects[o].name + "()");
-										enemies[enemyCounter].init(levels[level].layers[l].objects[o]);
-										if ( enemies[enemyCounter].stompable ) { stompableEnemiesCounter++; };
-										if ( enemies[enemyCounter].name == "Chilli1") { chilliCounter++; }
-										enemyCounter++;
-								}
-						}
-						maxStompableEnemyCounter = stompableEnemiesCounter;
-						maxChilliCounter = chilliCounter;
-				}
-		}
-
-
-		//Due to the level editor being used, sprite start positions may not be as expected.
-		//Game engine requires that all rendering starts in the top left corner, so positions are updated here to compensate if necessary
-		for (e=0; e < enemies.length; e++)
-		{
-				//enemies[e].x = enemies[e].x + SPRITESTARTCORRECTIONX;
-				//enemies[e].y = enemies[e].y + SPRITESTARTCORRECTIONY;
-				//enemies[e].startXPosition = enemies[e].x;
-				//enemies[e].startYPosition = enemies[e].y;
-		}
-
-		//player1.x = player1.x + SPRITESTARTCORRECTIONX;
-		//player1.y = player1.y + SPRITESTARTCORRECTIONY;
-		//end of sprite update.
-
-
-
-
-
-		levelPlatformData = levels[level].layers[0].data;
-
-		brickcols = levels[level].layers[0].width;
-		brickrows = levels[level].layers[0].height;
-		brickcount = brickrows * brickcols;
-
-		lastBrickX = (brickcols * 64) - 64; //furthest right brick
-
-		//Load bricks spritesheets
-		bricksSpritesheet.src = "tiles\/spritesheet_mexico.png";
-
-		//reset the array
-		bricks = [];
-
-		i = 0;
-
-		var nB; //New Brick
-
-		//set the brick positions
-		for (b=0; b < brickrows; b++){
-			for (a=0; a < brickcols; a++){
-
-					p = b * brickcols + a;
-
-					x = BRICKSTARTX + (a * BRICKWIDTH);
-					y = BRICKSTARTY + (b * BRICKHEIGHT);
-
-
-					nB = new Brick();
-					var tileId = levels[level].layers[0].data[i];
-					var backgroundId = levels[level].layers[1].data[i];
-					var columns = levels[level].tilesets[0].columns;
-
-					switch(tileId)
-					{
-						case 0:
-										if (backgroundId == 0) //if there is no backgound, it's blank
-										{
-											nB.tileName="none";
-											nB.spritesheetPosX = 0;
-											nB.spritesheetPosY = 0;
-											nB.type = tileId;
-
-										}
-										else  //but if there is a background, load it.
-										{
-											nB.tileName="background";
-											nB.type = backgroundId;
-											nB.spritesheetPosX = Math.trunc(((backgroundId - 1) % columns)) * 64;
-											nB.spritesheetPosY = Math.trunc((backgroundId - 1)/ columns) * 64;
-											nB.isBackground = true;
-										}
-										nB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63};
-										nB.deadly = false;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.x = x;
-										nB.y = y;
-
-						break;
-
-						case 1: nB.tileName="spikes1";
-										nB.rectMain = {top:y+32, bottom:y+63, left:x+8, right:x+55};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = true;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.type = tileId;
-										nB.x = x;
-										nB.y = y;
-						break;
-
-						case 2: nB.tileName="vine1";
-										nB.rectMain = {top:y, bottom:y+63, left:x+24, right:x+38};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = false;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.blocker=false;
-										nB.climbable=true;
-										nB.type = tileId;
-										nB.x = x;
-										nB.y = y;
-						break;
-
-						case 3: nB.tileName="spikes2";
-										nB.rectMain = {top:y+32, bottom:y+63, left:x+8, right:x+55};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = true;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.type = tileId;
-										nB.x = x;
-										nB.y = y;
-						break;
-
-						case 4: nB.tileName="spikes3";
-										nB.rectMain = {top:y, bottom:y+32, left:x+8, right:x+55};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = true;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.type = tileId;
-										nB.x = x;
-										nB.y = y;
-						break;
-
-						case 5: nB.tileName="vine1";
-										nB.rectMain = {top:y, bottom:y+63, left:x+24, right:x+38};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = false;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.blocker=false;
-										nB.climbable=true;
-										nB.type = tileId;
-										nB.x = x;
-										nB.y = y;
-						break;
-
-						case 7: nB.tileName="enemyboundary";
-										nB.rectMain = {top:y, bottom:y+63, left:x,   right:x+63};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = false;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.type = tileId;
-										nB.enemyBoundary = true;
-										nB.blocker = true;
-										nB.x = x;
-										nB.y = y;
-						break;
-
-						case 8: nB.tileName="water1";
-										nB.rectMain = {top:y+32, bottom:y+63, left:x+8, right:x+55};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = true;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.type = tileId;
-										nB.x = x;
-										nB.y = y;
-						break;
-
-						case 9: nB.tileName="water2";
-										nB.rectMain = {top:y, bottom:y+63, left:x+8, right:x+55};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = true;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.type = tileId;
-										nB.x = x;
-										nB.y = y;
-						break;
-
-						default: nB.tileName="brick";
-										nB.rectMain = {top:y, bottom:y+63, left:x,   right:x+63};
-										nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
-										nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
-										nB.deadly = false;
-										nB.exit=false;
-										nB.moveable=false;
-										nB.type = tileId;
-										nB.x = x;
-										nB.y = y;
-						break;
-					}
-
-
-
-					bricks[i] = nB;
-
-					i++;
+				case "Objects":     loadObjects( levels[level].layers[l].objects );
+														break;
 			}
 		}
+		loadMap(foregroundMap,backgroundMap);
 }
 
 
+function loadObjects(objects)
+{
+	var enemyCounter = 0;
+
+	//reset global variables
+	enemies = [];
+	chilliCounter = 0;
+	stompableEnemiesCounter = 0;
+	maxStompableEnemyCounter = 0;
+	maxChilliCounter = 0;
+
+	for (var o=0; o < objects.length; o++)
+	{
+			if (objects[o].name == "Player")
+			{
+					setAttributes(player1, {
+							name:"Player1",
+							img:"tiles/spritesheet_player_v2.png",
+							image_src:"tiles/spritesheet_player_v2.png",
+							rectOffset:       {top:0,  bottom:63, left:7,  right:55},
+							rectTopOffset:    {top:0,  bottom:31, left:7, right:55},
+							rectBottomOffset: {top:32, bottom:63, left:7, right:55},
+							rectLeftOffset:   {top:19, bottom:43, left:7,  right:19},
+							rectRightOffset:  {top:19, bottom:43, left:43, right:55}
+					});
+
+					player1.init(objects[o]);
+					player1.xSpeed = 0;
+			}
+			else
+			{
+					if (objects[o].name != "")
+					{
+						eval("enemies[enemyCounter] = new " + objects[o].name + "()");
+						enemies[enemyCounter].init(objects[o]);
+						if ( enemies[enemyCounter].stompable ) { stompableEnemiesCounter++; };
+						if ( enemies[enemyCounter].name == "Chilli1") { chilliCounter++; }
+						enemyCounter++;
+					}
+					else
+					{
+							console.log("WARNING game.js --- Enemy Object creation attempt with no name set - cannot create object");
+					}
+			}
+	}
+	maxStompableEnemyCounter = stompableEnemiesCounter;
+	maxChilliCounter = chilliCounter;
+}
+
+
+function loadMap(foregroundMap, backgroundMap)
+{
+	var i = 0; //array counter
+	var a = 0; //array x
+	var b = 0; //array y
+	var x = 0; //target brick x
+	var y = 0; //target brick y
+	var p = 0; //Position in the level array
+	var c = 0; //the type of the brick
+
+	var rectMain; //to be the collision rectangle
+	var tileName;
+
+
+	//reset global variables
+	brickcols = 0;
+	brickrows = 0;
+	mapOffsetY = 0;  //set the map to start with more sky showing
+
+
+	brickcols = foregroundMap.width;
+	brickrows = foregroundMap.height;
+	brickcount = brickrows * brickcols;
+
+	lastBrickX = (brickcols * 64) - 64; //furthest right brick
+
+	//Load spritesheet images and set the total columns in sheet
+	bricksSpritesheet.src = "tiles\/spritesheet_mexico.png";
+	var columns = levels[level].tilesets[0].columns;
+
+	//reset the arrays
+	bricks = [];
+	background = [];
+
+	i = 0;
+
+	var nB; //New Brick
+	var nBB; //New Background Brick
+
+	//set the brick positions
+	for (b=0; b < brickrows; b++)
+	{
+		for (a=0; a < brickcols; a++)
+		{
+
+				p = b * brickcols + a;
+
+				x = BRICKSTARTX + (a * BRICKWIDTH);
+				y = BRICKSTARTY + (b * BRICKHEIGHT);
+
+
+				nB = new Brick();
+				nBB = new Brick();
+
+				var tileId = foregroundMap.data[i];
+				var backgroundId = backgroundMap.data[i];
+
+				switch(tileId)
+				{
+					case 0: //set a blank tile
+
+									nB.tileName="none";
+									nB.spritesheetPosX = 0;
+									nB.spritesheetPosY = 0;
+									nB.type = tileId;
+									nB.isBackground = true;
+									nB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63};
+									nB.deadly = false;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.x = x;
+									nB.y = y;
+
+					break;
+
+					case 1: nB.tileName="spikes1";
+									nB.rectMain = {top:y+32, bottom:y+63, left:x+8, right:x+55};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = true;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.type = tileId;
+									nB.x = x;
+									nB.y = y;
+					break;
+
+					case 2: nB.tileName="vine1";
+									nB.rectMain = {top:y, bottom:y+63, left:x+24, right:x+38};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = false;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.blocker=false;
+									nB.climbable=true;
+									nB.type = tileId;
+									nB.x = x;
+									nB.y = y;
+					break;
+
+					case 3: nB.tileName="spikes2";
+									nB.rectMain = {top:y+32, bottom:y+63, left:x+8, right:x+55};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = true;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.type = tileId;
+									nB.x = x;
+									nB.y = y;
+					break;
+
+					case 4: nB.tileName="spikes3";
+									nB.rectMain = {top:y, bottom:y+32, left:x+8, right:x+55};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = true;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.type = tileId;
+									nB.x = x;
+									nB.y = y;
+					break;
+
+					case 5: nB.tileName="vine1";
+									nB.rectMain = {top:y, bottom:y+63, left:x+24, right:x+38};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = false;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.blocker=false;
+									nB.climbable=true;
+									nB.type = tileId;
+									nB.x = x;
+									nB.y = y;
+					break;
+
+					case 7: nB.tileName="enemyboundary";
+									nB.rectMain = {top:y, bottom:y+63, left:x,   right:x+63};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = false;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.type = tileId;
+									nB.enemyBoundary = true;
+									nB.blocker = true;
+									nB.x = x;
+									nB.y = y;
+					break;
+
+					case 8: nB.tileName="water1";
+									nB.rectMain = {top:y+32, bottom:y+63, left:x+8, right:x+55};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = true;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.type = tileId;
+									nB.x = x;
+									nB.y = y;
+					break;
+
+					case 9: nB.tileName="water2";
+									nB.rectMain = {top:y, bottom:y+63, left:x+8, right:x+55};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = true;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.type = tileId;
+									nB.x = x;
+									nB.y = y;
+					break;
+
+					default: nB.tileName="brick";
+									nB.rectMain = {top:y, bottom:y+63, left:x,   right:x+63};
+									nB.spritesheetPosX = Math.trunc(((tileId - 1) % columns)) * 64;
+									nB.spritesheetPosY = Math.trunc((tileId - 1)/ columns) * 64;
+									nB.deadly = false;
+									nB.exit=false;
+									nB.moveable=false;
+									nB.type = tileId;
+									nB.x = x;
+									nB.y = y;
+					break;
+				}
+
+				//Set Background Structure
+				nBB.tileName="background";
+				nBB.type = backgroundId;
+				nBB.spritesheetPosX = Math.trunc(((backgroundId - 1) % columns)) * 64;
+				nBB.spritesheetPosY = Math.trunc((backgroundId - 1)/ columns) * 64;
+				nBB.isBackground = true;
+				nBB.rectMain = {top:y,    bottom:y+63, left:x,   right:x+63};
+				nBB.deadly = false;
+				nBB.exit=false;
+				nBB.moveable=false;
+				nBB.x = x;
+				nBB.y = y;
+
+
+				bricks[i] = nB;
+				background[i] = nBB;
+
+				i++;
+		}
+	}
+}
 
 
 
@@ -601,8 +611,6 @@ function setLocalBricks(sprite)
 		if (((sprite.x) % 64) == 0) { sprite.localBricks.xLinedUp = true } else { sprite.localBricks.xLinedUp = false };
 		if (((sprite.y) % 64) == 0) { sprite.localBricks.yLinedUp = true } else { sprite.localBricks.yLinedUp = false };
 
-
-
 		sprite.localBricks.current = currentBrick;
 		sprite.localBricks.left = currentBrick - 1;
 		sprite.localBricks.right = currentBrick + 1;
@@ -613,8 +621,6 @@ function setLocalBricks(sprite)
 		sprite.localBricks.leftDown = currentBrick + brickcols - 1;
 		sprite.localBricks.rightUp = currentBrick - brickcols + 1;
 		sprite.localBricks.rightDown = currentBrick + brickcols + 1;
-
-
 }
 
 
@@ -696,17 +702,11 @@ function checkWorldCollisions(sprite)
 													//Find left edge of brick and the right offset of the sprite collision (e.g. 55ish) (not 64 as usually thinner)
 													//The brick edge minus the collision thickness, plus 1 so there is no collision.
 													sprite.targetX = bricks[i].rectMain.left - (sprite.rectOffset.right + 1);
-
 													sprite.collisionRight = true;
 											}
 											else if(sprite.targetX < sprite.x)
 											{
-													//the player is moving left
-
-													//Find the right edge of the brick, the left offset of the sprite collision rect (e.g. 7 or 8)
-													//The brick edge minus the sprite will overlap slightly with wall (e.g. 7 or 8) - add 1 so not colliding
 													sprite.targetX = bricks[i].rectMain.right - (sprite.rectOffset.left - 1);
-
 													sprite.collisionLeft = true;
 											}
 
@@ -729,7 +729,6 @@ function checkWorldCollisions(sprite)
 													//All sprites are animated from the top left corner, so brick bottom + 1 is correct
 													//Plus, if there is an offet at the top, need to remove this in.
 													sprite.targetY = bricks[i].rectMain.bottom + 1 - sprite.rectOffset.top;
-
 													sprite.collisionTop = true;
 											}
 									}
@@ -779,12 +778,8 @@ function checkWorldCollisions(sprite)
 											collisionObjectIsBlocker = false;
 											console.log("Collision - climbable tile: " + bricks[i].tileName);
 									}
-
-
 							}
-
 					}
-
 			}
 
 
@@ -802,151 +797,42 @@ function checkWorldCollisions(sprite)
 }
 
 
-function checkEnemyCollisions(playerSprite)
+function checkEnemyCollisions(player)
 {
-
-		//when looping through all the sprites, use "name" to check the sprite being checked isn't "this" sprites
-
-		//get the Rect for this sprite
-		//Build a rectangle based on the overall sprite's collision offset
-		var playerRect = playerSprite.getCollisionRect();
-		var playerTopRect = playerSprite.getTopCollisionRect();
-		var playerBottomRect = playerSprite.getBottomCollisionRect();
-		var playerLeftRect = playerSprite.getLeftCollisionRect();
-		var playerRightRect = playerSprite.getRightCollisionRect();
-
-		var playerStompedEnemy = false; //use this to check if the player hit one or more enemys
+		var colevt = false; //variable for the CollisionEvent
 
 		for (i=0; i < enemies.length; i++)
 		{
 				if (enemies[i].active && enemies[i].alive)
 				{
-
-					var enemyRect = enemies[i].getCollisionRect();
-					var enemyTopRect = enemies[i].getTopCollisionRect();
-					var enemyLeftRect = enemies[i].getLeftCollisionRect();
-					var enemyRightRect = enemies[i].getRightCollisionRect();
-					var enemyBottomRect = enemies[i].getBottomCollisionRect();
-
-
-					if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Exit1")
+					colevt = enemies[i].getCollisionEvent(player);
+					if (colevt)
 					{
-							playerSprite.collisionExit = true;
-							console.log("Collision - Exit");
-					}
-
-					if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Chilli1")
-					{
-							console.log("HIT CHILLI");
-
-							enemies[i].hit = true;
-							enemies[i].active = false;
-							enemies[i].alive = false;
-
-							chilliCounter--;
-
-							sound.playSound(SND_CHILLI);
-
-							if (chilliCounter == 0)
-							{
-									extraLife();
-							}
-
-					}
-
-					if (intersectRect(playerRect, enemyRect) && enemies[i].name == "ChilliEL")
-					{
-							console.log("HIT CHILLI");
-
-							enemies[i].hit = true;
-							enemies[i].active = false;
-							enemies[i].alive = false;
-
-							sound.playSound(SND_CHILLI);
-							extraLife();
-					}
-
-
-					if (intersectRect(playerRect, enemyRect) &&
-								( enemies[i].name == "Bridge1" || enemies[i].name == "Bridge2"))
-					{
-
-							// Player has hit a bridge
-
-
-
-							if (intersectRect(playerBottomRect, enemyTopRect))
-							{
-									//Start the bridge falling
-									enemies[i].hit = true;
-									enemies[i].yDirection = 1;
-									enemies[i].ySpeed = 1;
-
-									playerSprite.yDirection = 1;
-									playerSprite.ySpeed = 1;
-									playerSprite.targetY = enemies[i].y - playerSprite.rectOffset.bottom -1;
-									playerSprite.collisionBottom = true;
-							}
-							else if (intersectRect(playerTopRect, enemyBottomRect))
-							{
-									playerSprite.yDirection = 0;
-									playerSprite.ySpeed = 0;
-									playerSprite.targetY = enemies[i].y + enemies[i].rectOffset.bottom - playerSprite.rectOffset.top;
-									playerSprite.collisionTop = true;
-							}
-							else if (intersectRect(playerLeftRect, enemyRightRect))
-							{
-								//Player has hit bridge from right
-								playerSprite.xDirection = 0;
-								playerSprite.targetX = enemies[i].x + playerSprite.collisionWidth;
-								playerSprite.collisionLeft = true;
-
-							}
-							else if (intersectRect(playerRightRect, enemyLeftRect))
-							{
-								//Player has hit bridge from left
-								playerSprite.xDirection = 0;
-								playerSprite.targetX = enemies[i].x - playerSprite.collisionWidth;
-								playerSprite.collisionRight = true;
-							}
-					}
-
-					if (intersectRect(playerRect, enemyRect) && enemies[i].name == "Enemy3" ||
-							intersectRect(playerRect, enemyRect) && enemies[i].name == "EnemyPiranha1" )
-					{
-							//These enemies cannot be killed.
-							playerSprite.hit = true;
-					}
-
-					if(intersectRect(playerRect, enemyRect) && enemies[i].deadly == true)
-					{
-
-							if(intersectRect(playerBottomRect, enemyTopRect) && enemies[i].hit == false && playerSprite.ySpeed > 0 )
-							{
-
-									//player on top of enemy
-									enemies[i].updateAttributesAfterStomped(bricks, player1);
-
-									if (enemies[i].stompable) { stompableEnemiesCounter--; }
-
-									sound.playSound(SND_JUMP);
-									playerStompedEnemy = true;
-
-							}
-							else
-							{
-									playerSprite.hit = true;
-							}
+						switch(colevt.name)
+						{
+							case "Chilli1":
+										chilliCounter--;
+										break;
+							case "ChilliEL":
+										extraLife();
+										break;
+							case "Exit1":
+										player.collisionExit = true;
+										break;
+						}
+						if (colevt.sound != "NO_SOUND") { sound.playSound(SND_CHILLI); }
+						if (colevt.playerHit) { player.hit = true; }
+						if (colevt.enemyHit)
+						{
+							enemies[i].updateAttributesAfterStomped(bricks, player1);
+							sound.playSound(SND_JUMP);
+							playerStompedEnemy = true;
+							player.ySpeed = PLAYERJUMP - 8;
+							if (enemies[i].stompable) { stompableEnemiesCounter--; }
+						}
 					}
 				}
 		}
-
-		if (playerStompedEnemy)
-		{
-				//if one or more enemys are stomped, bounce the player.
-				playerSprite.ySpeed = PLAYERJUMP - 8;
-		}
-
 }
 
 
@@ -996,7 +882,7 @@ function movePlayerX()
 				}
 		}
 
-		player1.targetX = Math.trunc(player1.x + (pixelmove * player1.xSpeed));
+		player1.targetX = Math.trunc(player1.x + (10 * player1.xSpeed));
 
 
 		checkWorldCollisions(player1);
@@ -1072,7 +958,6 @@ function movePlayerY()
 		{
 				player1.y = player1.targetY;
 		}
-
 }
 
 
@@ -1118,7 +1003,7 @@ function moveEnemiesX()
 		}
 }
 
-function performEmeniesActions()
+function performEnemiesActions()
 {
 
 	for(i=0; i < enemies.length; i++)
@@ -1138,20 +1023,12 @@ function performEmeniesActions()
 function spawnObject(objectType,xPos,yPos,params)
 {
 	newEnemyPosition = enemies.length;
-	switch(objectType)
-	{
-		case "EnemyMonkeyRock1":
-			enemies[newEnemyPosition] = new EnemyMonkeyRock1();
-			break;
-		case "EnemyMonkeyBanana1":
-			enemies[newEnemyPosition] = new EnemyMonkeyBanana1();
-			break;
-		case "EnemyArrow1":
-			enemies[newEnemyPosition] = new EnemyArrow1();
-			break;
-		default:
-			//do nothing
-	}
+
+	eval("enemies[newEnemyPosition] = new " + objectType + "()");
+	if ( enemies[newEnemyPosition].stompable ) { stompableEnemiesCounter++; };
+	if ( enemies[newEnemyPosition].name == "Chilli1") { chilliCounter++; }
+	//enemyCounter++;
+
 	enemies[newEnemyPosition].init({"x":xPos,"y":yPos,"properties":params});
 }
 
@@ -1177,195 +1054,6 @@ function cleanEnemyArray()
 }
 
 
-//
-// DRAW FUNCTIONS
-//
-
-function drawBricks()
-{
-
-		var image;
-
-		//This controls if the map moves while the player is moving left and right
-		if (player1.x - mapOffsetX > 448) { mapOffsetX = player1.x - 448; }
-		if (player1.x - mapOffsetX < 320) { mapOffsetX = player1.x - 320; }
-		if (mapOffsetX < 0) { mapOffsetX = 0; }
-
-
-		if (player1.y - mapOffsetY > MAPOFFSETY_LOWER) { mapOffsetY = player1.y - MAPOFFSETY_LOWER; }
-		if (player1.y - mapOffsetY < MAPOFFSETY_UPPER) { mapOffsetY = player1.y - MAPOFFSETY_UPPER; }
-
-
-
-		//due to lack of foresight when setting up the playable area,
-		//the map offset is set to -64 rather than 0 so player doesn't
-		//disappear behind the progress box
-		if (mapOffsetY < -64) { mapOffsetY = -64; }
-
-		mapOffsetX = Math.trunc(mapOffsetX);
-		mapOffsetY = Math.trunc(mapOffsetY);
-
-		for (i=0; i < brickcount; i++){
-				if(bricks[i].type != 0){
-
-						//only draw the bricks if they're on the screen and not blank
-						if (bricks[i].tileName != "none" &&
-							  bricks[i].tileName != "enemyboundary" &&   //enemyBoundary tiles are not drawn
-								bricks[i].x < mapOffsetX + CANVASWIDTH &&
-								bricks[i].x > mapOffsetX - 64 &&
-								bricks[i].y < mapOffsetY + CANVASHEIGHT &&
-								bricks[i].y > mapOffsetY )
-						{
-							 bctx.drawImage(bricksSpritesheet, bricks[i].spritesheetPosX, bricks[i].spritesheetPosY, 64, 64, bricks[i].x - mapOffsetX, bricks[i].y - mapOffsetY, 64, 64);
-						}
-				}
-
-		}
-
-}
-
-function drawRect(rect, sprite, colour)
-{
-			bctx.beginPath();
-			bctx.rect( sprite.x + rect.left,
-								sprite.y + rect.top,
-								rect.right - rect.left,
-								rect.bottom - rect.top);
-
-			bctx.fillStyle = colour;
-			bctx.fill();
-			bctx.closePath();
-}
-
-function drawPlayer()
-{
-	 var animXOffset = 0;
-	 var animYOffset = 0;
-
-		if(player1.xDirection == -1)
-		{
-				animYOffset = 64;
-		}
-		else if(player1.xDirection == 1)
-		{
-				animYOffset = 0;
-		}
-
-
-	 if(player1_LeftPressed)
-	 {
-				animYOffset = 64;
-				//animXOffset = player1.animFrame=gameFrame * 64;
-				animXOffset = (gameFrame % 9) * 64;
-	 }
-
-	 if(player1_RightPressed)
-	 {
-				animYOffset = 0;
-				//animXOffset = player1.animFrame=gameFrame * 64;
-				animXOffset = (gameFrame % 9) * 64;
-	 }
-
-
-	 bctx.drawImage(imageSprites, animXOffset,animYOffset,64,64, player1.x - mapOffsetX, player1.y - mapOffsetY,64,64);
-}
-
-
-function drawEnemies()
-{
-
-	 for(i=0; i < enemies.length; i++)
-	 {
-
-			//Only draw the sprites if they are alive
-			if ( enemies[i].alive && enemies[i].visible )
-			{
-				 var animXOffset = enemies[i].animXOffset;
-				 var animYOffset = enemies[i].animYOffset;
-
-				 var e = enemies[i];
-
-				 if (  enemies[i].name == "Enemy1"
-						|| enemies[i].name == "Enemy2"
-						)
-				 {
-						 if (enemies[i].hit == true)
-						 {
-								 animYOffset = animYOffset + 64;
-						 }
-				 }
-				 if (enemies[i].name == "Enemy3" )
-				 {
-
-									if (e.rotation == 0) { animYOffset = animYOffset + 0; }
-						 else if (e.rotation == 90) { animYOffset = animYOffset + 64; }
-						 else if (e.rotation == 180) { animYOffset = animYOffset + 128; }
-						 else if (e.rotation == 270) { animYOffset = animYOffset + 192; }
-						 else { animYOffset = animYOffset + 0; }
-				 }
-				 if ( enemies[i].name == "Enemy4" )
-				 {
-								 if ( e.xDirection == 1  ) { animYOffset = animYOffset + 0; }
-						else if ( e.xDirection == -1 ) { animYOffset = animYOffset + 64; }
-
-						if (e.hit == true)
-						{
-								animYOffset = animYOffset + 128;
-						}
-				 }
-				 if ( enemies[i].name == "EnemyEagle1" )
-				 {
-								 if ( e.hit == false && e.xDirection == 1  ) { animYOffset = animYOffset + 0; }
-						else if ( e.hit == false && e.xDirection == -1 ) { animYOffset = animYOffset + 64; }
-						else if ( e.hit == true)
-						{
-								animYOffset = animYOffset + 128;
-						}
-				 }
-				 if ( enemies[i].name == "EnemyPiranha1" )
-				 {
-						if ( e.yDirection == 1 ) { animYOffset = animYOffset + 64; }
-				 }
-				 if (enemies[i].name == "EnemyMonkey1"
-				  || enemies[i].name == "EnemyMonkey2"
-  			  || enemies[i].name == "EnemySpikes1"
-					|| enemies[i].name == "EnemyArrowTrap1")
-				 {
-					 animYOffset = enemies[i].getDrawYCoord(gameFrame);
-				 }
-
-
-				 //sets position in the spritesheet
-				 //animXOffset = (gameFrame % enemies[i].animMaxFrame) * 64 + enemies[i].animXOffset;
-
-				 animXOffset = enemies[i].getDrawXCoord(gameFrame);
-				 //bctx.drawImage(enemies[i].image, animXOffset, animYOffset,64,64, enemies[i].x - mapOffsetX, enemies[i].y - mapOffsetY,64,64);
-
-				 bctx.drawImage(imageSprites, Math.floor(animXOffset), Math.floor(animYOffset),64,64, Math.floor(enemies[i].x - mapOffsetX), Math.floor(enemies[i].y - mapOffsetY),64,64);
-
-
-			}
-	 }
-}
-
-function drawControls()
-{
-		controls = new Image();
-		controls.src = "tiles/spritesheet_controls.png";
-
-		if (gameState == "PLAYING")
-		{
-				bctx.drawImage(controls,   0, 0, 64, 64, 64,  672, 64, 64); //left
-				bctx.drawImage(controls,  64, 0, 64, 64, 256, 672, 64, 64); //right
-				bctx.drawImage(controls, 128, 0, 64, 64, 928, 672, 64, 64); //up
-		}
-		else if (gameState == "PLAYER_DIED")
-		{
-				ctx.drawImage(controls, 192, 0, 64, 64, 928, 672, 64, 64);
-		}
-
-
-}
 
 
 function calculateFrameRate()
@@ -1394,45 +1082,88 @@ function extraLife()
 		sound.playSound(SND_EXTRALIFE);
 }
 
+function checkPlayerReachedLevelEnd()
+{
+	if (player1.collisionExit == true)
+	{
+			return true;
+	}
+	return false;
+}
+
+function checkIfLandscape()
+{
+   if (window.innerHeight < window.innerWidth)
+	 {
+		 return true;
+	 }
+	 else
+	 {
+		 return false;
+	 }
+}
+
+function checkPlayerKilled()
+{
+	if (! cheatmode)
+	{
+			if (player1.hit)
+			{
+				  //player hit by a baddie
+					return true;
+			}
+			else if (player1.collisionDeath == true)
+			{
+				  //player walked into an obstacle, like spikes
+					return true;
+			}
+			return false;
+	}
+	else
+	{
+			//cheatmode is on
+			player1.hit = false;
+			player1.collisionDeath = false;
+
+			bctx.fillStyle = "#AAAAAA";
+			bctx.fillText("Cheat Mode On", 100, 50);
+
+			return false;
+	}
+}
+
+function handleStatePlayerDied()
+{
+	sound.playSound(SND_PLAYERDIE);
+	player1.lives --;
+}
+
 function gameLoop()
 {
-
 
 		var date = new Date();
 		var text;
 		gameLoopStart = date.getTime();
 
-
 		text = gameLoopStart - gameLoopEnd;
-		//console.log("Loop Wait Time = " + text);
 
-		/*
-		if (!landscape)
+		if (!checkIfLandscape())
 		{
-			 bctx.clearRect(0, 0, CANVASWIDTH, CANVASWIDTH);
-			 clearIntroScreen();
-
-			 messagebox.updateTextAreaText(0, "PLEASE ROTATE DEVICE");
-			 messagebox.draw(bctx);
-
+			gameState == "NOT_LANDSCAPE";
 		}
 		else
-		*/
 		{
-				if (!gameStarted)
+				if (gameState == "INTRO")
 				{
 					//Draw the intro screen
-					//This only draws once - if already on screen, it will remain
-					drawIntroScreen();
+					drawIntroScreen(); //this function will only draw if not already there
+					demoMovePlayerX();
 				}
-
-				if (!gamePaused && !levelComplete && !playerDied)
+				else if ( gameState == "PLAYING" )
 				{
 						var loopTimeIndex = date.getTime();
-
 						loopTimeGap = loopTimeIndex - lastTimeIndex;
 						lastTimeIndex = loopTimeIndex;
-
 						gameTimeInFrame = gameTimeInFrame + loopTimeGap;
 
 						if(gameTimeInFrame > ANIMATIONSPEED)
@@ -1444,148 +1175,39 @@ function gameLoop()
 										gameFrame=0;
 								}
 						}
-
-
-
-						bctx.clearRect(0, 0, CANVASWIDTH, CANVASHEIGHT);
-						ctx.clearRect(0, 0, CANVASWIDTH, CANVASWIDTH);
-
-
-						pixelmove = Math.trunc(pps * (loopTimeGap / 1000));
-										bctx.fillStyle = "#000000";
-
-
-						if (debugmode)
-						{
-							bctx.fillText(Math.round(pixelmove),75,50);
-
-							if (pixelmove > 10)
-							{
-									bctx.fillStyle = "#000000";
-									bctx.fillText("Frame rate dropped below normal game operation!",170,50);
-							}
-						}
-
 						moveEnemiesY();
-						performEmeniesActions();
+						performEnemiesActions();
 						moveEnemiesX();
-						performEmeniesActions();
+						performEnemiesActions();
 						cleanEnemyArray();   //garbage collects the enemy array
 
-						if (gameStarted)
-						{
-								movePlayerX();
-								movePlayerY();
-						}
-						else
-						{
-								demoMovePlayerX();
-						}
+						movePlayerX();
+						movePlayerY();
 
-
-
-						if (player1.collisionExit == true)
-						{
-								levelComplete = true;
-						}
-
-						drawBricks();
-						drawEnemies();  //and other sprites
-						drawPlayer();
-						drawControls();
-
-						progressbox.setTitle("CHILLIES: " + chilliCounter);
-						progressbox.updateTextArea(livestext,"LIVES: " + player1.lives, 1, "LEFT", 1, 0);
-
-						progressbox.draw(bctx);
-
-
-						if(level == 0)
-						{
-								titletextbox.draw(bctx);
-								versionbox.draw(bctx);
-						}
-
-						calculateFrameRate();
-
-
-
-						if (! cheatmode)
-						{
-								if (player1.hit)
-								{
-										gamePaused = true;
-										gameState = "PAUSED";
-										playerDied = true;
-								}
-								else if (player1.collisionDeath == true)
-								{
-										gamePaused = true;
-										gameState = "PAUSED";
-										playerDied = true;
-								}
-						}
-						else
-						{
-								//cheatmode is on
-								playerDied = false;
-								player1.hit = false;
-								player1.collisionDeath = false;
-
-								bctx.fillStyle = "#AAAAAA";
-								bctx.fillText("Cheat Mode On", 100, 50);
-						}
-
-
-						ctx.drawImage(buffer, 0, 0, 1024, 768, 0, 0, 1024, 768);
-
-
-
+						if ( checkPlayerReachedLevelEnd() ) { gameState = "LEVEL_COMPLETE"; }
+						else if ( checkPlayerKilled() ) { gameState = "PLAYER_DIED"; }
 				}
-				else if (playerDied == true)
+				else if (gameState == "PLAYER_DIED")
 				{
-						var text = "Oooops";
-						if (player1.collisionDeath) { titletextbox.updateTextArea(0,"CAREFUL WHERE YOU STAND", 1, "CENTRE", 0, 0); }
-						if (player1.hit)            { titletextbox.updateTextArea(0, "WATCH OUT FOR THE BADDIES", 1, "CENTRE", 0, 0); }
-
-						titletextbox.draw(ctx);
-
-						sound.playSound(SND_PLAYERDIE);
-
-						player1.lives --;
+					  handleStatePlayerDied();
 
 						if ( player1.lives <= 0 )
 						{
 							gameState = "GAME_OVER";
-							titletextbox.updateTextArea(0,"GAME OVER", 1, "CENTRE", 0, 0);
-							titletextbox.draw(ctx);
-							level = 1;
 
+							level = 1;
+							console.log("setting GAME OVER");
 						}
 						else
 						{
-
-							gameState = "PLAYER_DIED";
-
+							gameState = "PLAYER_DIED_WAIT_FOR_RESETLEVEL";
+							console.log("setting PLAYER_DIED_WAIT_FOR_RESETLEVEL");
 						}
-
-
-						messagebox.updateTextArea(0,"PRESS R TO RESET LEVEL", 1, "CENTRE", 0, 0);
-						messagebox.draw(ctx);
-
-						playerDied = false;
-						drawControls();
-
-
 				}
-				else if (gameState == "PLAYER_DIED" && player1_ResetLevelPressed)
+		    else if (gameState == "PLAYER_DIED_WAIT_FOR_RESETLEVEL" && player1_ResetLevelPressed)
 				{
-					player1_ResetLevelPressed = false;
-					attempts++;
-					initBricks();
-					resetTouchButtons();
-					gamePaused=false;
-					gameState = "PLAYING";
+					resetLevel();
+					gameState = "PLAYING"
 				}
 				else if (gameState == "GAME_OVER" && player1_ResetLevelPressed)
 				{
@@ -1593,263 +1215,50 @@ function gameLoop()
 					resetTouchButtons();
 					resetGame();
 				}
-				else if (levelComplete == true)
+				else if (gameState == "LEVEL_COMPLETE")
 				{
-						var chilliPercent = Math.round(100-(chilliCounter / maxChilliCounter) * 100);
-						var baddiesPercent = Math.round(100-(stompableEnemiesCounter / maxStompableEnemyCounter) * 100);
+					  var timeNow = new Date().getTime();
+					  levelTimeTaken = Math.floor((timeNow - levelTimeStart) / 1000);
 
-						if ( isNaN(chilliPercent) ) { chilliPercent = 100; }
-						if ( isNaN(baddiesPercent) ) { baddiesPercent = 100; }
-
-						var attemptsText = "ST";
-						if      ( attempts == 2 ) { attemptsText = "ND"; }
-						else if ( attempts == 3 ) { attemptsText = "RD"; }
-						else if ( attempts >= 4 ) { attemptsText = "TH"; }
-						attemptsText = attempts + attemptsText;
-
-						var timeNow = new Date().getTime();
-						var timeTaken = Math.floor((timeNow - levelTimeStart) / 1000);
-						var timeMins = Math.floor(timeTaken / 60);
-						var timeSecs = Math.floor(timeTaken % 60);
-
-
-						levelcompletebox.updateTextAreaText(levelcompletebox_levelTextArea,   "LEVEL " + level + " COMPLETE");
-						levelcompletebox.updateTextAreaText(levelcompletebox_chilliTextArea,  chilliPercent + "%");
-						levelcompletebox.updateTextAreaText(levelcompletebox_baddiesTextArea, baddiesPercent + "%");
-						levelcompletebox.updateTextAreaText(levelcompletebox_attemptsTextArea, attemptsText );
-						levelcompletebox.updateTextAreaText(levelcompletebox_timeTextArea,    timeMins + " MIN " + timeSecs + " SECS");
-
-						if (level > 0 ) // don't draw the completion screen for startup level
+						if ( level == 0 ) // don't draw the completion screen for startup level
 						{
-							levelcompletebox.draw(ctx);
+							  player1_ContinuePressed = true; //automatically continue to level 1
+						}
 
+						if (level == maxLevel)
+						{
+								gameState = "GAME_COMPLETE";
+								resetTouchButtons();
 						}
 						else
 						{
-								player1_ContinuePressed = true; //automatically continue to level 1
+							  gameState = "LEVEL_COMPLETE_WAIT_FOR_RESET";
 						}
 
-						levelComplete = false;
-						gamePaused = true;
-						gameState = "LEVEL_COMPLETE";
-
 				}
-				else if ( gameState == "LEVEL_COMPLETE" && player1_ContinuePressed == true )
+				else if ( gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET" && player1_ContinuePressed == true )
 				{
-
-					console.log("SPACE CONT...");
-
 					level++;
-
 					player1_ContinuePressed = false;
-
-
-					if ( level <= maxLevel )
-					{
-							attemptsHistory.push(attempts);
-							attempts = 1;
-							initMusic(level);
-							initBricks();
-							resetTouchButtons();
-							gamePaused = false;
-							gameState = "PLAYING";
-					}
-					else
-					{
-							gamePaused = true;
-							resetTouchButtons();
-							titletextbox.setTitle("WELL DONE   GAME COMPLETED");
-							titletextbox.draw(ctx);
-
-					}
+					//attemptsHistory.push(attempts);
+					attempts = 1;
+					initMusic(level);
+					loadLevel();
+					resetTouchButtons();
+					gameState = "PLAYING";
 				}
-		//end landscape check
+
+				calculateFrameRate();
+				renderScreen();
 		}
+
 
 		var date2 = new Date();
-
 		gameLoopEnd = date2.getTime();
-
-
 		text = gameLoopEnd - gameLoopStart;
-
-		//console.log("Loop Time = " + text);
-
-}
-
-
-document.addEventListener("keydown", keyDownHandler, false);
-document.addEventListener("keyup", keyUpHandler, false);
-
-function keyDownHandler(e)
-{
-		switch(e.keyCode)
-		{
-			case 32: player1_ContinuePressed = true; break;
-
-			case 37: player1_LeftPressed = true; break;
-			case 38: player1_UpPressed = true; break;
-			case 39: player1_RightPressed = true; break;
-			case 40: player1_DownPressed = true; break;
-
-		}
-}
-
-function keyUpHandler(e)
-{
-		switch(e.keyCode)
-		{
-			case 37: player1_LeftPressed = false; break;
-			case 38: player1_UpPressed = false; break;
-			case 39: player1_RightPressed = false; break;
-			case 40: player1_DownPressed = false; break;
-			case 67: /* c */ if (cheatmode == false) {cheatmode=true;} else {cheatmode=false;};break;
-			case 84: /* t */ if (showTargetRect == false) {showTargetRect=true;} else {showTargetRect=false;}; break;
-			case 80: /* p */ if (gamePaused == false) { gamePaused = true;} else {gamePaused=false;}; break;
-			case 82: /* r */ player1_ResetLevelPressed = true; break;
-		}
-}
-
-function onTouchStart(event)
-{
-
-
-	//do stuff
-		var x;
-		var y;
-		var id;
-
-		var iMax = event.changedTouches.length;
-
-
-		for(var i=0; i<iMax; i++)
-		{
-
-				x = event.changedTouches[i].clientX;
-				y = event.changedTouches[i].clientY;
-				id = event.changedTouches[i].identifier;
-
-				if (gameState == "PLAYING")
-				{
-						if (x>(0 ) &&  x<=(160 * canvasScale + margin))   { touchButtons.left.pressed = true; touchButtons.left.touchId = id }
-						if (x>(160 * canvasScale + margin) &&  x<(512 * canvasScale + margin))  { touchButtons.right.pressed = true; touchButtons.right.touchId = id }
-						if (x>(512 * canvasScale + margin) /*&&  x<(1020 * canvasScale + margin)*/) { touchButtons.up.pressed = true; touchButtons.up.touchId = id }
-				}
-				else if (gameState == "PLAYER_DIED")
-				{
-						if (x>(900 * canvasScale + margin) &&  x<(1020 * canvasScale + margin)) { touchButtons.resetlevel.pressed = true; touchButtons.resetlevel.touchId = id }
-				}
-				else if (gameState == "LEVEL_COMPLETE")
-				{
-						if (x>(0 * canvasScale + margin) &&  x<(1024 * canvasScale + margin)) { touchButtons.continue.pressed = true; touchButtons.continue.touchId = id }
-				}
-
-		}
-
-
-		if (touchButtons.left.pressed == true) { player1_LeftPressed = true; } else { player1_LeftPressed = false; }
-		if (touchButtons.right.pressed == true) { player1_RightPressed = true; } else { player1_RightPressed = false; }
-		if (touchButtons.up.pressed == true) { player1_UpPressed = true; } else { player1_UpPressed = false; }
-
-
-		if (touchButtons.resetlevel.pressed == true)
-		{
-				player1_ResetLevelPressed = true;
-				touchButtons.resetlevel.pressed == false;
-		}
-		else { resetlevelPressed = false; }
-
-		if (touchButtons.continue.pressed == true)
-		{
-				player1_ContinuePressed = true;
-				touchButtons.continue.pressed = false;
-		}
-		else { touchButtons.continue.pressed = false; }
-
+		console.log("Gameloop time: " + text);
 
 }
 
-function onTouchMove(event)
-{
-	 // Prevent the browser from doing its default thing (scroll, zoom)
-	event.preventDefault();
-
-		var id;
-
-		var iMax = event.changedTouches.length;
-
-		for(var i=0; i<iMax; i++)
-		{
-				x = event.changedTouches[i].clientX;
-				y = event.changedTouches[i].clientY;
-				id = event.changedTouches[i].identifier;
-
-				if ( touchButtons.left.touchId == id ) { touchButtons.left.pressed = false; }
-				if ( touchButtons.right.touchId == id ) { touchButtons.right.pressed = false; }
-				if ( touchButtons.up.touchId == id ) { /* do nothing - even if moves off the up button */ }
-
-				if (x> 0                           &&  x<=(160 * canvasScale + margin)) { touchButtons.left.pressed = true; touchButtons.left.touchId = id }
-				if (x>(160 * canvasScale + margin) &&  x<(512 * canvasScale + margin))  { touchButtons.right.pressed = true; touchButtons.right.touchId = id }
-
-		}
-
-		if (touchButtons.left.pressed == true) { player1_LeftPressed = true; } else { player1_LeftPressed = false; }
-		if (touchButtons.right.pressed == true) { player1_RightPressed = true; } else { player1_RightPressed = false; }
-		if (touchButtons.up.pressed == true) { player1_UpPressed = true; } else { player1_UpPressed = false; }
-
-
-
-}
-
-function onTouchEnd(event)
-{
-
-		var id;
-
-		var iMax = event.changedTouches.length;
-
-		for(var i=0; i<iMax; i++)
-		{
-				id = event.changedTouches[i].identifier;
-
-				if ( touchButtons.left.touchId == id ) { touchButtons.left.pressed = false; }
-				if ( touchButtons.right.touchId == id ) { touchButtons.right.pressed = false; }
-				if ( touchButtons.up.touchId == id ) { touchButtons.up.pressed = false; }
-				if ( touchButtons.resetlevel.touchId == id ) { touchButtons.resetlevel.pressed = false; }
-				if ( touchButtons.continue.touchId == id ) { touchButtons.continue.pressed = false; }
-
-
-		}
-
-		if (touchButtons.left.pressed == true) { player1_LeftPressed = true; } else { player1_LeftPressed = false; }
-		if (touchButtons.right.pressed == true) { player1_RightPressed = true; } else { player1_RightPressed = false; }
-		if (touchButtons.up.pressed == true) { player1_UpPressed = true; } else { player1_UpPressed = false; }
-
-}
-
-function resetTouchButtons()
-{
-
-
-	touchButtons.left.pressed = false;
-	touchButtons.right.pressed = false;
-	touchButtons.up.pressed = false;
-	touchButtons.resetlevel.pressed = false;
-	touchButtons.continue.pressed = false;
-
-	player1_LeftPressed = false;
-	player1_RightPressed = false;
-	player1_UpPressed = false;
-	player1_ContinuePressed = false;
-	player1_ResetLevelPressed = false;
-}
-
-
-
-//titletextbox.setTitle("CLICK TO START");
-//titletextbox.draw(ctx);
-
-//fullscreen();
-//disableScroll();
-initBricks();
+loadLevel();
 setInterval(gameLoop, 20);
