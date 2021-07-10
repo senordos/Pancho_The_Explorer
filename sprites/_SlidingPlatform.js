@@ -1,9 +1,9 @@
-function EnemyBlock1()
+function _SlidingPlatform()
 {
 
     _Sprite.call(this);
 
-    this.name = "EnemyBlock1";
+    this.name = "_SlidingPlatform";
 
     this.xSpeed = 0;
     this.ySpeed = 0;
@@ -16,10 +16,10 @@ function EnemyBlock1()
 
 }
 
-EnemyBlock1.prototype = Object.create(_Sprite.prototype);
+_SlidingPlatform.prototype = Object.create(_Sprite.prototype);
 
 
-EnemyBlock1.prototype.setMoveTargetY = function()
+_SlidingPlatform.prototype.setMoveTargetY = function()
 {
     _Sprite.prototype.setMoveTargetY.call(this);
 
@@ -34,7 +34,7 @@ EnemyBlock1.prototype.setMoveTargetY = function()
 }
 
 
-EnemyBlock1.prototype.updateMoveAttributesY = function (map, player)
+_SlidingPlatform.prototype.updateMoveAttributesY = function (map, player)
 {
     _Sprite.prototype.updateMoveAttributesY.call(this, map, player);
     if (this.collisionBottom == true)
@@ -56,7 +56,7 @@ EnemyBlock1.prototype.updateMoveAttributesY = function (map, player)
     }
 }
 
-EnemyBlock1.prototype.getCollisionEvent = function(player)
+_SlidingPlatform.prototype.getCollisionEvent = function(player)
 {
   if (this.checkPlayerCollision(player))
   {
