@@ -90,6 +90,8 @@ var maxChilliCounter = 0;
 var levelTimeStart = 0;
 var levelTimeTaken = 0;
 var attempts = 1; //this is the number of attempts to complete current level
+var extraLivesUsed = new Map(); //this tracks whether the extra lives have been found or not
+
 
 //Can't remember why I put this in, but possibly so that at the end of the
 //game it can show how many attempts it took to complete each level in game.
@@ -362,6 +364,24 @@ function loadObjects(objects)
 			{
 					if (objects[o].name != "")
 					{
+						console.log("Level = " + level);
+						console.log("Name  = " + objects[o].name);
+						//rename the Extra Life object if it has already been used.
+						if(objects[o].name == "ChilliEL")
+						{
+							extraLifeId = level + "-" + objects[o].x + "-" + objects[o].y;
+							if (extraLivesUsed.has(extraLifeId))
+							{
+								if (extraLivesUsed.get(extraLifeId))
+								{
+									objects[o].name = "Chilli1";
+								}
+							}
+							else
+							{
+								extraLivesUsed.set(extraLifeId, false);
+							}
+						}
 						eval("enemies[enemyCounter] = new " + objects[o].name + "()");
 						enemies[enemyCounter].init(objects[o]);
 						if ( enemies[enemyCounter].stompable ) { stompableEnemiesCounter++; };
@@ -814,6 +834,9 @@ function checkEnemyCollisions(player)
 										chilliCounter--;
 										break;
 							case "ChilliEL":
+										//get Chilli ID
+										extraLifeId = level + "-" + enemies[i].x + "-" + enemies[i].y;
+										extraLivesUsed.set(extraLifeId,true);
 										extraLife();
 										break;
 							case "Exit1":
