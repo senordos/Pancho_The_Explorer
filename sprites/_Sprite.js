@@ -20,6 +20,7 @@ function _Sprite()
     this.animMaxFrame = 4;
     this.xDirection = 1;
     this.yDirection = 1;
+    this.groundSpeed = 0;
     this.startXDirection = this.xDirection;
     this.startYDirection = this.yDirection;
     this.xSpeed = 0;

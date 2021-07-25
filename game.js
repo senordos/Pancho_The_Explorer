@@ -849,10 +849,6 @@ function movePlayerX()
 		player1.targetX = player1.x;
 		player1.targetY = player1.y;
 
-
-
-
-
 		if(player1_LeftPressed)
 		{
 				player1.xSpeed = player1.xSpeed - 0.1;
@@ -888,6 +884,8 @@ function movePlayerX()
 		checkWorldCollisions(player1);
 		checkEnemyCollisions(player1);
 
+		player1.targetX = player1.targetX + player1.groundSpeed;
+		player1.groundSpeed = 0;  //set this to 0 after contact. Will set again if still in contact
 
 		player1.x = Math.trunc(player1.targetX);
 
@@ -898,8 +896,6 @@ function movePlayerX()
 
 function movePlayerY()
 {
-
-
 
 		//reset the player targets before moving.
 		player1.targetX = player1.x;
@@ -947,6 +943,7 @@ function movePlayerY()
 				player1.ySpeed = 0;
 		}
 		checkEnemyCollisions(player1);
+
 
 
 		player1.targetY = Math.floor(player1.targetY);
@@ -1256,7 +1253,7 @@ function gameLoop()
 		var date2 = new Date();
 		gameLoopEnd = date2.getTime();
 		text = gameLoopEnd - gameLoopStart;
-		console.log("Gameloop time: " + text);
+		//console.log("Gameloop time: " + text);
 
 }
 
