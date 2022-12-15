@@ -27,7 +27,7 @@ _ProjectileThrower.prototype.init = function(level_sprite_data)
 {
     _Sprite.prototype.init.call(this, level_sprite_data);
 
-    if (level_sprite_data.properties.hasOwnProperty('ThrowDirection'))
+    if (level_sprite_data.hasOwnProperty('.properties.ThrowDirection'))
     {
       switch(level_sprite_data.properties.ThrowDirection)
       {
@@ -43,11 +43,11 @@ _ProjectileThrower.prototype.init = function(level_sprite_data)
                       break;
       }
     }
-    if (level_sprite_data.properties.hasOwnProperty('ThrowObject'))
+    if (level_sprite_data.hasOwnProperty('properties.ThrowObject'))
     {
         this.throwEventObject = level_sprite_data.properties.ThrowObject;
     }
-    if (level_sprite_data.properties.hasOwnProperty('ThrowInterval'))
+    if (level_sprite_data.hasOwnProperty('properties.ThrowInterval'))
     {
         this.throwInterval = level_sprite_data.properties.ThrowInterval;
     }
