@@ -24,7 +24,7 @@ jobs:
           app-name: 'panchotheexplorer'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_EC222F954DE34D68B09B3AF7AE4C07C8 }}
-          package: .
+          package: ./game
 
 
 
