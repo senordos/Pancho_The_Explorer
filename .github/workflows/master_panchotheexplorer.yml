@@ -1,13 +1,23 @@
+# Some links from the original MS provided scripts (which I couldn't get to work)
+# -----
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
+#
+# The working version below is based on
+# -----
+# https://github.com/Azure/actions-workflow-samples/blob/master/AppService/php-webapp-on-azure.yml
+# 
+# Some notes on this script
+# -----
+# Deployment folder is set at bottom in package
 
-name: Build and deploy Node.js app to Azure Web App - panchotheexplorer
+
+name: Deploy panchotheexplorer to Azure Web App (when master changes)
 
 on:
   push:
     branches:
       - master
-
 
 jobs:
   deploy:
