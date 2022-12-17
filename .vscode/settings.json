@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/0a475d54-7d78-4453-b149-07f8674f2c1a/AppServices/subscriptions/0a475d54-7d78-4453-b149-07f8674f2c1a/resourceGroups/christian_rg_0893/providers/Microsoft.Web/sites/panchotheexplorer",
+    "appService.deploySubpath": "game"
+}
