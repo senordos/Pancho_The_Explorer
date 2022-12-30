@@ -73,20 +73,20 @@ function button_toggleMusicClicked()
 function onWindowResize()
 {
     //Resize the game canvas...
-    //heightRatio = window.innerHeight / CANVASHEIGHT;
-    //if (heightRatio > 1) { heightRatio = 1 };
+    heightRatio = window.innerHeight / CANVASHEIGHT;
+    if (heightRatio > 1) { heightRatio = 1 };
 
-    //canvasScale = heightRatio; ///size to canvasScale to fit screen
+    canvasScale = heightRatio; ///size to canvasScale to fit screen
 
-    //SCALEDCANVASWIDTH = Math.floor(CANVASWIDTH * canvasScale);
-    //SCALEDCANVASHEIGHT = Math.floor(CANVASHEIGHT * canvasScale);
+    SCALEDCANVASWIDTH = Math.floor(CANVASWIDTH * canvasScale);
+    SCALEDCANVASHEIGHT = Math.floor(CANVASHEIGHT * canvasScale);
 
-    //margin = Math.floor((window.innerWidth - SCALEDCANVASWIDTH) / 2);
+    margin = Math.floor((window.innerWidth - SCALEDCANVASWIDTH) / 2);
 
-    //document.getElementById("gameCanvas").setAttribute("width", SCALEDCANVASWIDTH);
-    //document.getElementById("gameCanvas").setAttribute("height", SCALEDCANVASHEIGHT);
+    document.getElementById("gameCanvas").setAttribute("width", SCALEDCANVASWIDTH);
+    document.getElementById("gameCanvas").setAttribute("height", SCALEDCANVASHEIGHT);
 
     //ctx.scale(canvasScale,canvasScale);
-
+    ctx.setTransform(canvasScale,0,0,canvasScale,0,0);
 
 }
