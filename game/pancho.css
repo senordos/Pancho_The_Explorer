@@ -1,0 +1,19 @@
+body { 
+    overflow:hidden; 
+    background: #ffffff; 
+    margin:0; 
+    padding:0; 
+    touch-action: pan-x pan-y;
+    touch-action: none;
+} 
+#pancho { 
+    width: 320px; 
+    height: 460px; 
+    background:#ffffff; 
+} 
+canvas { 
+    background: #ffffff; 
+    display: none; 
+    margin: 0 auto; 
+}
+
