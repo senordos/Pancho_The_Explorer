@@ -426,7 +426,7 @@ function loadMap(foregroundMap, backgroundMap)
 	lastBrickX = (brickcols * 64) - 64; //furthest right brick
 
 	//Load spritesheet images and set the total columns in sheet
-	bricksSpritesheet.src = "tiles\/spritesheet_mexico.png";
+	bricksSpritesheet.src = "tiles\/spritesheet_mexico_64.png";
 	var columns = levels[level].tilesets[0].columns;
 
 	//reset the arrays
