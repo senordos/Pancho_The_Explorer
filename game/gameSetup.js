@@ -83,10 +83,10 @@ function onWindowResize()
 
     margin = Math.floor((window.innerWidth - SCALEDCANVASWIDTH) / 2);
 
-    document.getElementById("gameCanvas").setAttribute("width", SCALEDCANVASWIDTH);
-    document.getElementById("gameCanvas").setAttribute("height", SCALEDCANVASHEIGHT);
+    //document.getElementById("gameCanvas").setAttribute("width", SCALEDCANVASWIDTH);
+    //document.getElementById("gameCanvas").setAttribute("height", SCALEDCANVASHEIGHT);
 
-    ctx.scale(canvasScale,canvasScale);
+    //ctx.scale(canvasScale,canvasScale);
 
 
 }
