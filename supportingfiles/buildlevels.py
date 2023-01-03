@@ -14,13 +14,13 @@ if len(sys.argv) == 3:
     startLevel = int(sys.argv[2])
 
 
-fw = open("leveldata.js","w")
+fw = open("../game/leveldata.js","w")
 fw.write("var levels = [];\n")
 
 levelArrayCounter = 0;
 maxLevel = 10
 for levelCounter in range(startLevel, maxLevel+1):
-    filename = "./levels/" + episodeName
+    filename = "../levels/" + episodeName
     if levelCounter < 10:
         filename = filename + "0"
     filename = filename + str(levelCounter)
