@@ -10,7 +10,7 @@ function _SlidingPlatform()
     this.xDirection = 1;
     this.yDirection = 0;
 
-    this.animXOffset = 0;
+    this.animXOffset = 128;
     this.animYOffset = 640;
     this.animMaxFrame = 1;
 
@@ -29,7 +29,7 @@ _SlidingPlatform.prototype.setMoveTargetX = function()
 
 _SlidingPlatform.prototype.updateMoveAttributesX = function (map, player)
 {
-    _Sprite.prototype.updateMoveAttributesY.call(this, map, player);
+    _Sprite.prototype.updateMoveAttributesX.call(this, map, player);
     if (this.collisionRight == true || this.collisionLeft == true)
     {
         this.xDirection = this.xDirection * -1;

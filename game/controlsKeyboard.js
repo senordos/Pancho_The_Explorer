@@ -25,9 +25,10 @@ function keyUpHandler(e)
 			case 38: player1_UpPressed = false; break;
 			case 39: player1_RightPressed = false; break;
 			case 40: player1_DownPressed = false; break;
-			case 67: /* c */ if (cheatmode == false) {cheatmode=true;} else {cheatmode=false;};break;
-			case 84: /* t */ if (showTargetRect == false) {showTargetRect=true;} else {showTargetRect=false;}; break;
-			case 80: /* p */ if (gamePaused == false) { gamePaused = true;} else {gamePaused=false;}; break;
-			case 82: /* r */ player1_ResetLevelPressed = true; break;
+			case 67:  /* c */ if (cheatmode == false) {cheatmode=true;} else {cheatmode=false;}; break;
+			case 73:  /* i */ if (introOff == false) {introOff = true;} else {introOff = false;}; break;
+			case 84:  /* t */ if (showTargetRect == false) {showTargetRect=true;} else {showTargetRect=false;}; break;
+			case 80:  /* p */ if (gamePaused == false) { gamePaused = true;} else {gamePaused=false;}; break;
+			case 82:  /* r */ player1_ResetLevelPressed = true; break;
 		}
 }

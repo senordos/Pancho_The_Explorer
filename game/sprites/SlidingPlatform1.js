@@ -5,8 +5,8 @@ function SlidingPlatform1()
 
     this.name = "SlidingPlatform1";
 
-    this.animXOffset = 0;
-    this.animYOffset = 640;
+    this.animXOffset = 128;
+    this.animYOffset = 896;
     this.animMaxFrame = 1;
 
 }

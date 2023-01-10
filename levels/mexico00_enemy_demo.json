@@ -222,11 +222,11 @@
         {
          "columns":6,
          "firstgid":1,
-         "image":"..\/tiles\/spritesheet_mexico.png",
+         "image":"..\/tiles\/spritesheet_mexico_64.png",
          "imageheight":512,
          "imagewidth":384,
          "margin":0,
-         "name":"spritesheet_Mexico",
+         "name":"spritesheet_mexico_64",
          "spacing":0,
          "tilecount":48,
          "tileheight":64,

@@ -728,11 +728,11 @@
         {
          "columns":7,
          "firstgid":1,
-         "image":"..\/tiles\/spritesheet_mexico.png",
+         "image":"..\/tiles\/spritesheet_mexico_64.png",
          "imageheight":768,
          "imagewidth":448,
          "margin":0,
-         "name":"spritesheet_Mexico",
+         "name":"spritesheet_mexico_64",
          "spacing":0,
          "tilecount":84,
          "tileheight":64,

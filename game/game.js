@@ -102,6 +102,8 @@ var extraLivesUsed = new Map(); //this tracks whether the extra lives have been 
 var gameState = "INTRO";
 
 var cheatmode = false;
+var introOff = false;
+var gamePaused = false;
 var debugmode = false;
 
 

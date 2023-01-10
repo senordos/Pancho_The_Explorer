@@ -307,7 +307,7 @@ function drawTextBoxes()
 	progressbox.updateTextArea(livestext,"LIVES: " + player1.lives, 1, "LEFT", 1, 0);
 	progressbox.draw(bctx);
 
-	if(level == 0)
+	if(level == 0 && introOff == false)
 	{
 			titletextbox.draw(bctx);
 			versionbox.draw(bctx);
@@ -345,7 +345,7 @@ function drawTextBoxes()
 												titletextbox.draw(bctx);
 												messagebox.updateTextArea(0,"PRESS R TO RESET LEVEL", 1, "CENTRE", 0, 0);
 												messagebox.draw(bctx);
-	  break;
+	  	break;
 		case "PLAYER_DIED_WAIT_FOR_RESETLEVEL":
 												if (player1.collisionDeath) { titletextbox.updateTextArea(0,"CAREFUL WHERE YOU STAND", 1, "CENTRE", 0, 0); }
 												if (player1.hit)            { titletextbox.updateTextArea(0, "WATCH OUT FOR THE BADDIES", 1, "CENTRE", 0, 0); }
@@ -380,5 +380,5 @@ function renderScreen()
 
 	ctx.clearRect(0, 0, CANVASWIDTH, CANVASWIDTH);            //Clear screen ready for new buffer
 	ctx.drawImage(buffer, 0, 0, 1024, 768, 0, 0, 1024, 768);  //Flip buffer into screen
-	bctx.clearRect(0, 0, CANVASWIDTH, CANVASHEIGHT);					//Clear buffer ready for new images
+	bctx.clearRect(0, 0, CANVASWIDTH, CANVASHEIGHT);		  //Clear buffer ready for new images
 }

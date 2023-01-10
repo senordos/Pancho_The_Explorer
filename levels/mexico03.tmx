@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.0" orientation="orthogonal" renderorder="right-down" width="200" height="30" tilewidth="64" tileheight="64" infinite="0" backgroundcolor="#ffffff" nextlayerid="4" nextobjectid="393">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="200" height="30" tilewidth="64" tileheight="64" infinite="0" backgroundcolor="#ffffff" nextlayerid="4" nextobjectid="393">
  <editorsettings>
   <export target="mexico03.json" format="json1"/>
  </editorsettings>
- <tileset firstgid="1" name="spritesheet_Mexico" tilewidth="64" tileheight="64" tilecount="84" columns="7">
-  <image source="../tiles/spritesheet_mexico.png" width="448" height="768"/>
+ <tileset firstgid="1" name="spritesheet_mexico_64" tilewidth="64" tileheight="64" tilecount="84" columns="7">
+  <image source="../game/tiles/spritesheet_mexico_64.png" width="448" height="768"/>
  </tileset>
  <tileset firstgid="85" name="Objects" tilewidth="64" tileheight="64" tilecount="400" columns="10">
-  <image source="../tiles/spritesheet_objects_64.png" width="640" height="2560"/>
+  <image source="../game/tiles/spritesheet_objects_64.png" width="640" height="2560"/>
  </tileset>
  <layer id="1" name="Background" width="200" height="30">
   <data encoding="csv">
@@ -119,13 +119,13 @@
   </object>
   <object id="315" name="Enemy4" gid="245" x="7040" y="768" width="64" height="64">
    <properties>
-    <property name="activateIfPlayerXGT" value="6912"/>
+    <property name="activateIfPlayerXGT" value="6784"/>
     <property name="canSeeEdges" value="true"/>
    </properties>
   </object>
   <object id="317" name="Enemy4" gid="245" x="6912" y="768" width="64" height="64">
    <properties>
-    <property name="activateIfPlayerXGT" value="6912"/>
+    <property name="activateIfPlayerXGT" value="6784"/>
     <property name="canSeeEdges" value="true"/>
    </properties>
   </object>
