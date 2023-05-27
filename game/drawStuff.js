@@ -375,7 +375,7 @@ function renderScreen()
 	drawBricks();
 	drawEnemies();  //and other sprites
 	drawPlayer();
-	drawControls();
+	if (ISMOBILE) { drawControls(); }
 	drawTextBoxes();
 
 	ctx.clearRect(0, 0, CANVASWIDTH, CANVASWIDTH);            //Clear screen ready for new buffer
