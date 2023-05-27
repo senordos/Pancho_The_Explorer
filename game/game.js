@@ -1172,7 +1172,7 @@ function gameLoop()
 
 		if (!checkIfLandscape())
 		{
-			gameState == "NOT_LANDSCAPE";
+			gameState = "NOT_LANDSCAPE";
 		}
 		else
 		{
