@@ -101,6 +101,7 @@ var extraLivesUsed = new Map(); //this tracks whether the extra lives have been 
 
 
 var gameState = "INTRO";
+var prePortraitGameState = "NOT_SET"
 
 var cheatmode = false;
 var introOff = false;
@@ -1172,106 +1173,110 @@ function gameLoop()
 
 		if (!checkIfLandscape())
 		{
+			prePortraitGameState = gameState;
 			gameState = "NOT_LANDSCAPE";
 		}
 		else
 		{
-				if (gameState == "INTRO")
+			if (gameState == "NOT_LANDSCAPE")
+			{
+				gameState = prePortraitGameState;
+			}
+
+			if (gameState == "INTRO")
+			{
+				//Draw the intro screen
+				drawIntroScreen(); //this function will only draw if not already there
+				demoMovePlayerX();
+			}
+			else if ( gameState == "PLAYING" )
+			{
+					var loopTimeIndex = date.getTime();
+					loopTimeGap = loopTimeIndex - lastTimeIndex;
+					lastTimeIndex = loopTimeIndex;
+					gameTimeInFrame = gameTimeInFrame + loopTimeGap;
+
+					if(gameTimeInFrame > ANIMATIONSPEED)
+					{
+							gameTimeInFrame = 0;
+							gameFrame = gameFrame + 1;
+							if (gameFrame > 19)
+							{
+									gameFrame=0;
+							}
+					}
+					moveEnemiesY();
+					performEnemiesActions();
+					moveEnemiesX();
+					performEnemiesActions();
+					cleanEnemyArray();   //garbage collects the enemy array
+
+					movePlayerX();
+					movePlayerY();
+
+					if ( checkPlayerReachedLevelEnd() ) { gameState = "LEVEL_COMPLETE"; }
+					else if ( checkPlayerKilled() ) { gameState = "PLAYER_DIED"; }
+			}
+			else if (gameState == "PLAYER_DIED")
+			{
+				handleStatePlayerDied();
+
+				if ( player1.lives <= 0 )
 				{
-					//Draw the intro screen
-					drawIntroScreen(); //this function will only draw if not already there
-					demoMovePlayerX();
+					gameState = "GAME_OVER";
+
+					level = 1;
+					console.log("setting GAME OVER");
 				}
-				else if ( gameState == "PLAYING" )
+				else
 				{
-						var loopTimeIndex = date.getTime();
-						loopTimeGap = loopTimeIndex - lastTimeIndex;
-						lastTimeIndex = loopTimeIndex;
-						gameTimeInFrame = gameTimeInFrame + loopTimeGap;
-
-						if(gameTimeInFrame > ANIMATIONSPEED)
-						{
-								gameTimeInFrame = 0;
-								gameFrame = gameFrame + 1;
-								if (gameFrame > 19)
-								{
-										gameFrame=0;
-								}
-						}
-						moveEnemiesY();
-						performEnemiesActions();
-						moveEnemiesX();
-						performEnemiesActions();
-						cleanEnemyArray();   //garbage collects the enemy array
-
-						movePlayerX();
-						movePlayerY();
-
-						if ( checkPlayerReachedLevelEnd() ) { gameState = "LEVEL_COMPLETE"; }
-						else if ( checkPlayerKilled() ) { gameState = "PLAYER_DIED"; }
+					gameState = "PLAYER_DIED_WAIT_FOR_RESETLEVEL";
+					console.log("setting PLAYER_DIED_WAIT_FOR_RESETLEVEL");
 				}
-				else if (gameState == "PLAYER_DIED")
-				{
-					  handleStatePlayerDied();
-
-						if ( player1.lives <= 0 )
-						{
-							gameState = "GAME_OVER";
-
-							level = 1;
-							console.log("setting GAME OVER");
-						}
-						else
-						{
-							gameState = "PLAYER_DIED_WAIT_FOR_RESETLEVEL";
-							console.log("setting PLAYER_DIED_WAIT_FOR_RESETLEVEL");
-						}
-				}
+			}
 		    else if (gameState == "PLAYER_DIED_WAIT_FOR_RESETLEVEL" && player1_ResetLevelPressed)
-				{
-					resetLevel();
-					gameState = "PLAYING"
-				}
-				else if (gameState == "GAME_OVER" && player1_ResetLevelPressed)
-				{
-					player1_ResetLevelPressed = false;
-					resetTouchButtons();
-					resetGame();
-				}
-				else if (gameState == "LEVEL_COMPLETE")
-				{
-					  var timeNow = new Date().getTime();
-					  levelTimeTaken = Math.floor((timeNow - levelTimeStart) / 1000);
+			{
+				resetLevel();
+				gameState = "PLAYING"
+			}
+			else if (gameState == "GAME_OVER" && player1_ResetLevelPressed)
+			{
+				player1_ResetLevelPressed = false;
+				resetTouchButtons();
+				resetGame();
+			}
+			else if (gameState == "LEVEL_COMPLETE")
+			{
+				var timeNow = new Date().getTime();
+				levelTimeTaken = Math.floor((timeNow - levelTimeStart) / 1000);
 
-						if ( level == 0 ) // don't draw the completion screen for startup level
-						{
-							  player1_ContinuePressed = true; //automatically continue to level 1
-						}
-
-						if (level == maxLevel)
-						{
-								gameState = "GAME_COMPLETE";
-								resetTouchButtons();
-						}
-						else
-						{
-							  gameState = "LEVEL_COMPLETE_WAIT_FOR_RESET";
-						}
-
-				}
-				else if ( gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET" && player1_ContinuePressed == true )
+				if ( level == 0 ) // don't draw the completion screen for startup level
 				{
-					level++;
-					player1_ContinuePressed = false;
-					//attemptsHistory.push(attempts);
-					attempts = 1;
-					initMusic(level);
-					loadLevel();
-					resetTouchButtons();
-					gameState = "PLAYING";
+						player1_ContinuePressed = true; //automatically continue to level 1
 				}
 
-				
+				if (level == maxLevel)
+				{
+						gameState = "GAME_COMPLETE";
+						resetTouchButtons();
+				}
+				else
+				{
+						gameState = "LEVEL_COMPLETE_WAIT_FOR_RESET";
+				}
+
+			}
+			else if ( gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET" && player1_ContinuePressed == true )
+			{
+				level++;
+				player1_ContinuePressed = false;
+				//attemptsHistory.push(attempts);
+				attempts = 1;
+				initMusic(level);
+				loadLevel();
+				resetTouchButtons();
+				gameState = "PLAYING";
+			}			
 		}
 		calculateFrameRate();
 		renderScreen();
