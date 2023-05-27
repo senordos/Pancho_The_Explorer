@@ -269,7 +269,6 @@ function drawEnemies()
 					 animYOffset = enemies[i].getDrawYCoord(gameFrame);
 				 }
 
-
 				 //sets position in the spritesheet
 				 //animXOffset = (gameFrame % enemies[i].animMaxFrame) * 64 + enemies[i].animXOffset;
 
@@ -277,8 +276,6 @@ function drawEnemies()
 				 //bctx.drawImage(enemies[i].image, animXOffset, animYOffset,64,64, enemies[i].x - mapOffsetX, enemies[i].y - mapOffsetY,64,64);
 
 				 bctx.drawImage(imageSprites, Math.floor(animXOffset), Math.floor(animYOffset),64,64, Math.floor(enemies[i].x - mapOffsetX), Math.floor(enemies[i].y - mapOffsetY),64,64);
-
-
 			}
 	 }
 }
@@ -315,6 +312,8 @@ function drawTextBoxes()
 
 	switch (gameState)
 	{
+		case "INTRO": drawIntroScreen(); 
+		break;
 
 		case "LEVEL_COMPLETE_WAIT_FOR_RESET":
 												if (level > 0)

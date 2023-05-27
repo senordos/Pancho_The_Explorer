@@ -1191,7 +1191,8 @@ function gameLoop()
 			if (gameState == "INTRO")
 			{
 				//Draw the intro screen
-				drawIntroScreen(); //this function will only draw if not already there
+				//State will draw HTML controls to screen.
+				//Clicking / touching a control will change the state.
 				demoMovePlayerX();
 			}
 			else if ( gameState == "PLAYING" )
