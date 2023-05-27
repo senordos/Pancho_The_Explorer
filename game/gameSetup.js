@@ -78,6 +78,12 @@ function onWindowResize()
 
     canvasScale = heightRatio; ///size to canvasScale to fit screen
 
+    if (canvasScale * CANVASWIDTH > window.innerWidth)
+    {
+      //then the screen is probably in Portrait mode on a mobile
+      canvasScale = window.innerWidth / CANVASWIDTH;
+    }
+
     SCALEDCANVASWIDTH = Math.floor(CANVASWIDTH * canvasScale);
     SCALEDCANVASHEIGHT = Math.floor(CANVASHEIGHT * canvasScale);
 
