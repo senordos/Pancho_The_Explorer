@@ -1271,10 +1271,10 @@ function gameLoop()
 					gameState = "PLAYING";
 				}
 
-				calculateFrameRate();
-				renderScreen();
+				
 		}
-
+		calculateFrameRate();
+		renderScreen();
 
 		var date2 = new Date();
 		gameLoopEnd = date2.getTime();
