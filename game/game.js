@@ -13,6 +13,7 @@ const UP = 1;
 const LEFT = 2;
 const RIGHT = 3;
 
+const ISMOBILE = isMobile();
 
 //initialise the sound engine
 gameSound = true;
