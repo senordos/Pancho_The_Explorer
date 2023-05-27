@@ -1173,7 +1173,7 @@ function gameLoop()
 
 		if (!checkIfLandscape())
 		{
-			prePortraitGameState = gameState;
+			if (gameState != "NOT_LANDSCAPE") { prePortraitGameState = gameState; }
 			gameState = "NOT_LANDSCAPE";
 		}
 		else
