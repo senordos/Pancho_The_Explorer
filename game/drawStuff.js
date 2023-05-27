@@ -379,7 +379,7 @@ function renderScreen()
 	drawTextBoxes();
 
 	bctx.fillStyle = "#000000";
-	bctx.fillText(gameState,10,300);
+	bctx.fillText(gameState,10,200);
 
 	ctx.clearRect(0, 0, CANVASWIDTH, CANVASWIDTH);            //Clear screen ready for new buffer
 	ctx.drawImage(buffer, 0, 0, 1024, 768, 0, 0, 1024, 768);  //Flip buffer into screen

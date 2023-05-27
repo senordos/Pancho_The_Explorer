@@ -1175,12 +1175,17 @@ function gameLoop()
 		{
 			if (gameState != "NOT_LANDSCAPE") { prePortraitGameState = gameState; }
 			gameState = "NOT_LANDSCAPE";
+
+			//screen size changed, call resize function.
+			onWindowResize();
 		}
 		else
 		{
 			if (gameState == "NOT_LANDSCAPE")
 			{
 				gameState = prePortraitGameState;
+				//screen size changed, call resize function.
+				onWindowResize();
 			}
 
 			if (gameState == "INTRO")
