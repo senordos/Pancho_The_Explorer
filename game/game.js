@@ -229,12 +229,13 @@ var chilliCounter = 0;
 
 var touch = { x:0, y:0, type:"NONE", id:0 };
 
-var touchButtons = {  left:{pressed:false, touchId:-1},
-											right:{pressed:false, touchId:-1},
-											up:{pressed:false, touchId:-1},
-											resetlevel:{pressed:false, touchId:-1},
-											continue:{pressed:false, touchId:-1}
-										}
+var touchButtons = {    
+						left:{pressed:false, touchId:-1},
+						right:{pressed:false, touchId:-1},
+						up:{pressed:false, touchId:-1},
+						resetlevel:{pressed:false, touchId:-1},
+						continue:{pressed:false, touchId:-1}
+					}
 
 
 var gameLoopStart;
@@ -1094,10 +1095,6 @@ function calculateFrameRate()
 			timeindex = n;
 
 		}
-		bctx.fillStyle = "#000000";
-
-		bctx.fillText(framerate,10,100);
-
 }
 
 function extraLife()

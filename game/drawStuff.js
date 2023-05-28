@@ -383,8 +383,12 @@ function renderScreen()
 	if (ISMOBILE) { drawControls(); }
 	drawTextBoxes();
 
+	// Show game state
+	// bctx.fillStyle = "#000000";
+	// bctx.fillText(gameState,10,200);
+
 	bctx.fillStyle = "#000000";
-	bctx.fillText(gameState,10,200);
+	bctx.fillText(framerate,10,100);
 
 	ctx.clearRect(0, 0, CANVASWIDTH, CANVASWIDTH);            //Clear screen ready for new buffer
 	ctx.drawImage(buffer, 0, 0, 1024, 768, 0, 0, 1024, 768);  //Flip buffer into screen
