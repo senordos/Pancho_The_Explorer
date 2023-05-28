@@ -5,6 +5,12 @@ function drawIntroScreen()
 {
     //Only draw the intro screen if it doesn't already exist
     var hasIntroScreen = document.getElementById('introScreen');
+
+	if(hasIntroScreen)
+	{
+		//Add stuff here to check of the Intro Screen is wrongly positioned.
+	}
+
     if(!hasIntroScreen)
     {
       console.log("DRAWING INTRO SCREEN");
