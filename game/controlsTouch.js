@@ -119,7 +119,7 @@ function onTouchEnd(event)
 function resetTouchButtons()
 {
 
-
+	
 	touchButtons.left.pressed = false;
 	touchButtons.right.pressed = false;
 	touchButtons.up.pressed = false;
