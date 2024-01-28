@@ -300,9 +300,29 @@ function initMusic(level)
 					//Same music as level 0
 					break;
 			case 3:
+					//Same music as level 0
+					break;
+			case 4:
 					sound.playNextTrack();
 					break;
-
+			case 5:
+					//No change to music
+					break;
+			case 6:
+					//No change to music
+					break;
+			case 7:
+					sound.playNextTrack();
+					break;
+			case 8:
+					//No change to music;
+					break;
+			case 8:
+					//No change to music;
+					break;
+			case 10:
+					sound.playNextTrack();
+					break;
 			default: //Do nothing
 
 		}
