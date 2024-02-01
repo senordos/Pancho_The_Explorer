@@ -30,7 +30,7 @@ function onTouchStart(event)
 					    //if (x>(900 * canvasScale + margin) &&  x<(1020 * canvasScale + margin)) { touchButtons.resetlevel.pressed = true; touchButtons.resetlevel.touchId = id }
 						player1_ResetLevelPressed = true;
 				}
-				else if (gameState == "LEVEL_COMPLETE")
+				else if (gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET")
 				{
 						//if (x>(0 * canvasScale + margin) &&  x<(1024 * canvasScale + margin)) { touchButtons.continue.pressed = true; touchButtons.continue.touchId = id }
 						player1_ContinuePressed = true;
