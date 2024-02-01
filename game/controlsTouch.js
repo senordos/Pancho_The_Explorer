@@ -24,7 +24,7 @@ function onTouchStart(event)
 						if (x>(160 * canvasScale + margin) &&  x<(512 * canvasScale + margin))  { touchButtons.right.pressed = true; touchButtons.right.touchId = id }
 						if (x>(512 * canvasScale + margin) /*&&  x<(1020 * canvasScale + margin)*/) { touchButtons.up.pressed = true; touchButtons.up.touchId = id }
 				}
-				else if (gameState == "PLAYER_DIED_WAIT_FOR_RESETLEVEL")
+				else if (gameState == "PLAYER_DIED_WAIT_FOR_RESETLEVEL" || "GAME_OVER")
 				{
 						
 					    //if (x>(900 * canvasScale + margin) &&  x<(1020 * canvasScale + margin)) { touchButtons.resetlevel.pressed = true; touchButtons.resetlevel.touchId = id }
