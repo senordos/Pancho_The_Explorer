@@ -260,7 +260,8 @@ function resetGame()
 
 		//Start the game at the begining
 		level = 0;
-		player1.lives = 1;
+		player1.lives = 3;
+		extraLivesUsed.clear();
 		loadLevel();
 }
 
