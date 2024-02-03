@@ -408,7 +408,8 @@ function loadObjects(objects)
 							//TO FIX, THERE IS A BIT OF A HACK... CHANGING THE NAME HERE...
 							changedObjectName = true;
 							var originalObjectName = objects[o].name;
-							objects[o].name = "Chilli1";
+							//Rather than an extra life, change to be invincible chilli
+							objects[o].name = "ChilliINV";
 						}
 					}
 					else
