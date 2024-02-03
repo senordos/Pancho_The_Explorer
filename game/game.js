@@ -343,14 +343,14 @@ function loadLevel()
 		{
 			switch( levels[level].layers[l].name )
 			{
-				case "Map": 				foregroundMap = levels[level].layers[l];
-														break;
+				case "Map": 		foregroundMap = levels[level].layers[l];
+									break;
 
 				case "Background": 	backgroundMap = levels[level].layers[l];
-														break;
+									break;
 
 				case "Objects":     loadObjects( levels[level].layers[l].objects );
-														break;
+									break;
 			}
 		}
 		loadMap(foregroundMap,backgroundMap);
@@ -372,52 +372,58 @@ function loadObjects(objects)
 	{
 			if (objects[o].name == "Player")
 			{
-					setAttributes(player1, {
-							name:"Player1",
-							img:"tiles/spritesheet_player_v2.png",
-							image_src:"tiles/spritesheet_player_v2.png",
-							rectOffset:       {top:0,  bottom:63, left:7,  right:55},
-							rectTopOffset:    {top:0,  bottom:31, left:7, right:55},
-							rectBottomOffset: {top:32, bottom:63, left:7, right:55},
-							rectLeftOffset:   {top:19, bottom:43, left:7,  right:19},
-							rectRightOffset:  {top:19, bottom:43, left:43, right:55}
-					});
+				setAttributes(player1, {
+						name:"Player1",
+						img:"tiles/spritesheet_player_v2.png",
+						image_src:"tiles/spritesheet_player_v2.png",
+						rectOffset:       {top:0,  bottom:63, left:7,  right:55},
+						rectTopOffset:    {top:0,  bottom:31, left:7, right:55},
+						rectBottomOffset: {top:32, bottom:63, left:7, right:55},
+						rectLeftOffset:   {top:19, bottom:43, left:7,  right:19},
+						rectRightOffset:  {top:19, bottom:43, left:43, right:55}
+				});
 
-					player1.init(objects[o]);
-					player1.xSpeed = 0;
+				player1.init(objects[o]);
+				player1.xSpeed = 0;
 			}
 			else
 			{
-					if (objects[o].name != "")
+				if (objects[o].name != "")
+				{
+					console.log("Level = " + level);
+					console.log("Name  = " + objects[o].name);
+					//rename the Extra Life object if it has already been used.
+					if(objects[o].name == "ChilliEL")
 					{
-						console.log("Level = " + level);
-						console.log("Name  = " + objects[o].name);
-						//rename the Extra Life object if it has already been used.
-						if(objects[o].name == "ChilliEL")
+						extraLifeId = level + "-" + objects[o].x + "-" + objects[o].y;
+						if (extraLivesUsed.has(extraLifeId))
 						{
-							extraLifeId = level + "-" + objects[o].x + "-" + objects[o].y;
-							if (extraLivesUsed.has(extraLifeId))
+							if (extraLivesUsed.get(extraLifeId))
 							{
-								if (extraLivesUsed.get(extraLifeId))
-								{
-									objects[o].name = "Chilli1";
-								}
-							}
-							else
-							{
-								extraLivesUsed.set(extraLifeId, false);
+								//BAD DESIGN DECISION HERE AS THIS EDITS THE ACTUAL MAP
+								//RATHER THEN DOING SOMETHING TEMPORARY!
+								//TO FIX, THERE IS A BIT OF A HACK... CHANGING THE NAME HERE...
+								objects[o].name = "Chilli1";
 							}
 						}
-						eval("enemies[enemyCounter] = new " + objects[o].name + "()");
-						enemies[enemyCounter].init(objects[o]);
-						if ( enemies[enemyCounter].stompable ) { stompableEnemiesCounter++; };
-						if ( enemies[enemyCounter].name == "Chilli1") { chilliCounter++; }
-						enemyCounter++;
+						else
+						{
+							extraLivesUsed.set(extraLifeId, false);
+						}
 					}
-					else
-					{
-							console.log("WARNING game.js --- Enemy Object creation attempt with no name set - cannot create object");
-					}
+					eval("enemies[enemyCounter] = new " + objects[o].name + "()");
+					enemies[enemyCounter].init(objects[o]);
+					
+					//...AND CHANGING IT BACK HERE, LEAVING THE LEVEL DATA INTACT.
+					objects[o].name = "ChilliEL";
+					if ( enemies[enemyCounter].stompable ) { stompableEnemiesCounter++; };
+					if ( enemies[enemyCounter].name == "Chilli1") { chilliCounter++; }
+					enemyCounter++;
+				}
+				else
+				{
+					console.log("WARNING game.js --- Enemy Object creation attempt with no name set - cannot create object");
+				}
 			}
 	}
 	maxStompableEnemyCounter = stompableEnemiesCounter;
