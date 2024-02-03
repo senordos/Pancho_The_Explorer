@@ -403,6 +403,7 @@ function loadObjects(objects)
 								//BAD DESIGN DECISION HERE AS THIS EDITS THE ACTUAL MAP
 								//RATHER THEN DOING SOMETHING TEMPORARY!
 								//TO FIX, THERE IS A BIT OF A HACK... CHANGING THE NAME HERE...
+								var originalObjectName = objects[o].name;
 								objects[o].name = "Chilli1";
 							}
 						}
@@ -413,9 +414,9 @@ function loadObjects(objects)
 					}
 					eval("enemies[enemyCounter] = new " + objects[o].name + "()");
 					enemies[enemyCounter].init(objects[o]);
-					
+
 					//...AND CHANGING IT BACK HERE, LEAVING THE LEVEL DATA INTACT.
-					objects[o].name = "ChilliEL";
+					objects[o].name = originalObjectName;
 					if ( enemies[enemyCounter].stompable ) { stompableEnemiesCounter++; };
 					if ( enemies[enemyCounter].name == "Chilli1") { chilliCounter++; }
 					enemyCounter++;
