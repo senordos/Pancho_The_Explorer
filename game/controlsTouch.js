@@ -34,6 +34,7 @@ function onTouchStart(event)
 				{					   
 						//if (x>(0 * canvasScale + margin) &&  x<(1024 * canvasScale + margin)) { touchButtons.continue.pressed = true; touchButtons.continue.touchId = id }
 						player1_ContinuePressed = true;
+						player1_ScreenTouched = true;
 				}
 
 		}

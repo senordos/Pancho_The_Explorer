@@ -133,6 +133,8 @@ var player1_DownPressed=false;
 var player1_LeftPressed=false;
 var player1_RightPressed=false;
 var player1_ContinuePressed=false;
+var player1_ScreenTouched = false;
+
 var player1_ResetLevelPressed=false;
 
 var player2_UpPressed=false;
@@ -1306,10 +1308,11 @@ function gameLoop()
 				}
 
 			}
-			else if ( gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET" && player1_ContinuePressed)
+			else if ( gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET" && ( player1_ContinuePressed || player1_ScreenTouched))
 			{
 				level++;
 				player1_ContinuePressed = false;
+				player1_ScreenTouched = false;
 				//attemptsHistory.push(attempts);
 				attempts = 1;
 				initMusic(level);
