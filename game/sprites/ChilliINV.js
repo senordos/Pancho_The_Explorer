@@ -1,9 +1,9 @@
-function ChilliNV()
+function ChilliINV()
 {
 
     _Sprite.call(this);
 
-    this.name = "ChilliNV";
+    this.name = "ChilliINV";
     this.active = true;
 
     this.image_src = "tiles/spritesheet_chilli1.png";
@@ -16,9 +16,9 @@ function ChilliNV()
 
 }
 
-ChilliNV.prototype = Object.create(_Sprite.prototype);
+ChilliINV.prototype = Object.create(_Sprite.prototype);
 
-ChilliNV.prototype.getCollisionEvent = function(player)
+ChilliINV.prototype.getCollisionEvent = function(player)
 {
     if (this.checkPlayerCollision(player))
     {
