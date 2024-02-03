@@ -370,62 +370,70 @@ function loadObjects(objects)
 
 	for (var o=0; o < objects.length; o++)
 	{
-			if (objects[o].name == "Player")
-			{
-				setAttributes(player1, {
-						name:"Player1",
-						img:"tiles/spritesheet_player_v2.png",
-						image_src:"tiles/spritesheet_player_v2.png",
-						rectOffset:       {top:0,  bottom:63, left:7,  right:55},
-						rectTopOffset:    {top:0,  bottom:31, left:7, right:55},
-						rectBottomOffset: {top:32, bottom:63, left:7, right:55},
-						rectLeftOffset:   {top:19, bottom:43, left:7,  right:19},
-						rectRightOffset:  {top:19, bottom:43, left:43, right:55}
-				});
+		//PART OF A HACK TO FIX GAME RESETS WHERE EXTRA LIVES NEED RESETING DUE TO BAD FORESIGHT.
+		changedObjectName = false;
 
-				player1.init(objects[o]);
-				player1.xSpeed = 0;
+		if (objects[o].name == "Player")
+		{
+			setAttributes(player1, {
+					name:"Player1",
+					img:"tiles/spritesheet_player_v2.png",
+					image_src:"tiles/spritesheet_player_v2.png",
+					rectOffset:       {top:0,  bottom:63, left:7,  right:55},
+					rectTopOffset:    {top:0,  bottom:31, left:7, right:55},
+					rectBottomOffset: {top:32, bottom:63, left:7, right:55},
+					rectLeftOffset:   {top:19, bottom:43, left:7,  right:19},
+					rectRightOffset:  {top:19, bottom:43, left:43, right:55}
+			});
+
+			player1.init(objects[o]);
+			player1.xSpeed = 0;
+		}
+		else
+		{
+			if (objects[o].name != "")
+			{
+				console.log("Level = " + level);
+				console.log("Name  = " + objects[o].name);
+				//rename the Extra Life object if it has already been used.
+				if(objects[o].name == "ChilliEL")
+				{
+					extraLifeId = level + "-" + objects[o].x + "-" + objects[o].y;
+					if (extraLivesUsed.has(extraLifeId))
+					{
+						if (extraLivesUsed.get(extraLifeId))
+						{
+							//BAD DESIGN DECISION HERE AS THIS EDITS THE ACTUAL MAP
+							//RATHER THEN DOING SOMETHING TEMPORARY!
+							//TO FIX, THERE IS A BIT OF A HACK... CHANGING THE NAME HERE...
+							changedObjectName = true;
+							var originalObjectName = objects[o].name;
+							objects[o].name = "Chilli1";
+						}
+					}
+					else
+					{
+						extraLivesUsed.set(extraLifeId, false);
+					}
+				}
+				eval("enemies[enemyCounter] = new " + objects[o].name + "()");
+				enemies[enemyCounter].init(objects[o]);
+
+				//...AND CHANGING IT BACK HERE, LEAVING THE LEVEL DATA INTACT.
+				if (changedObjectName)
+				{
+					objects[o].name = originalObjectName;
+					changedObjectName=false;
+				}
+				if ( enemies[enemyCounter].stompable ) { stompableEnemiesCounter++; };
+				if ( enemies[enemyCounter].name == "Chilli1") { chilliCounter++; }
+				enemyCounter++;
 			}
 			else
 			{
-				if (objects[o].name != "")
-				{
-					console.log("Level = " + level);
-					console.log("Name  = " + objects[o].name);
-					//rename the Extra Life object if it has already been used.
-					if(objects[o].name == "ChilliEL")
-					{
-						extraLifeId = level + "-" + objects[o].x + "-" + objects[o].y;
-						if (extraLivesUsed.has(extraLifeId))
-						{
-							if (extraLivesUsed.get(extraLifeId))
-							{
-								//BAD DESIGN DECISION HERE AS THIS EDITS THE ACTUAL MAP
-								//RATHER THEN DOING SOMETHING TEMPORARY!
-								//TO FIX, THERE IS A BIT OF A HACK... CHANGING THE NAME HERE...
-								var originalObjectName = objects[o].name;
-								objects[o].name = "Chilli1";
-							}
-						}
-						else
-						{
-							extraLivesUsed.set(extraLifeId, false);
-						}
-					}
-					eval("enemies[enemyCounter] = new " + objects[o].name + "()");
-					enemies[enemyCounter].init(objects[o]);
-
-					//...AND CHANGING IT BACK HERE, LEAVING THE LEVEL DATA INTACT.
-					objects[o].name = originalObjectName;
-					if ( enemies[enemyCounter].stompable ) { stompableEnemiesCounter++; };
-					if ( enemies[enemyCounter].name == "Chilli1") { chilliCounter++; }
-					enemyCounter++;
-				}
-				else
-				{
-					console.log("WARNING game.js --- Enemy Object creation attempt with no name set - cannot create object");
-				}
+				console.log("WARNING game.js --- Enemy Object creation attempt with no name set - cannot create object");
 			}
+		}
 	}
 	maxStompableEnemyCounter = stompableEnemiesCounter;
 	maxChilliCounter = chilliCounter;
