@@ -1306,7 +1306,7 @@ function gameLoop()
 				}
 
 			}
-			else if ( gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET" && player1_ContinuePressed == true )
+			else if ( gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET" && player1_ContinuePressed)
 			{
 				level++;
 				player1_ContinuePressed = false;
