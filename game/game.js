@@ -1308,7 +1308,9 @@ function gameLoop()
 				}
 
 			}
-			else if ( gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET" && ( player1_ContinuePressed || player1_ScreenTouched))
+			else if ( gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET" && ( player1_ContinuePressed 
+																	|| player1_ScreenTouched 
+																	|| player1_ResetLevelPressed))
 			{
 				sound.playSound(SND_CHILLI);
 				level++;
