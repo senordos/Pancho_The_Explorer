@@ -1313,9 +1313,10 @@ function gameLoop()
 																	|| player1_ScreenTouched 
 																	|| player1_ResetLevelPressed))
 			{
-				level++;
-				player1_ContinuePressed = false;
 				player1_ScreenTouched = false;
+
+				level++;
+
 				//attemptsHistory.push(attempts);
 				attempts = 1;
 				initMusic(level);
