@@ -1310,6 +1310,7 @@ function gameLoop()
 			}
 			else if ( gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET" && ( player1_ContinuePressed || player1_ScreenTouched))
 			{
+				sound.playSound(SND_CHILLI);
 				level++;
 				player1_ContinuePressed = false;
 				player1_ScreenTouched = false;
