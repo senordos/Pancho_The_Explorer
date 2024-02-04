@@ -1312,7 +1312,6 @@ function gameLoop()
 																	|| player1_ScreenTouched 
 																	|| player1_ResetLevelPressed))
 			{
-				sound.playSound(SND_CHILLI);
 				level++;
 				player1_ContinuePressed = false;
 				player1_ScreenTouched = false;
