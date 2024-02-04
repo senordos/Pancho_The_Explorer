@@ -1278,6 +1278,7 @@ function gameLoop()
 			}
 		    else if (gameState == "PLAYER_DIED_WAIT_FOR_RESETLEVEL" && player1_ScreenTouched) //player1_ResetLevelPressed)
 			{
+				player1_ScreenTouched = false;
 				resetLevel();
 				gameState = "PLAYING"
 			}
