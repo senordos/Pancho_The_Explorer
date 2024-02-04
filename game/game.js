@@ -1276,7 +1276,7 @@ function gameLoop()
 					console.log("setting PLAYER_DIED_WAIT_FOR_RESETLEVEL");
 				}
 			}
-		    else if (gameState == "PLAYER_DIED_WAIT_FOR_RESETLEVEL" && player1_ResetLevelPressed)
+		    else if (gameState == "PLAYER_DIED_WAIT_FOR_RESETLEVEL" && player1_ScreenTouched) //player1_ResetLevelPressed)
 			{
 				resetLevel();
 				gameState = "PLAYING"
