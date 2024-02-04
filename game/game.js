@@ -395,8 +395,8 @@ function loadObjects(objects)
 		{
 			if (objects[o].name != "")
 			{
-				console.log("Level = " + level);
-				console.log("Name  = " + objects[o].name);
+				//console.log("Level = " + level);
+				//console.log("Name  = " + objects[o].name);
 				//rename the Extra Life object if it has already been used.
 				if(objects[o].name == "ChilliEL")
 				{
@@ -435,6 +435,8 @@ function loadObjects(objects)
 			else
 			{
 				console.log("WARNING game.js --- Enemy Object creation attempt with no name set - cannot create object");
+				console.log("                --- Object ID = " + o);
+
 			}
 		}
 	}
@@ -840,7 +842,7 @@ function checkWorldCollisions(sprite)
 									{
 											sprite.collisionClimb = true;
 											collisionObjectIsBlocker = false;
-											console.log("Collision - climbable tile: " + bricks[i].tileName);
+											//console.log("Collision - climbable tile: " + bricks[i].tileName);
 									}
 							}
 					}
@@ -1268,23 +1270,24 @@ function gameLoop()
 					gameState = "GAME_OVER";
 
 					level = 1;
-					console.log("setting GAME OVER");
+					console.log("Setting gameState = GAME OVER");
 				}
 				else
 				{
 					gameState = "PLAYER_DIED_WAIT_FOR_RESETLEVEL";
-					console.log("setting PLAYER_DIED_WAIT_FOR_RESETLEVEL");
+					console.log("Setting gameState =  PLAYER_DIED_WAIT_FOR_RESETLEVEL");
 				}
 			}
 		    else if (gameState == "PLAYER_DIED_WAIT_FOR_RESETLEVEL" && player1_ScreenTouched)
 			{
-				player1_ScreenTouched = false;
+				//player1_ScreenTouched = false;
+				resetTouchButtons();
 				resetLevel();
 				gameState = "PLAYING"
 			}
-			else if (gameState == "GAME_OVER" && player1_ResetLevelPressed)
+			else if (gameState == "GAME_OVER" && player1_ScreenTouched)
 			{
-				player1_ResetLevelPressed = false;
+				//player1_ResetLevelPressed = false;
 				resetTouchButtons();
 				resetGame();
 			}
@@ -1311,14 +1314,15 @@ function gameLoop()
 			}
 			else if ( gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET" && player1_ScreenTouched )
 			{
-				player1_ScreenTouched = false;
+				
 				level++;
+				//player1_ScreenTouched = false;
+				resetTouchButtons();
 
 				//attemptsHistory.push(attempts);
 				attempts = 1;
 				initMusic(level);
 				loadLevel();
-				resetTouchButtons();
 				gameState = "PLAYING";
 			}			
 		}
