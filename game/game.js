@@ -26,7 +26,7 @@ sound.loadSound(SND_CHILLI, "sounds/sound_chilli.wav");
 sound.loadSound(SND_PLAYERDIE, "sounds/sound_playerdie.wav");
 sound.loadSound(SND_EXTRALIFE, "sounds/sound_extralife.wav");
 sound.loadMusic(0,"sounds/music_conejo-rapido-1-5.mp3")
-sound.loadMusic(1,"sounds/music_robosocks-chiptune-lead.mp3");
+sound.loadMusic(1,"sounds/music_african-rhythm-africa-groovy-sport-stomping-music-20622.mp3");
 sound.loadMusic(2,"sounds/music_bassfreak-another-chiptune.mp3");
 
 
