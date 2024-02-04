@@ -142,4 +142,6 @@ function resetTouchButtons()
 	player1_UpPressed = false;
 	player1_ContinuePressed = false;
 	player1_ResetLevelPressed = false;
+	player1_ScreenTouched = false;
+
 }
