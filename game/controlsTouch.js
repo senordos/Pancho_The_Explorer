@@ -24,17 +24,17 @@ function onTouchStart(event)
 						if (x>(160 * canvasScale + margin) &&  x<(512 * canvasScale + margin))  { touchButtons.right.pressed = true; touchButtons.right.touchId = id }
 						if (x>(512 * canvasScale + margin) /*&&  x<(1020 * canvasScale + margin)*/) { touchButtons.up.pressed = true; touchButtons.up.touchId = id }
 				}
-				else if (gameState == "PLAYER_DIED_WAIT_FOR_RESETLEVEL" || "GAME_OVER")
+				else if (gameState == "PLAYER_DIED_WAIT_FOR_RESETLEVEL" || "GAME_OVER" || "LEVEL_COMPLETE_WAIT_FOR_RESET")
 				{
 						
 					    //if (x>(900 * canvasScale + margin) &&  x<(1020 * canvasScale + margin)) { touchButtons.resetlevel.pressed = true; touchButtons.resetlevel.touchId = id }
 						//player1_ResetLevelPressed = true;
 						player1_ScreenTouched = true;
-						sound.playSound(SND_CHILLI);
+						//sound.playSound(SND_CHILLI);
 
 
 				}
-				else if (gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET") 
+				/*else if (gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET") 
 				{					   
 						//if (x>(0 * canvasScale + margin) &&  x<(1024 * canvasScale + margin)) { touchButtons.continue.pressed = true; touchButtons.continue.touchId = id }
 						//player1_ResetLevelPressed = true;
@@ -42,7 +42,7 @@ function onTouchStart(event)
 						player1_ScreenTouched = true;
 						sound.playSound(SND_CHILLI);
 
-				}
+				}*/
 
 		}
 
