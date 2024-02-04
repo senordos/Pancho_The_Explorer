@@ -1278,14 +1278,14 @@ function gameLoop()
 					console.log("Setting gameState =  PLAYER_DIED_WAIT_FOR_RESETLEVEL");
 				}
 			}
-		    else if (gameState == "PLAYER_DIED_WAIT_FOR_RESETLEVEL" && player1_ScreenTouched)
+		    else if (gameState == "PLAYER_DIED_WAIT_FOR_RESETLEVEL" && (player1_ScreenTouched || player1_ResetPressed))
 			{
 				//player1_ScreenTouched = false;
 				resetTouchButtons();
 				resetLevel();
 				gameState = "PLAYING"
 			}
-			else if (gameState == "GAME_OVER" && player1_ScreenTouched)
+			else if (gameState == "GAME_OVER" && ( player1_ScreenTouched || player1_ResetPressed ))
 			{
 				//player1_ResetLevelPressed = false;
 				resetTouchButtons();
@@ -1312,7 +1312,7 @@ function gameLoop()
 				}
 
 			}
-			else if ( gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET" && player1_ScreenTouched )
+			else if ( gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET" && ( player1_ScreenTouched || player1_ContinuePressed ) )
 			{
 				
 				level++;
