@@ -1312,7 +1312,9 @@ function gameLoop()
 				}
 
 			}
-			else if ( gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET" && ( player1_ScreenTouched || player1_ContinuePressed ) )
+			else if ( gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET" && ( player1_ScreenTouched 
+																		|| player1_ContinuePressed 
+																		|| player1_ResetPressed ) )
 			{
 				
 				level++;
