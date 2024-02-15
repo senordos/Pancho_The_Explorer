@@ -17,7 +17,7 @@ const ISMOBILE = isMobile();
 
 //initialise the sound engine
 gameSound = true;
-gameMusic = true;
+gameMusic = false;
 var sound = new Sound();
 sound.soundsOn();          //start the game with the sounds enabled
 sound.loadSound(SND_JUMP, "sounds/jump.wav");

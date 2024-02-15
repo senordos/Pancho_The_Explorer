@@ -70,7 +70,7 @@ function drawIntroScreen()
           button_toggleMusic.style.width = buttonSize;
           button_toggleMusic.style.height = buttonSize;
           button_toggleMusic.style.display = "inline";
-          button_toggleMusic.style.backgroundImage = "url('tiles/button_soundon.png')";
+          button_toggleMusic.style.backgroundImage = "url('tiles/button_soundoff.png')";
           button_toggleMusic.style.backgroundSize = buttonSize;
           button_toggleMusic.style.border = "none";
           button_toggleMusic.style.padding = "0px 0px";
