@@ -885,6 +885,10 @@ function checkEnemyCollisions(player)
 										extraLivesUsed.set(extraLifeId,true);
 										extraLife();
 										break;
+							case "ChilliINV":
+										//get Chilli ID
+										startInvincibility(player);
+										break;										
 							case "Exit1":
 										player.collisionExit = true;
 										break;
@@ -904,6 +908,13 @@ function checkEnemyCollisions(player)
 		}
 }
 
+function startInvincibility(player)
+{
+	//player gets 10s of invincibility
+	player.isInvincible = true;
+	var date = new Date();
+	player.invincibleStartTime = date.getTime();
+}
 
 function demoMovePlayerX()
 {

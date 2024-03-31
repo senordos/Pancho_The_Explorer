@@ -1,6 +1,6 @@
 function ChilliINV()
 {
-
+  //INVINCIBLE CHILLI 
     _Sprite.call(this);
 
     this.name = "ChilliINV";

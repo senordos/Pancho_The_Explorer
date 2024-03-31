@@ -35,6 +35,8 @@ function _Sprite()
     this.hit = false;    //sprite is hit by something. May become unhit in future
     this.jump = false;
     this.stompable = false;
+    this.isInvincible = false; 
+    this.invincibleStartTime = null;
 
     //determine if the sprite will collide with the world bricks, or ignore them
     this.interactsWithWorld = true;
