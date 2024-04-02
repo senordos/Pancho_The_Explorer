@@ -183,14 +183,14 @@ function drawPlayer()
 	 var animXOffset = 0;
 	 var animYOffset = 0;
 
-		if(player1.xDirection == -1)
-		{
-				animYOffset = 64;
-		}
-		else if(player1.xDirection == 1)
-		{
-				animYOffset = 0;
-		}
+	if(player1.xDirection == -1)
+	{
+			animYOffset = 64;
+	}
+	else if(player1.xDirection == 1)
+	{
+			animYOffset = 0;
+	}
 
 
 	 if(player1_LeftPressed)
@@ -209,6 +209,26 @@ function drawPlayer()
 
 
 	 bctx.drawImage(imageSprites, animXOffset,animYOffset,64,64, player1.x - mapOffsetX, player1.y - mapOffsetY,64,64);
+
+	 //draw invicibility sphere
+	 //and play sound at same time
+	 var date = new Date();
+	 
+	 if  (player1.isInvincible
+		  && (Math.trunc((date.getTime() - player1.invincibleStartTime) / 500) % 2 == 0))
+	 {
+		bctx.drawImage(imageSprites, 0,2432,64,64, player1.x - mapOffsetX, player1.y - mapOffsetY,64,64);
+		if ( ! player1.invincibleSoundHasPlayed ) 
+		{ 
+			sound.playSound(SND_INVINCIBLE);
+			player1.invincibleSoundHasPlayed = true; 
+		}		
+	 }
+	 else
+	 {
+		player1.invincibleSoundHasPlayed = false; 
+	 }
+	 
 }
 
 

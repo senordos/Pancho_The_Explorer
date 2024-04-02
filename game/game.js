@@ -6,6 +6,7 @@ const SND_STOMP = 1;
 const SND_PLAYERDIE = 2;
 const SND_CHILLI = 3;
 const SND_EXTRALIFE = 4;
+const SND_INVINCIBLE = 5;
 
 //some direction constants for general use
 const DOWN = 0;
@@ -23,8 +24,10 @@ sound.soundsOn();          //start the game with the sounds enabled
 sound.loadSound(SND_JUMP, "sounds/jump.wav");
 sound.loadSound(SND_STOMP, "sounds/stomp.wav");
 sound.loadSound(SND_CHILLI, "sounds/sound_chilli.wav");
+sound.loadSound(SND_INVINCIBLE, "sounds/sound_invincible.wav");
 sound.loadSound(SND_PLAYERDIE, "sounds/sound_playerdie.wav");
 sound.loadSound(SND_EXTRALIFE, "sounds/sound_extralife.wav");
+
 sound.loadMusic(0,"sounds/music_conejo-rapido-1-5.mp3")
 sound.loadMusic(1,"sounds/music_african-rhythm-africa-groovy-sport-stomping-music-20622.mp3");
 sound.loadMusic(2,"sounds/music_bassfreak-another-chiptune.mp3");
@@ -887,7 +890,7 @@ function checkEnemyCollisions(player)
 										break;
 							case "ChilliINV":
 										//get Chilli ID
-										startInvincibility(player);
+										player.startInvincibility();
 										break;										
 							case "Exit1":
 										player.collisionExit = true;
@@ -908,13 +911,6 @@ function checkEnemyCollisions(player)
 		}
 }
 
-function startInvincibility(player)
-{
-	//player gets 10s of invincibility
-	player.isInvincible = true;
-	var date = new Date();
-	player.invincibleStartTime = date.getTime();
-}
 
 function demoMovePlayerX()
 {
@@ -1097,6 +1093,11 @@ function performEnemiesActions()
 	}
 }
 
+function performPlayerActions()
+{
+	player1.updateActions();
+}
+
 function spawnObject(objectType,xPos,yPos,params)
 {
 	newEnemyPosition = enemies.length;
@@ -1178,30 +1179,34 @@ function checkIfLandscape()
 
 function checkPlayerKilled()
 {
-	if (! cheatmode)
+	if ( cheatmode || player1.isInvincible)
 	{
-			if (player1.hit)
-			{
-				  //player hit by a baddie
-					return true;
-			}
-			else if (player1.collisionDeath == true)
-			{
-				  //player walked into an obstacle, like spikes
-					return true;
-			}
-			return false;
-	}
-	else
-	{
-			//cheatmode is on
-			player1.hit = false;
-			player1.collisionDeath = false;
+		//if player cannot be killed due to cheat or invincibility...
 
+		player1.hit = false;
+		player1.collisionDeath = false;
+
+		if (cheatmode)
+		{
 			bctx.fillStyle = "#AAAAAA";
 			bctx.fillText("Cheat Mode On", 100, 50);
-
-			return false;
+		}
+		return false;
+	} 
+	else
+	{
+		//under normal circumstances, player can be killed
+		if (player1.hit)
+		{
+				//player hit by a baddie
+				return true;
+		}
+		else if (player1.collisionDeath == true)
+		{
+				//player walked into an obstacle, like spikes
+				return true;
+		}
+		return false;
 	}
 }
 
@@ -1268,6 +1273,7 @@ function gameLoop()
 
 					movePlayerX();
 					movePlayerY();
+					performPlayerActions();
 
 					if ( checkPlayerReachedLevelEnd() ) { gameState = "LEVEL_COMPLETE"; }
 					else if ( checkPlayerKilled() ) { gameState = "PLAYER_DIED"; }

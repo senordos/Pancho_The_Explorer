@@ -2,7 +2,9 @@
 
  I decided I wanted to make a game. It was a goal I had when leaving uni.... that was 13 years ago (2003)!
 
- The goal:
+ The first upload (when I started makng it) was November 2016.
+
+ The goal (2016):
  - Create a game
  - Focus on building a gaming engine... something that works
  - The game will be a platform game
@@ -22,4 +24,8 @@ Review the goals (2022):
  - Game should have 10 levels (Done but needs attention)
  - Focus is on something that works... not fancy graphics... not fancy sound (cos I can't do that!) (DONE)
 
+ Review the goals again (2024)
+ REMAINING:
+ - Target platform is Apple iPad
+ - Game should have 10 levels
  

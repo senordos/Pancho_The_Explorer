@@ -20,7 +20,7 @@ function _Sprite()
     this.animMaxFrame = 4;
     this.xDirection = 1;
     this.yDirection = 1;
-    this.groundSpeed = 0;
+    this.groundSpeed = 0; 
     this.startXDirection = this.xDirection;
     this.startYDirection = this.yDirection;
     this.xSpeed = 0;
@@ -37,6 +37,8 @@ function _Sprite()
     this.stompable = false;
     this.isInvincible = false; 
     this.invincibleStartTime = null;
+    this.invincibleSoundHasPlayed = false; //this is needed to stop the sound repeating each frame.
+
 
     //determine if the sprite will collide with the world bricks, or ignore them
     this.interactsWithWorld = true;
@@ -159,6 +161,7 @@ _Sprite.prototype.init = function(level_sprite_data)
     this.alive = true;
     this.hit = false;
     this.jump = false;
+    this.isInvincible = false;
 
 
     this.x = Math.floor(level_sprite_data.x);
@@ -257,17 +260,25 @@ _Sprite.prototype.setMoveTargetY = function()
 
 _Sprite.prototype.updateActions = function()
 {
+    if ( this.isInvincible )
+    {
+      var date = new Date();
+      if ( (date - this.invincibleStartTime) / 1000 > 5 ) // 5 seconds of invincibility
+      {
+        this.isInvincible = false;
+      }
+    }
     return null;
 }
 
-_Sprite.prototype.updateMoveAttributesX = function(map, player)
+_Sprite.prototype.updateMoveAttributesX = function(map, otherSprite)
 {
-  var distance = this.x - player.x;
+  var distance = this.x - otherSprite.x;
   if (this.active != true)
   {
     if ( this.activateIfPlayerXGT !== undefined )
     {
-        if ( this.activateIfPlayerXGT > 0 && player.x > this.activateIfPlayerXGT )
+        if ( this.activateIfPlayerXGT > 0 && otherSprite.x > this.activateIfPlayerXGT )
         {
             this.active = true;
         }
@@ -281,12 +292,12 @@ _Sprite.prototype.updateMoveAttributesX = function(map, player)
 
 
 
-_Sprite.prototype.updateMoveAttributesY = function(map, player)
+_Sprite.prototype.updateMoveAttributesY = function(map, otherSprite)
 {
     //Do nothing
 }
 
-_Sprite.prototype.updateAttributesAfterStomped = function(map, player)
+_Sprite.prototype.updateAttributesAfterStomped = function(map, otherSprite)
 {
     //Do nothing
 }
@@ -302,18 +313,18 @@ _Sprite.prototype.getDrawXCoord = function(gameFrame)
     return (gameFrame % this.animMaxFrame) * 64 + this.animXOffset;
 }
 
-_Sprite.prototype.checkPlayerCollision = function(player)
+_Sprite.prototype.checkPlayerCollision = function(otherSprite)
 {
-    if (intersectRect(player.getCollisionRect(), this.getCollisionRect()))
+    if (intersectRect(otherSprite.getCollisionRect(), this.getCollisionRect()))
     {
       return true;
     }
     return false;
 }
 
-_Sprite.prototype.getCollisionEvent = function(player)
+_Sprite.prototype.getCollisionEvent = function(otherSprite)
 {
-    if (this.checkPlayerCollision(player))
+    if (this.checkPlayerCollision(otherSprite))
     {
       //default collision behaviour if method not overridden.
       //acts like a basic enemy
@@ -323,7 +334,7 @@ _Sprite.prototype.getCollisionEvent = function(player)
 
       if(this.deadly)
       {
-        if (intersectRect(player.getBottomCollisionRect(), this.getTopCollisionRect())
+        if (intersectRect(otherSprite.getBottomCollisionRect(), this.getTopCollisionRect())
             && this.hit == false)
             //&& player.ySpeed > 0)
         {
@@ -344,3 +355,11 @@ _Sprite.prototype.getCollisionEvent = function(player)
     }
     return false;
 }
+
+_Sprite.prototype.startInvincibility = function()
+{
+    this.isInvincible = true;
+    var date = new Date();
+    this.invincibleStartTime = date.getTime();
+}
+
