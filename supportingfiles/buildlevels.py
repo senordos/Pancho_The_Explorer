@@ -14,12 +14,10 @@ if len(sys.argv) == 3:
     startLevel = int(sys.argv[2])
 
 
-fw = open("../game/leveldata.js","w")
-fw.write("var levels = [];\n")
+leveldatafile = open("../game/leveldata.js","w")
+leveldatafile.write("var levels = [];\n")
 
-levelArrayCounter = 0;
-maxLevel = 10
-for levelCounter in range(startLevel, maxLevel+1):
+def process_level(levelCounter, episodeName, levelArrayCounter, leveldatafile):
     filename = "../levels/" + episodeName
     if levelCounter < 10:
         filename = filename + "0"
@@ -28,29 +26,43 @@ for levelCounter in range(startLevel, maxLevel+1):
     filename = filename + ".json"
     if os.path.isfile(filename):
         print(filename)
-        #Reposition Y
-        #The level editor positions y at the bottom of the object
-        #The game engine expects it at the top left, so reposition Y
+        # Reposition Y
         with open(filename) as json_file:
             data = json.load(json_file)
             for l in data['layers']:
                 if l['name'] == "Objects":
                     for o in l['objects']:
-
                         oldY = o['y']
-                        o['y'] = oldY - 64                  
+                        o['y'] = oldY - 64
+            json_file.close()
             with open(fixedfilename, 'w') as fixedfile:
                 json.dump(data, fixedfile)
-                fixedfile.close()
-            json_file.close() 
-        #END of Reposition Y             
-        fr = open(fixedfilename,"r")    #use updated filename   
-        fw.write("levels[" + str(levelArrayCounter) + "] = ")
-        fw.write(fr.read());
-        fw.write(";\n")
-        levelArrayCounter += 1
+                fixedfile.close() 
+        # Write to JS file
+        with open(fixedfilename, "r") as fr:
+            leveldatafile.write("levels[" + str(levelArrayCounter) + "] = ")
+            leveldatafile.write(fr.read())
+            leveldatafile.write(";\n")
+        return True
     else:
-        break
+        return False
 
-fw.close()
-fr.close()
+# Start processing levels
+levelArrayCounter = 0
+maxLevel = 10
+# always process level 0 to have the intro part
+processed = process_level(0, episodeName, levelArrayCounter, leveldatafile)
+levelArrayCounter += 1
+
+if not processed:
+    print("WARNING: Level 0 not found, exiting.")
+    leveldatafile.close()
+    quit()
+
+for levelCounter in range(startLevel, maxLevel+1):
+    processed = process_level(levelCounter, episodeName, levelArrayCounter, leveldatafile)
+    if not processed:
+        break
+    levelArrayCounter += 1
+
+leveldatafile.close()
