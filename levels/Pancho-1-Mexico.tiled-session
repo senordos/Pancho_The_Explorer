@@ -1,0 +1,85 @@
+{
+    "activeFile": "testland00.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "level00.tmx": {
+            "scale": 0.152890625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1916.4026571282575,
+                "y": 640.9810935104753
+            }
+        },
+        "level00.tmx#platform_tiles": {
+            "scaleInDock": 1
+        },
+        "level00.tmx#platform_tileset": {
+            "scaleInDock": 1
+        },
+        "level00.tmx#spritesheet_enemy1": {
+            "scaleInDock": 1
+        },
+        "level00.tmx#spritesheet_player": {
+            "scaleInDock": 1
+        },
+        "mexico00.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1542,
+                "y": 269.33333333333337
+            }
+        },
+        "mexico00.tmx#Objects": {
+            "scaleInDock": 0.33
+        },
+        "mexico00.tmx#spritesheet_mexico_64": {
+            "scaleInDock": 0.33
+        },
+        "mexico01.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 5120,
+                "y": 640
+            }
+        },
+        "mexico01.tmx#Objects": {
+            "scaleInDock": 0.33
+        },
+        "mexico01.tmx#spritesheet_Mexico_64": {
+            "scaleInDock": 0.33
+        },
+        "testland00.tmx": {
+            "scale": 0.6199,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 2047.9109533795772,
+                "y": 532.3439264397484
+            }
+        },
+        "testland00.tmx#Objects": {
+            "scaleInDock": 0.33
+        },
+        "testland00.tmx#spritesheet_mexico_64": {
+            "scaleInDock": 0.33
+        }
+    },
+    "last.exportedFilePath": "/Users/christian/Documents/coding/HTML5/pancho/levels",
+    "map.lastUsedExportFilter": "JSON map files [Tiled 1.1] (*.json)",
+    "map.lastUsedFormat": "tmx",
+    "openFiles": [
+        "level00.tmx",
+        "mexico01.tmx",
+        "testland00.tmx"
+    ],
+    "project": "Pancho-1-Mexico.tiled-project",
+    "recentFiles": [
+        "level00.tmx",
+        "mexico01.tmx",
+        "testland00.tmx",
+        "mexico00.tmx"
+    ]
+}

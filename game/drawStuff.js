@@ -288,9 +288,10 @@ function drawEnemies()
 						if ( e.yDirection == 1 ) { animYOffset = animYOffset + 64; }
 				 }
 				 if (enemies[i].name == "EnemyMonkey1"
-				  || enemies[i].name == "EnemyMonkey2"
-  			  || enemies[i].name == "EnemySpikes1"
-					|| enemies[i].name == "EnemyArrowTrap1")
+				    || enemies[i].name == "EnemyMonkey2"
+  			        || enemies[i].name == "EnemySpikes1"
+					|| enemies[i].name == "EnemyArrowTrap1"
+					|| enemies[i].name == "EnemyElMalo")
 				 {
 					 animYOffset = enemies[i].getDrawYCoord(gameFrame);
 				 }
@@ -301,7 +302,7 @@ function drawEnemies()
 				 animXOffset = enemies[i].getDrawXCoord(gameFrame);
 				 //bctx.drawImage(enemies[i].image, animXOffset, animYOffset,64,64, enemies[i].x - mapOffsetX, enemies[i].y - mapOffsetY,64,64);
 
-				 bctx.drawImage(imageSprites, Math.floor(animXOffset), Math.floor(animYOffset),64,64, Math.floor(enemies[i].x - mapOffsetX), Math.floor(enemies[i].y - mapOffsetY),64,64);
+				 bctx.drawImage(imageSprites, Math.floor(animXOffset), Math.floor(animYOffset),enemies[i].w,enemies[i].h, Math.floor(enemies[i].x - mapOffsetX), Math.floor(enemies[i].y - mapOffsetY),enemies[i].w,enemies[i].h);
 			}
 	 }
 }

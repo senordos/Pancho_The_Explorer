@@ -186,7 +186,7 @@ _Sprite.prototype.init = function(level_sprite_data)
         }
         if (level_sprite_data.properties.hasOwnProperty('startYDirection'))
         {
-          this.xDirection = Math.floor(level_sprite_data.properties.startYDirection);
+          this.yDirection = Math.floor(level_sprite_data.properties.startYDirection);
         }
         if (level_sprite_data.properties.hasOwnProperty('delayActivation'))
         {
@@ -310,7 +310,7 @@ _Sprite.prototype.getDrawYCoord = function(gameFrame)
 _Sprite.prototype.getDrawXCoord = function(gameFrame)
 {
 
-    return (gameFrame % this.animMaxFrame) * 64 + this.animXOffset;
+    return (gameFrame % this.animMaxFrame) * this.w + this.animXOffset;
 }
 
 _Sprite.prototype.checkPlayerCollision = function(otherSprite)

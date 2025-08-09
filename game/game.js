@@ -1,3 +1,8 @@
+//read the parameters of the URL
+const urlParamsString = window.location.search;
+const urlParams = new URLSearchParams(urlParamsString);
+const startLevel = urlParams.get("level");
+
 const CANVASWIDTH = 1024;
 const CANVASHEIGHT = 768;
 
@@ -29,8 +34,8 @@ sound.loadSound(SND_PLAYERDIE, "sounds/sound_playerdie.wav");
 sound.loadSound(SND_EXTRALIFE, "sounds/sound_extralife.wav");
 
 sound.loadMusic(0,"sounds/music_conejo-rapido-1-5.mp3")
-sound.loadMusic(1,"sounds/music_african-rhythm-africa-groovy-sport-stomping-music-20622.mp3");
-sound.loadMusic(2,"sounds/music_bassfreak-another-chiptune.mp3");
+sound.loadMusic(1,"sounds/music_jungle3.mp3");
+sound.loadMusic(2,"sounds/music_escalofriante.mp3");
 
 
 
@@ -87,6 +92,16 @@ var gameTimeInFrame=0;
 
 //Progress tracking variables
 var level = 0; //current level, beginning at 0.
+if (startLevel == null || startLevel > 9 || startLevel < 0 )
+{
+	//is the start level is not a number, then
+	level = 0 
+}
+else
+{
+	level = startLevel;
+}
+
 var maxLevel = levels.length - 1; //the last level, after which you win
 var maxStompableEnemyCounter = 0;
 var stompableEnemiesCounter = 0;
@@ -251,13 +266,6 @@ var gameLoopEnd;
 function resetGame()
 {
 		attempts = 1; //this is the number of attempts to complete current level
-		//clear all the entries in attemptsHistory
-		/*
-		while ( attemptsHistory.length )
-		{
-			attemptsHistory.pop();
-		}
-		*/
 
 		gameState = "PLAYING";
 
@@ -292,42 +300,69 @@ function setAttributes(elem, obj)
 }
 
 
-function initMusic(level)
+function initMusic(level,gameJustLoaded)
 {
 		switch(level)
 		{
 			case 0:
 					//Music already started on game init
+					sound.playMusic(0);
 					break;
 			case 1:
 					//Same music as level 0
+					if(gameJustLoaded)
+					{
+						sound.playMusic(0);
+					}
 					break;
 			case 2:
-					//Same music as level 0
+					if(gameJustLoaded)
+					{
+						sound.playMusic(0);
+					}
 					break;
 			case 3:
-					//Same music as level 0
+					if(gameJustLoaded)
+					{
+						sound.playMusic(0);
+					}
 					break;
 			case 4:
-					sound.playNextTrack();
+
+					sound.playMusic(1);
 					break;
 			case 5:
-					//No change to music
+					if(gameJustLoaded)
+					{
+						sound.playMusic(1);
+					}
 					break;
 			case 6:
-					//No change to music
+					if(gameJustLoaded)
+					{
+						sound.playMusic(1);
+					}
 					break;
 			case 7:
-					sound.playNextTrack();
+					sound.playMusic(2);
+
+			case 8:
+					if(gameJustLoaded)
+					{
+						sound.playMusic(2);
+					}				
 					break;
 			case 8:
-					//No change to music;
-					break;
-			case 8:
-					//No change to music;
+					if(gameJustLoaded)
+					{
+						sound.playMusic(2);
+					}				
 					break;
 			case 10:
-					sound.playNextTrack();
+					if(gameJustLoaded)
+					{
+						sound.playMusic(3	);
+					}				
 					break;
 			default: //Do nothing
 
@@ -359,6 +394,7 @@ function loadLevel()
 			}
 		}
 		loadMap(foregroundMap,backgroundMap);
+		initMusic(level);
 }
 
 
@@ -814,7 +850,7 @@ function checkWorldCollisions(sprite)
 													if (intersectRect(spriteBottomRect, bricks[i].rectMain) && moveAxis == "Y")
 													{
 														sprite.collisionDeath = true;
-														console.log("Collision - deadly tile: " + bricks[i].tileName);
+														//console.log("Collision - deadly tile: " + bricks[i].tileName);
 													}
 
 											}
@@ -824,7 +860,7 @@ function checkWorldCollisions(sprite)
 												if (intersectRect(spriteTopRect, bricks[i].rectMain) && moveAxis == "Y")
 												{
 													sprite.collisionDeath = true;
-													console.log("Collision - deadly tile: " + bricks[i].tileName);
+													//console.log("Collision - deadly tile: " + bricks[i].tileName);
 												}
 											}
 									}
@@ -1340,7 +1376,7 @@ function gameLoop()
 
 				//attemptsHistory.push(attempts);
 				attempts = 1;
-				initMusic(level);
+				initMusic(level,false); //set the level, but game has not just loaded
 				loadLevel();
 				gameState = "PLAYING";
 			}			

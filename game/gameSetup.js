@@ -31,7 +31,8 @@ function button_startGameClicked()
     document.getElementById("gameCanvas").style.display = "block";
     if (gameMusic == true)
     {
-      sound.playMusic(0); //play level 0 music
+      console.log("HERE - level = " + level);
+      initMusic(Math.floor(level),true);
     }
     gameState = "PLAYING";
 }
