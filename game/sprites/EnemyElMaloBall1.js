@@ -4,7 +4,7 @@ function EnemyElMaloBall1()
 
     this.name = "EnemyElMaloBall1";
 
-    this.interactsWithWorld = false;
+    this.interactsWithWorld = true;
 
     this.animXOffset = 0;
     this.animYOffset = 2368;

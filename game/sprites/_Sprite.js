@@ -37,6 +37,7 @@ function _Sprite()
     this.stompable = false;
     this.isInvincible = false; 
     this.invincibleStartTime = null;
+    this.timeToBeInvincible = 20; //20 seconds of invincibility
     this.invincibleSoundHasPlayed = false; //this is needed to stop the sound repeating each frame.
 
 
@@ -263,7 +264,7 @@ _Sprite.prototype.updateActions = function()
     if ( this.isInvincible )
     {
       var date = new Date();
-      if ( (date - this.invincibleStartTime) / 1000 > 5 ) // 5 seconds of invincibility
+      if ( (date - this.invincibleStartTime) / 1000 > this.timeToBeInvincible ) // 5 seconds of invincibility
       {
         this.isInvincible = false;
       }

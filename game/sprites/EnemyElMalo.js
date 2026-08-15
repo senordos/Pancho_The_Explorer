@@ -66,17 +66,17 @@ EnemyElMalo.prototype.updateAttributesAfterStomped = function(map, player)
   console.log("EL MALO");
   player.ySpeed = -8;
 
-  if (this.lives == 3)
+  this.lives--;
+
+  if (this.lives <= 0)
   {
-    this.lives --;
-  }
-  else if (this.lives == 2)
-  {
-    this.lives --;
-  }
-  else if (this. lives = 1)
-  {
-    this.lives --;
+    this.lives = 0;
+    this.alive = false;
+    this.visible = false;
+    this.deadly = false;
+    this.xSpeed = 0;
+    this.xDirection = 0;
+    return;
   }
 
   this.hit = false;

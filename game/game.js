@@ -92,7 +92,7 @@ var gameTimeInFrame=0;
 
 //Progress tracking variables
 var level = 0; //current level, beginning at 0.
-if (startLevel == null || startLevel > 9 || startLevel < 0 )
+if (startLevel == null || startLevel > levels.length - 1 || startLevel < 0 )
 {
 	//is the start level is not a number, then
 	level = 0 
@@ -929,7 +929,11 @@ function checkEnemyCollisions(player)
 										player.startInvincibility();
 										break;										
 							case "Exit1":
-										player.collisionExit = true;
+										// Mexico 10's exit stays closed until El Malo is defeated.
+										var elMaloIsAlive = enemies.some(function(enemy) {
+											return enemy.name == "EnemyElMalo" && enemy.alive;
+										});
+										if (!elMaloIsAlive) { player.collisionExit = true; }
 										break;
 						}
 						if (colevt.sound != "NO_SOUND") { sound.playSound(SND_CHILLI); }

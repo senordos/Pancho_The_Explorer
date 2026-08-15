@@ -59,7 +59,7 @@ if not processed:
     leveldatafile.close()
     quit()
 
-for levelCounter in range(startLevel, maxLevel+1):
+for levelCounter in range(max(startLevel, 1), maxLevel+1):
     processed = process_level(levelCounter, episodeName, levelArrayCounter, leveldatafile)
     if not processed:
         break

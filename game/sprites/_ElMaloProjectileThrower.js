@@ -5,7 +5,7 @@ function _ElMaloProjectileThrower()
     //These settings should all be overwritten in the constructor
     this.name = "_ElMaloProjectileThrower";
     this.stompable = true;
-    this.positionIsLocked = true; //default is that Monkeys don't move.
+    this.positionIsLocked = true; //default is that this doesn't move.
     this.animXOffset = 0;
     this.animYOffset = 0;
     this.animMaxFrame = 2;
@@ -18,7 +18,7 @@ function _ElMaloProjectileThrower()
     this.throwInterval = 1000;
 
     this.throwEventName = "_ElMaloProjectileThrower --- No Event Name Defined";
-    this.throwEventObject = "EnemyStoneBall1";  //Default object is EnemyStoneBall1
+    this.throwEventObject = "EnemyElMaloBall1";  //Default object is EnemyStoneBall1
     this.throwEventDirection = DOWN;
 }
 
