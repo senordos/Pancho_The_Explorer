@@ -63,6 +63,12 @@ function clearTouchButtonForId(id)
 
 function onTouchStart(event)
 {
+	// Keep the active pointer captured so browser gestures do not interrupt the
+	// control while the finger is still down. This is especially useful on Safari.
+	if (event && typeof event.pointerId === 'number' && event.target && event.target.setPointerCapture) {
+		try { event.target.setPointerCapture(event.pointerId); } catch (e) {}
+	}
+
 	// Avoid default browser behavior (scroll/selection/zoom) but only when
 	// interacting with the canvas/game area. Allow touches on HTML buttons
 	// to generate normal click events.
@@ -145,6 +151,10 @@ function onTouchMove(event)
 
 function onTouchEnd(event)
 {
+	if (event && typeof event.pointerId === 'number' && event.target && event.target.releasePointerCapture) {
+		try { event.target.releasePointerCapture(event.pointerId); } catch (e) {}
+	}
+
 	// preventDefault on touchend only when touch started on canvas
 	try {
 		var targ = event.target;
@@ -169,6 +179,10 @@ function onTouchEnd(event)
 
 function onTouchCancel(event)
 {
+	if (event && typeof event.pointerId === 'number' && event.target && event.target.releasePointerCapture) {
+		try { event.target.releasePointerCapture(event.pointerId); } catch (e) {}
+	}
+
 	if (event && event.preventDefault) { event.preventDefault(); }
 
 	var points = getTouchPoints(event);

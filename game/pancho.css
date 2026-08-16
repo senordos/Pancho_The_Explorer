@@ -34,8 +34,10 @@ canvas {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    outline: none;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
     touch-action: none;
+    overscroll-behavior: none;
+    outline: none;
 }
 

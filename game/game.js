@@ -82,6 +82,7 @@ if(touchable)
 		targetEl.addEventListener('pointermove', onTouchMove, { passive: false });
 		targetEl.addEventListener('pointerup', onTouchEnd, { passive: false });
 		targetEl.addEventListener('pointercancel', onTouchCancel, { passive: false });
+		targetEl.addEventListener('pointerleave', onTouchCancel, { passive: false });
 	} else {
 		targetEl.addEventListener('touchstart', onTouchStart, { passive: false });
 		targetEl.addEventListener('touchmove', onTouchMove, { passive: false });
