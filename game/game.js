@@ -287,6 +287,11 @@ function resetGame()
 		level = 0;
 		player1.lives = 3;
 		extraLivesUsed.clear();
+		// Stop any currently playing music when restarting the whole game
+		if (typeof sound !== 'undefined' && typeof sound.stopMusic === 'function')
+		{
+			sound.stopMusic();
+		}
 		loadLevel();
 }
 

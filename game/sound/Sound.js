@@ -160,3 +160,15 @@ Sound.prototype.waitToPlayMusic = function(tries, id)
         }
     }
 }
+
+Sound.prototype.stopMusic = function()
+{
+    if (!this.music) return;
+    for (var i = 0; i < this.music.length; i++)
+    {
+        if (this.music[i] && typeof this.music[i].stop === 'function')
+        {
+            this.music[i].stop();
+        }
+    }
+}
