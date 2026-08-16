@@ -17,6 +17,16 @@
         <div id="fsOverlay" aria-hidden="false">
             <button id="fsButton">Start Fullscreen</button>
         </div>
+        <div id="startSplash" aria-hidden="false">
+            <div id="startSplashInner">
+                <h1>Pancho the Explorer</h1>
+                <p>Play in fullscreen or windowed mode?</p>
+                <div class="startButtons">
+                    <button id="start_fs">Fullscreen</button>
+                    <button id="start_win">Windowed</button>
+                </div>
+            </div>
+        </div>
     </section>
     <script src="leveldata.js"></script>
     <script src="sprites/_Sprite.js"></script>
@@ -70,6 +80,9 @@
             var canvas = document.getElementById('gameCanvas');
             var overlay = document.getElementById('fsOverlay');
             var btn = document.getElementById('fsButton');
+            var splash = document.getElementById('startSplash');
+            var btnFS = document.getElementById('start_fs');
+            var btnWin = document.getElementById('start_win');
 
             function resize(){
                 var w = window.innerWidth || document.documentElement.clientWidth;
@@ -82,6 +95,54 @@
             window.addEventListener('resize', resize);
             resize();
 
+            function enterFSThenLoad(callback)
+            {
+                var el = document.documentElement;
+                var requested = false;
+                function afterFS(){
+                    document.removeEventListener('fullscreenchange', afterFS);
+                    document.removeEventListener('webkitfullscreenchange', afterFS);
+                    callback();
+                }
+                if (el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen)
+                {
+                    document.addEventListener('fullscreenchange', afterFS);
+                    document.addEventListener('webkitfullscreenchange', afterFS);
+                    if (el.requestFullscreen) el.requestFullscreen();
+                    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+                    else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
+                    else if (el.msRequestFullscreen) el.msRequestFullscreen();
+                    requested = true;
+                }
+                if (!requested)
+                {
+                    // if Fullscreen API not available, just continue
+                    callback();
+                }
+            }
+
+            function loadGameScript()
+            {
+                // hide splash and overlay
+                if (splash) splash.style.display = 'none';
+                if (overlay) overlay.style.display = 'none';
+                // ensure canvas visible
+                canvas.style.display = 'block';
+
+                // dynamically insert game.js so it runs after the user's choice
+                var s = document.createElement('script');
+                s.src = 'game.js';
+                s.onload = function(){
+                    // trigger a resize after game script loads to let gameSetup set correct scaling
+                    try { window.dispatchEvent(new Event('resize')); } catch(e) {}
+                };
+                document.body.appendChild(s);
+            }
+
+            if (btnFS) btnFS.addEventListener('click', function(){ enterFSThenLoad(loadGameScript); });
+            if (btnWin) btnWin.addEventListener('click', loadGameScript);
+
+            // Also keep the small fullscreen button available for direct fullscreen requests
             function enterFS(){
                 var el = document.documentElement;
                 if (el.requestFullscreen) el.requestFullscreen();
@@ -91,7 +152,6 @@
                 if (overlay) overlay.style.display = 'none';
                 try { canvas.focus(); } catch(e) {}
             }
-
             if (btn) btn.addEventListener('click', enterFS);
             if (canvas) canvas.addEventListener('click', enterFS);
             if (overlay) overlay.addEventListener('click', function(e){ if(e.target===overlay) enterFS(); });
@@ -100,6 +160,5 @@
             canvas.style.display = 'block';
         })();
     </script>
-    <script src="game.js"></script>
 </body>
 </html>
