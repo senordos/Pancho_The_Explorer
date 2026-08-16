@@ -1,0 +1,23 @@
+name: Test Ubuntu Runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-runner:
+    runs-on: [self-hosted, linux, x64]
+
+    steps:
+      - name: Show runner information
+        run: |
+          echo "Runner hostname:"
+          hostname
+          echo
+          echo "User:"
+          whoami
+          echo
+          echo "Working directory:"
+          pwd
+          echo
+          echo "Operating system:"
+          uname -a
