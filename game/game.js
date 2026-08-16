@@ -40,6 +40,15 @@ sound.loadMusic(2,"sounds/music_escalofriante.mp3");
 
 
 var canvasScale = 1; //initial scaling is set to 1
+const SHOWVERSION = true;
+
+function showVersionIfEnabled()
+{
+	if (SHOWVERSION)
+	{
+		drawVersionText();
+	}
+}
 
 //drawIntroScreen();
 

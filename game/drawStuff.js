@@ -324,6 +324,24 @@ function drawControls()
 		}
 }
 
+function getCurrentVersionText()
+{
+	var title = document.title || "Pancho the Explorer";
+	var match = title.match(/v\d+\.\d+\.\d+/i);
+	if (match && match[0]) { return match[0]; }
+	return "v0.0.0";
+}
+
+function drawVersionText()
+{
+	bctx.save();
+	bctx.font = 'bold 15px "Courier New", "Lucida Console", monospace';
+	bctx.fillStyle = '#000000';
+	bctx.textBaseline = 'top';
+	bctx.fillText(getCurrentVersionText(), 10, 8);
+	bctx.restore();
+}
+
 
 function drawTextBoxes()
 {
@@ -334,6 +352,7 @@ function drawTextBoxes()
 	if(level == 0 && introOff == false)
 	{
 			titletextbox.draw(bctx);
+			showVersionIfEnabled();
 			versionbox.draw(bctx);
 	}
 
