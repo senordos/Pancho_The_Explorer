@@ -93,7 +93,15 @@ function onWindowResize()
     document.getElementById("gameCanvas").setAttribute("width", SCALEDCANVASWIDTH);
     document.getElementById("gameCanvas").setAttribute("height", SCALEDCANVASHEIGHT);
 
-    //ctx.scale(canvasScale,canvasScale);
+    // position canvas element so it is centered horizontally and vertically
+    var canvasEl = document.getElementById("gameCanvas");
+    canvasEl.style.position = 'absolute';
+    canvasEl.style.left = margin + 'px';
+    var top = Math.floor((window.innerHeight - SCALEDCANVASHEIGHT) / 2);
+    if (top < 0) { top = 0; }
+    canvasEl.style.top = top + 'px';
+
+    // set the internal drawing transform to scale the drawing coordinate system
     ctx.setTransform(canvasScale,0,0,canvasScale,0,0);
 
 }

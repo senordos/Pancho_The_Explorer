@@ -2,8 +2,10 @@
 function onTouchStart(event)
 {
 
+	// Avoid default browser behavior (scroll/selection/zoom)
+	if (event && event.preventDefault) { event.preventDefault(); }
 
-	//do stuff
+	// do stuff
 		var x;
 		var y;
 		var id;
@@ -103,6 +105,7 @@ function onTouchMove(event)
 
 function onTouchEnd(event)
 {
+	if (event && event.preventDefault) { event.preventDefault(); }
 
 		var id;
 

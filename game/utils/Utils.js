@@ -2,10 +2,9 @@ function disableScroll()
 {
   window.addEventListener("touchmove", function(event) {
     if (!event.target.classList.contains('scrollable')) {
-      // no more scrolling
       event.preventDefault();
     }
-  }, false);
+  }, { passive: false });
 }
 
 

@@ -74,9 +74,14 @@ var touchable = 'createTouch' in document;
 console.log("screen touchable status=" + touchable);
 if(touchable)
 {
-	document.addEventListener( 'touchstart', onTouchStart, false );
-	document.addEventListener( 'touchmove', onTouchMove, false );
-	document.addEventListener( 'touchend', onTouchEnd, false );
+	// Use non-passive listeners so we can call preventDefault() and stop
+	// the browser's native pan/zoom behaviour.
+	document.addEventListener('touchstart', onTouchStart, { passive: false });
+	document.addEventListener('touchmove', onTouchMove,   { passive: false });
+	document.addEventListener('touchend',  onTouchEnd,    { passive: false });
+
+	// Prevent the iOS gesturestart default zoom behaviour (older iOS)
+	document.addEventListener('gesturestart', function(e){ e.preventDefault(); }, false);
 }
 var touches = [];
 var t = 0;
