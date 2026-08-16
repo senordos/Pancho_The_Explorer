@@ -1,7 +1,9 @@
 name: Deploy Pancho to Ubuntu
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - development
 
 jobs:
   deploy:
