@@ -90,11 +90,16 @@ function onWindowResize()
 
     margin = Math.floor((window.innerWidth - SCALEDCANVASWIDTH) / 2);
 
+    // update the canvas drawing buffer
     document.getElementById("gameCanvas").setAttribute("width", SCALEDCANVASWIDTH);
     document.getElementById("gameCanvas").setAttribute("height", SCALEDCANVASHEIGHT);
 
-    // position canvas element so it is centered horizontally and vertically
+    // update the CSS layout size so the element's box matches the buffer
     var canvasEl = document.getElementById("gameCanvas");
+    canvasEl.style.width = SCALEDCANVASWIDTH + 'px';
+    canvasEl.style.height = SCALEDCANVASHEIGHT + 'px';
+
+    // position canvas element so it is centered horizontally and vertically
     canvasEl.style.position = 'absolute';
     canvasEl.style.left = margin + 'px';
     var top = Math.floor((window.innerHeight - SCALEDCANVASHEIGHT) / 2);

@@ -85,6 +85,8 @@
             var btnWin = document.getElementById('start_win');
 
             function resize(){
+                // don't override sizing after the game has initialized its own layout
+                if (window.gameLoaded) return;
                 var w = window.innerWidth || document.documentElement.clientWidth;
                 var h = window.innerHeight || document.documentElement.clientHeight;
                 canvas.width = w;
@@ -123,6 +125,7 @@
 
             function loadGameScript()
             {
+                window.gameLoaded = true;
                 // hide splash and overlay
                 if (splash) splash.style.display = 'none';
                 if (overlay) overlay.style.display = 'none';
