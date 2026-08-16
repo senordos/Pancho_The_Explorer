@@ -22,6 +22,13 @@ Follow the surrounding vanilla JavaScript style: four-space indentation in new c
 
 Test changes in a browser on both keyboard and touch-capable viewports where relevant. Verify level loading, collision/physics, restart and exit flow, and relevant sound controls. For level edits, export JSON, rebuild `leveldata.js`, then play the changed level from its query parameter. There is no coverage target or test-file convention currently.
 
+## Versioning & Release Notes
+
+- Use the release format `v0.06.xx` for the current day’s work, where `06` is the day-based series and `xx` is the incremental deployment number for that day.
+- Start each day’s series at `v0.06.01` and increment to `v0.06.02`, `v0.06.03`, and so on for follow-up changes on the same day.
+- On a new day, advance the day-based segment: `v0.06.xx` becomes `v0.07.01`, then `v0.07.02`, and so on.
+- Keep the browser title in `game/index.html` aligned with the active version label and update the release number whenever a new deployment is made.
+
 ## Commit & Pull Request Guidelines
 
 Use short, imperative, sentence-style commit subjects consistent with history, such as `Fix reset level variable` or `Add invincibility chilli`. Keep each commit focused. Pull requests should describe gameplay impact, list affected levels/assets, link any issue when applicable, and include screenshots or a short recording for visible gameplay or UI changes. Do not commit generated level changes without their source level export.
