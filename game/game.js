@@ -74,11 +74,18 @@ var touchable = 'createTouch' in document;
 console.log("screen touchable status=" + touchable);
 if(touchable)
 {
-	// Use non-passive listeners so we can call preventDefault() and stop
-	// the browser's native pan/zoom behaviour.
-	document.addEventListener('touchstart', onTouchStart, { passive: false });
-	document.addEventListener('touchmove', onTouchMove,   { passive: false });
-	document.addEventListener('touchend',  onTouchEnd,    { passive: false });
+	// Bind touch handlers to the canvas element so HTML UI buttons remain interactive.
+	var canvasEl = document.getElementById('gameCanvas');
+	if (canvasEl) {
+		canvasEl.addEventListener('touchstart', onTouchStart, { passive: false });
+		canvasEl.addEventListener('touchmove',  onTouchMove,  { passive: false });
+		canvasEl.addEventListener('touchend',   onTouchEnd,   { passive: false });
+	} else {
+		// fallback to document if canvas not present yet
+		document.addEventListener('touchstart', onTouchStart, { passive: false });
+		document.addEventListener('touchmove', onTouchMove, { passive: false });
+		document.addEventListener('touchend', onTouchEnd, { passive: false });
+	}
 
 	// Prevent the iOS gesturestart default zoom behaviour (older iOS)
 	document.addEventListener('gesturestart', function(e){ e.preventDefault(); }, false);

@@ -2,8 +2,17 @@
 function onTouchStart(event)
 {
 
-	// Avoid default browser behavior (scroll/selection/zoom)
-	if (event && event.preventDefault) { event.preventDefault(); }
+	// Avoid default browser behavior (scroll/selection/zoom) but only when
+	// interacting with the canvas/game area. Allow touches on HTML buttons
+	// to generate normal click events.
+	try {
+		var targ = event.target;
+		var tag = targ && targ.tagName && targ.tagName.toUpperCase();
+		var insideButton = (tag === 'BUTTON') || (targ.closest && targ.closest('button'));
+		if (!insideButton) {
+			if (event && event.preventDefault) { event.preventDefault(); }
+		}
+	} catch (e) {}
 
 	// do stuff
 		var x;
@@ -105,7 +114,15 @@ function onTouchMove(event)
 
 function onTouchEnd(event)
 {
-	if (event && event.preventDefault) { event.preventDefault(); }
+	// preventDefault on touchend only when touch started on canvas
+	try {
+		var targ = event.target;
+		var tag = targ && targ.tagName && targ.tagName.toUpperCase();
+		var insideButton = (tag === 'BUTTON') || (targ.closest && targ.closest('button'));
+		if (!insideButton) {
+			if (event && event.preventDefault) { event.preventDefault(); }
+		}
+	} catch (e) {}
 
 		var id;
 
