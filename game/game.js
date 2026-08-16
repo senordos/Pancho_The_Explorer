@@ -74,21 +74,24 @@ var touchable = 'createTouch' in document;
 console.log("screen touchable status=" + touchable);
 if(touchable)
 {
-	// Bind touch handlers to the canvas element so HTML UI buttons remain interactive.
 	var canvasEl = document.getElementById('gameCanvas');
-	if (canvasEl) {
-		canvasEl.addEventListener('touchstart', onTouchStart, { passive: false });
-		canvasEl.addEventListener('touchmove',  onTouchMove,  { passive: false });
-		canvasEl.addEventListener('touchend',   onTouchEnd,   { passive: false });
+	var targetEl = canvasEl || document;
+
+	if (window.PointerEvent) {
+		targetEl.addEventListener('pointerdown', onTouchStart, { passive: false });
+		targetEl.addEventListener('pointermove', onTouchMove, { passive: false });
+		targetEl.addEventListener('pointerup', onTouchEnd, { passive: false });
+		targetEl.addEventListener('pointercancel', onTouchCancel, { passive: false });
 	} else {
-		// fallback to document if canvas not present yet
-		document.addEventListener('touchstart', onTouchStart, { passive: false });
-		document.addEventListener('touchmove', onTouchMove, { passive: false });
-		document.addEventListener('touchend', onTouchEnd, { passive: false });
+		targetEl.addEventListener('touchstart', onTouchStart, { passive: false });
+		targetEl.addEventListener('touchmove', onTouchMove, { passive: false });
+		targetEl.addEventListener('touchend', onTouchEnd, { passive: false });
+		targetEl.addEventListener('touchcancel', onTouchCancel, { passive: false });
 	}
 
 	// Prevent the iOS gesturestart default zoom behaviour (older iOS)
 	document.addEventListener('gesturestart', function(e){ e.preventDefault(); }, false);
+	window.addEventListener('blur', resetTouchButtons);
 }
 var touches = [];
 var t = 0;

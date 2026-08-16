@@ -1,7 +1,68 @@
 
+function getTouchPoints(event)
+{
+	if (event && event.changedTouches && event.changedTouches.length) {
+		return event.changedTouches;
+	}
+
+	if (event && typeof event.clientX === 'number' && typeof event.clientY === 'number') {
+		return [{
+			clientX: event.clientX,
+			clientY: event.clientY,
+			identifier: event.pointerId
+		}];
+	}
+
+	return [];
+}
+
+function syncTouchButtonState()
+{
+	if (touchButtons.left.pressed == true) { player1_LeftPressed = true; } else { player1_LeftPressed = false; }
+	if (touchButtons.right.pressed == true) { player1_RightPressed = true; } else { player1_RightPressed = false; }
+	if (touchButtons.up.pressed == true) { player1_UpPressed = true; } else { player1_UpPressed = false; }
+
+	if (touchButtons.resetlevel.pressed == true)
+	{
+		player1_ResetLevelPressed = true;
+		touchButtons.resetlevel.pressed = false;
+	}
+	else { resetlevelPressed = false; }
+
+	if (touchButtons.continue.pressed == true)
+	{
+		player1_ContinuePressed = true;
+		touchButtons.continue.pressed = false;
+	}
+	else { touchButtons.continue.pressed = false; }
+}
+
+function clearTouchButtonForId(id)
+{
+	if (touchButtons.left.touchId == id) {
+		touchButtons.left.pressed = false;
+		touchButtons.left.touchId = -1;
+	}
+	if (touchButtons.right.touchId == id) {
+		touchButtons.right.pressed = false;
+		touchButtons.right.touchId = -1;
+	}
+	if (touchButtons.up.touchId == id) {
+		touchButtons.up.pressed = false;
+		touchButtons.up.touchId = -1;
+	}
+	if (touchButtons.resetlevel.touchId == id) {
+		touchButtons.resetlevel.pressed = false;
+		touchButtons.resetlevel.touchId = -1;
+	}
+	if (touchButtons.continue.touchId == id) {
+		touchButtons.continue.pressed = false;
+		touchButtons.continue.touchId = -1;
+	}
+}
+
 function onTouchStart(event)
 {
-
 	// Avoid default browser behavior (scroll/selection/zoom) but only when
 	// interacting with the canvas/game area. Allow touches on HTML buttons
 	// to generate normal click events.
@@ -14,102 +75,72 @@ function onTouchStart(event)
 		}
 	} catch (e) {}
 
-	// do stuff
-		var x;
-		var y;
-		var id;
+	var points = getTouchPoints(event);
+	var iMax = points.length;
 
-		var iMax = event.changedTouches.length;
+	for (var i = 0; i < iMax; i++)
+	{
+		var x = points[i].clientX;
+		var y = points[i].clientY;
+		var id = points[i].identifier;
 
+		clearTouchButtonForId(id);
 
-		for(var i=0; i<iMax; i++)
+		if (gameState == "PLAYING")
 		{
-
-				x = event.changedTouches[i].clientX;
-				y = event.changedTouches[i].clientY;
-				id = event.changedTouches[i].identifier;
-
-				if (gameState == "PLAYING")
-				{
-						if (x>(0 ) &&  x<=(160 * canvasScale + margin))   { touchButtons.left.pressed = true; touchButtons.left.touchId = id }
-						if (x>(160 * canvasScale + margin) &&  x<(512 * canvasScale + margin))  { touchButtons.right.pressed = true; touchButtons.right.touchId = id }
-						if (x>(512 * canvasScale + margin) /*&&  x<(1020 * canvasScale + margin)*/) { touchButtons.up.pressed = true; touchButtons.up.touchId = id }
-				}
-				else if (gameState == "PLAYER_DIED_WAIT_FOR_RESETLEVEL" || "GAME_OVER" || "LEVEL_COMPLETE_WAIT_FOR_RESET")
-				{
-						
-					    //if (x>(900 * canvasScale + margin) &&  x<(1020 * canvasScale + margin)) { touchButtons.resetlevel.pressed = true; touchButtons.resetlevel.touchId = id }
-						//player1_ResetLevelPressed = true;
-						player1_ScreenTouched = true;
-						//sound.playSound(SND_CHILLI);
-
-
-				}
-				/*else if (gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET") 
-				{					   
-						//if (x>(0 * canvasScale + margin) &&  x<(1024 * canvasScale + margin)) { touchButtons.continue.pressed = true; touchButtons.continue.touchId = id }
-						//player1_ResetLevelPressed = true;
-						//player1_ContinuePressed = true;
-						player1_ScreenTouched = true;
-						sound.playSound(SND_CHILLI);
-
-				}*/
-
+			if (x > 0 && x <= (160 * canvasScale + margin)) {
+				touchButtons.left.pressed = true;
+				touchButtons.left.touchId = id;
+			}
+			if (x > (160 * canvasScale + margin) && x < (512 * canvasScale + margin)) {
+				touchButtons.right.pressed = true;
+				touchButtons.right.touchId = id;
+			}
+			if (x > (512 * canvasScale + margin)) {
+				touchButtons.up.pressed = true;
+				touchButtons.up.touchId = id;
+			}
 		}
-
-
-		if (touchButtons.left.pressed == true) { player1_LeftPressed = true; } else { player1_LeftPressed = false; }
-		if (touchButtons.right.pressed == true) { player1_RightPressed = true; } else { player1_RightPressed = false; }
-		if (touchButtons.up.pressed == true) { player1_UpPressed = true; } else { player1_UpPressed = false; }
-
-
-		if (touchButtons.resetlevel.pressed == true)
+		else if (gameState == "PLAYER_DIED_WAIT_FOR_RESETLEVEL" || gameState == "GAME_OVER" || gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET")
 		{
-				player1_ResetLevelPressed = true;
-				touchButtons.resetlevel.pressed == false;
+			player1_ScreenTouched = true;
 		}
-		else { resetlevelPressed = false; }
+	}
 
-		if (touchButtons.continue.pressed == true)
-		{
-				player1_ContinuePressed = true;
-				touchButtons.continue.pressed = false;
-		}
-		else { touchButtons.continue.pressed = false; }
-
-
+	syncTouchButtonState();
 }
 
 function onTouchMove(event)
 {
-	 // Prevent the browser from doing its default thing (scroll, zoom)
-	event.preventDefault();
+	// Prevent the browser from doing its default thing (scroll, zoom)
+	if (event && event.preventDefault) { event.preventDefault(); }
 
-		var id;
+	var points = getTouchPoints(event);
+	var iMax = points.length;
 
-		var iMax = event.changedTouches.length;
+	for (var i = 0; i < iMax; i++)
+	{
+		var x = points[i].clientX;
+		var y = points[i].clientY;
+		var id = points[i].identifier;
 
-		for(var i=0; i<iMax; i++)
-		{
-				x = event.changedTouches[i].clientX;
-				y = event.changedTouches[i].clientY;
-				id = event.changedTouches[i].identifier;
+		clearTouchButtonForId(id);
 
-				if ( touchButtons.left.touchId == id ) { touchButtons.left.pressed = false; }
-				if ( touchButtons.right.touchId == id ) { touchButtons.right.pressed = false; }
-				if ( touchButtons.up.touchId == id ) { /* do nothing - even if moves off the up button */ }
-
-				if (x> 0                           &&  x<=(160 * canvasScale + margin)) { touchButtons.left.pressed = true; touchButtons.left.touchId = id }
-				if (x>(160 * canvasScale + margin) &&  x<(512 * canvasScale + margin))  { touchButtons.right.pressed = true; touchButtons.right.touchId = id }
-
+		if (x > 0 && x <= (160 * canvasScale + margin)) {
+			touchButtons.left.pressed = true;
+			touchButtons.left.touchId = id;
 		}
+		if (x > (160 * canvasScale + margin) && x < (512 * canvasScale + margin)) {
+			touchButtons.right.pressed = true;
+			touchButtons.right.touchId = id;
+		}
+		if (x > (512 * canvasScale + margin)) {
+			touchButtons.up.pressed = true;
+			touchButtons.up.touchId = id;
+		}
+	}
 
-		if (touchButtons.left.pressed == true) { player1_LeftPressed = true; } else { player1_LeftPressed = false; }
-		if (touchButtons.right.pressed == true) { player1_RightPressed = true; } else { player1_RightPressed = false; }
-		if (touchButtons.up.pressed == true) { player1_UpPressed = true; } else { player1_UpPressed = false; }
-
-
-
+	syncTouchButtonState();
 }
 
 function onTouchEnd(event)
@@ -124,38 +155,43 @@ function onTouchEnd(event)
 		}
 	} catch (e) {}
 
-		var id;
+	var points = getTouchPoints(event);
+	var iMax = points.length;
 
-		var iMax = event.changedTouches.length;
+	for (var i = 0; i < iMax; i++)
+	{
+		var id = points[i].identifier;
+		clearTouchButtonForId(id);
+	}
 
-		for(var i=0; i<iMax; i++)
-		{
-				id = event.changedTouches[i].identifier;
+	syncTouchButtonState();
+}
 
-				if ( touchButtons.left.touchId == id ) { touchButtons.left.pressed = false; }
-				if ( touchButtons.right.touchId == id ) { touchButtons.right.pressed = false; }
-				if ( touchButtons.up.touchId == id ) { touchButtons.up.pressed = false; }
-				if ( touchButtons.resetlevel.touchId == id ) { touchButtons.resetlevel.pressed = false; }
-				if ( touchButtons.continue.touchId == id ) { touchButtons.continue.pressed = false; }
+function onTouchCancel(event)
+{
+	if (event && event.preventDefault) { event.preventDefault(); }
 
+	var points = getTouchPoints(event);
+	for (var i = 0; i < points.length; i++)
+	{
+		clearTouchButtonForId(points[i].identifier);
+	}
 
-		}
-
-		if (touchButtons.left.pressed == true) { player1_LeftPressed = true; } else { player1_LeftPressed = false; }
-		if (touchButtons.right.pressed == true) { player1_RightPressed = true; } else { player1_RightPressed = false; }
-		if (touchButtons.up.pressed == true) { player1_UpPressed = true; } else { player1_UpPressed = false; }
-
+	syncTouchButtonState();
 }
 
 function resetTouchButtons()
 {
-
-	
 	touchButtons.left.pressed = false;
+	touchButtons.left.touchId = -1;
 	touchButtons.right.pressed = false;
+	touchButtons.right.touchId = -1;
 	touchButtons.up.pressed = false;
+	touchButtons.up.touchId = -1;
 	touchButtons.resetlevel.pressed = false;
+	touchButtons.resetlevel.touchId = -1;
 	touchButtons.continue.pressed = false;
+	touchButtons.continue.touchId = -1;
 
 	player1_LeftPressed = false;
 	player1_RightPressed = false;
