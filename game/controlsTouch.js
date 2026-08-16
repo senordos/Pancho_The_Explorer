@@ -1,4 +1,6 @@
 
+var activeTouchRegions = {};
+
 function getTouchPoints(event)
 {
 	if (event && event.changedTouches && event.changedTouches.length) {
@@ -16,18 +18,45 @@ function getTouchPoints(event)
 	return [];
 }
 
+function getTouchRegionForX(x)
+{
+	if (x <= (160 * canvasScale + margin)) {
+		return "left";
+	}
+	if (x < (512 * canvasScale + margin)) {
+		return "right";
+	}
+	return "up";
+}
+
 function syncTouchButtonState()
 {
-	if (touchButtons.left.pressed == true) { player1_LeftPressed = true; } else { player1_LeftPressed = false; }
-	if (touchButtons.right.pressed == true) { player1_RightPressed = true; } else { player1_RightPressed = false; }
-	if (touchButtons.up.pressed == true) { player1_UpPressed = true; } else { player1_UpPressed = false; }
+	var leftPressed = false;
+	var rightPressed = false;
+	var upPressed = false;
+
+	for (var pointerId in activeTouchRegions)
+	{
+		var region = activeTouchRegions[pointerId];
+		if (region == "left") { leftPressed = true; }
+		if (region == "right") { rightPressed = true; }
+		if (region == "up") { upPressed = true; }
+	}
+
+	touchButtons.left.pressed = leftPressed;
+	touchButtons.right.pressed = rightPressed;
+	touchButtons.up.pressed = upPressed;
+
+	player1_LeftPressed = leftPressed;
+	player1_RightPressed = rightPressed;
+	player1_UpPressed = upPressed;
 
 	if (touchButtons.resetlevel.pressed == true)
 	{
 		player1_ResetLevelPressed = true;
 		touchButtons.resetlevel.pressed = false;
 	}
-	else { resetlevelPressed = false; }
+	else { player1_ResetLevelPressed = false; }
 
 	if (touchButtons.continue.pressed == true)
 	{
@@ -39,6 +68,11 @@ function syncTouchButtonState()
 
 function clearTouchButtonForId(id)
 {
+	if (id !== undefined && id !== null && activeTouchRegions[id] !== undefined)
+	{
+		delete activeTouchRegions[id];
+	}
+
 	if (touchButtons.left.touchId == id) {
 		touchButtons.left.pressed = false;
 		touchButtons.left.touchId = -1;
@@ -59,6 +93,19 @@ function clearTouchButtonForId(id)
 		touchButtons.continue.pressed = false;
 		touchButtons.continue.touchId = -1;
 	}
+}
+
+function setTouchRegionForPointer(id, x)
+{
+	if (id === undefined || id === null) { return; }
+
+	var region = getTouchRegionForX(x);
+	activeTouchRegions[id] = region;
+	if (region == "left") { touchButtons.left.touchId = id; }
+	if (region == "right") { touchButtons.right.touchId = id; }
+	if (region == "up") { touchButtons.up.touchId = id; }
+	
+	syncTouchButtonState();
 }
 
 function onTouchStart(event)
@@ -90,30 +137,15 @@ function onTouchStart(event)
 		var y = points[i].clientY;
 		var id = points[i].identifier;
 
-		clearTouchButtonForId(id);
-
 		if (gameState == "PLAYING")
 		{
-			if (x > 0 && x <= (160 * canvasScale + margin)) {
-				touchButtons.left.pressed = true;
-				touchButtons.left.touchId = id;
-			}
-			if (x > (160 * canvasScale + margin) && x < (512 * canvasScale + margin)) {
-				touchButtons.right.pressed = true;
-				touchButtons.right.touchId = id;
-			}
-			if (x > (512 * canvasScale + margin)) {
-				touchButtons.up.pressed = true;
-				touchButtons.up.touchId = id;
-			}
+			setTouchRegionForPointer(id, x);
 		}
 		else if (gameState == "PLAYER_DIED_WAIT_FOR_RESETLEVEL" || gameState == "GAME_OVER" || gameState == "LEVEL_COMPLETE_WAIT_FOR_RESET")
 		{
 			player1_ScreenTouched = true;
 		}
 	}
-
-	syncTouchButtonState();
 }
 
 function onTouchMove(event)
@@ -127,22 +159,9 @@ function onTouchMove(event)
 	for (var i = 0; i < iMax; i++)
 	{
 		var x = points[i].clientX;
-		var y = points[i].clientY;
 		var id = points[i].identifier;
-
-		clearTouchButtonForId(id);
-
-		if (x > 0 && x <= (160 * canvasScale + margin)) {
-			touchButtons.left.pressed = true;
-			touchButtons.left.touchId = id;
-		}
-		if (x > (160 * canvasScale + margin) && x < (512 * canvasScale + margin)) {
-			touchButtons.right.pressed = true;
-			touchButtons.right.touchId = id;
-		}
-		if (x > (512 * canvasScale + margin)) {
-			touchButtons.up.pressed = true;
-			touchButtons.up.touchId = id;
+		if (activeTouchRegions[id] !== undefined) {
+			setTouchRegionForPointer(id, x);
 		}
 	}
 
@@ -196,6 +215,7 @@ function onTouchCancel(event)
 
 function resetTouchButtons()
 {
+	activeTouchRegions = {};
 	touchButtons.left.pressed = false;
 	touchButtons.left.touchId = -1;
 	touchButtons.right.pressed = false;
