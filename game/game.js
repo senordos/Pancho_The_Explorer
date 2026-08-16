@@ -135,6 +135,7 @@ var levelTimeStart = 0;
 var levelTimeTaken = 0;
 var attempts = 1; //this is the number of attempts to complete current level
 var extraLivesUsed = new Map(); //this tracks whether the extra lives have been found or not
+var chilliBonusAwardedByLevel = []; // true once the +2 life bonus has been awarded for this level
 
 
 //Can't remember why I put this in, but possibly so that at the end of the
@@ -300,6 +301,7 @@ function resetGame()
 		level = 0;
 		player1.lives = 3;
 		extraLivesUsed.clear();
+		chilliBonusAwardedByLevel = [];
 		// Stop any currently playing music when restarting the whole game
 		if (typeof sound !== 'undefined' && typeof sound.stopMusic === 'function')
 		{
@@ -408,6 +410,7 @@ function loadLevel()
 		var backgroundMap = []; //holds the map data integers before creating objects
 
 		levelTimeStart = new Date().getTime();
+		chilliBonusAwardedByLevel[level] = false;
 
 		for (var l=0; l < levels[level].layers.length; l++)
 		{
@@ -947,6 +950,13 @@ function checkEnemyCollisions(player)
 						{
 							case "Chilli1":
 										chilliCounter--;
+										if (chilliCounter <= 0 && !chilliBonusAwardedByLevel[level])
+										{
+											chilliBonusAwardedByLevel[level] = true;
+											player1.lives += 2;
+											sound.playSound(SND_EXTRALIFE);
+											sound.playSound(SND_EXTRALIFE);
+										}
 										break;
 							case "ChilliEL":
 										//get Chilli ID
