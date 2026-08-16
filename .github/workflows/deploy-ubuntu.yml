@@ -1,0 +1,22 @@
+name: Deploy Pancho to Ubuntu
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, Linux, X64]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Deploy game to nginx
+        run: |
+          rm -rf /var/www/pancho/*
+          cp -a game/. /var/www/pancho/
+
+      - name: Verify deployment
+        run: |
+          echo "Deployed files:"
+          find /var/www/pancho -maxdepth 2 -type f | sort | head -100

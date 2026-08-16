@@ -5,7 +5,7 @@ on:
 
 jobs:
   test-runner:
-    runs-on: [self-hosted, linux, x64]
+    runs-on: [self-hosted, Linux, X64]
 
     steps:
       - name: Show runner information
@@ -21,3 +21,14 @@ jobs:
           echo
           echo "Operating system:"
           uname -a
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Show checked out files
+        run: |
+          echo "Current directory:"
+          pwd
+          echo
+          echo "Files:"
+          find . -maxdepth 2 -type f | sort
