@@ -7,7 +7,7 @@ html, body, #fullscreen {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background: #ffffff;
+    background: #000000;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
