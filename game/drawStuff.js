@@ -369,15 +369,16 @@ function drawTextBoxes()
 		case "GAME_OVER":
 												titletextbox.updateTextArea(0,"GAME OVER", 1, "CENTRE", 0, 0);
 												titletextbox.draw(bctx);
-												messagebox.updateTextArea(0,"PRESS R TO RESET LEVEL", 1, "CENTRE", 0, 0);
+												if (ISMOBILE) { messagebox.updateTextArea(0,"TAP TO RESET GAME", 1, "CENTRE", 0, 0); }
+												else {	        messagebox.updateTextArea(0,"PRESS R TO RESET GAME", 1, "CENTRE", 0, 0); }
 												messagebox.draw(bctx);
 	  	break;
 		case "PLAYER_DIED_WAIT_FOR_RESETLEVEL":
 												if (player1.collisionDeath) { titletextbox.updateTextArea(0,"CAREFUL WHERE YOU STAND", 1, "CENTRE", 0, 0); }
 												if (player1.hit)            { titletextbox.updateTextArea(0, "WATCH OUT FOR THE BADDIES", 1, "CENTRE", 0, 0); }
 												titletextbox.draw(bctx);
-
-												messagebox.updateTextArea(0,"PRESS R TO RESET LEVEL", 1, "CENTRE", 0, 0);
+												if (ISMOBILE) { messagebox.updateTextArea(0,"TAP TO RESET LEVEL", 1, "CENTRE", 0, 0); }
+												else {	        messagebox.updateTextArea(0,"PRESS R TO RESET LEVEL", 1, "CENTRE", 0, 0); }
 												messagebox.draw(bctx);
 		break;
 		case "NOT_LANDSCAPE":

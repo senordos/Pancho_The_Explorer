@@ -246,8 +246,8 @@ levelcompletebox.addTextArea("LEVEL TIME: ", 14, "LEFT", 2, 2);
 var levelcompletebox_timeTextArea =
 levelcompletebox.addTextArea("00:00", 14, "RIGHT", 2, 2);
 
-
-levelcompletebox.addTextArea("PRESS SPACE TO CONTINUE", 21, "CENTRE",0,0);
+if (ISMOBILE) { levelcompletebox.addTextArea("TAP TO CONTINUE", 21, "CENTRE",0,0); }
+else { levelcompletebox.addTextArea("PRESS SPACE TO CONTINUE", 21, "CENTRE",0,0); }
 
 
 
