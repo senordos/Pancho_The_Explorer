@@ -362,7 +362,7 @@ function initMusic(level,gameJustLoaded)
 					}
 					break;
 			case 4:
-
+					sound.stopMusic();
 					sound.playMusic(1);
 					break;
 			case 5:
@@ -378,6 +378,7 @@ function initMusic(level,gameJustLoaded)
 					}
 					break;
 			case 7:
+					sound.stopMusic();
 					sound.playMusic(2);
 
 			case 8:
