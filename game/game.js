@@ -11,7 +11,8 @@ const SND_STOMP = 1;
 const SND_PLAYERDIE = 2;
 const SND_CHILLI = 3;
 const SND_EXTRALIFE = 4;
-const SND_INVINCIBLE = 5;
+const SND_EXTRALIFEx2 = 5;
+const SND_INVINCIBLE = 6;
 
 //some direction constants for general use
 const DOWN = 0;
@@ -32,6 +33,7 @@ sound.loadSound(SND_CHILLI, "sounds/sound_chilli.wav");
 sound.loadSound(SND_INVINCIBLE, "sounds/sound_invincible.wav");
 sound.loadSound(SND_PLAYERDIE, "sounds/sound_playerdie.wav");
 sound.loadSound(SND_EXTRALIFE, "sounds/sound_extralife.wav");
+sound.loadSound(SND_EXTRALIFEx2, "sounds/sound_extraextralife.wav");
 
 sound.loadMusic(0,"sounds/music_conejo-rapido-1-5.mp3")
 sound.loadMusic(1,"sounds/music_jungle3.mp3");
@@ -954,8 +956,7 @@ function checkEnemyCollisions(player)
 										{
 											chilliBonusAwardedByLevel[level] = true;
 											player1.lives += 2;
-											sound.playSound(SND_EXTRALIFE);
-											sound.playSound(SND_EXTRALIFE);
+											sound.playSound(SND_EXTRALIFEx2);
 										}
 										break;
 							case "ChilliEL":
