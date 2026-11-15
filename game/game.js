@@ -11,7 +11,8 @@ const SND_STOMP = 1;
 const SND_PLAYERDIE = 2;
 const SND_CHILLI = 3;
 const SND_EXTRALIFE = 4;
-const SND_INVINCIBLE = 5;
+const SND_EXTRALIFEx2 = 5;
+const SND_INVINCIBLE = 6;
 
 //some direction constants for general use
 const DOWN = 0;
@@ -32,6 +33,7 @@ sound.loadSound(SND_CHILLI, "sounds/sound_chilli.wav");
 sound.loadSound(SND_INVINCIBLE, "sounds/sound_invincible.wav");
 sound.loadSound(SND_PLAYERDIE, "sounds/sound_playerdie.wav");
 sound.loadSound(SND_EXTRALIFE, "sounds/sound_extralife.wav");
+sound.loadSound(SND_EXTRALIFEx2, "sounds/sound_extraextralife.wav");
 
 sound.loadMusic(0,"sounds/music_conejo-rapido-1-5.mp3")
 sound.loadMusic(1,"sounds/music_jungle3.mp3");
@@ -77,6 +79,8 @@ bctx.imageSmoothingEnabled = false;
 onWindowResize();
 //Event listener if the window is resized
 window.addEventListener("resize", onWindowResize);
+document.addEventListener("fullscreenchange", onWindowResize);
+document.addEventListener("webkitfullscreenchange", onWindowResize);
 
 
 var touchable = 'createTouch' in document;
@@ -135,6 +139,7 @@ var levelTimeStart = 0;
 var levelTimeTaken = 0;
 var attempts = 1; //this is the number of attempts to complete current level
 var extraLivesUsed = new Map(); //this tracks whether the extra lives have been found or not
+var chilliBonusAwardedByLevel = []; // true once the +2 life bonus has been awarded for this level
 
 
 //Can't remember why I put this in, but possibly so that at the end of the
@@ -300,6 +305,7 @@ function resetGame()
 		level = 0;
 		player1.lives = 3;
 		extraLivesUsed.clear();
+		chilliBonusAwardedByLevel = [];
 		// Stop any currently playing music when restarting the whole game
 		if (typeof sound !== 'undefined' && typeof sound.stopMusic === 'function')
 		{
@@ -358,7 +364,7 @@ function initMusic(level,gameJustLoaded)
 					}
 					break;
 			case 4:
-
+					sound.stopMusic();
 					sound.playMusic(1);
 					break;
 			case 5:
@@ -374,6 +380,7 @@ function initMusic(level,gameJustLoaded)
 					}
 					break;
 			case 7:
+					sound.stopMusic();
 					sound.playMusic(2);
 
 			case 8:
@@ -408,6 +415,7 @@ function loadLevel()
 		var backgroundMap = []; //holds the map data integers before creating objects
 
 		levelTimeStart = new Date().getTime();
+		chilliBonusAwardedByLevel[level] = false;
 
 		for (var l=0; l < levels[level].layers.length; l++)
 		{
@@ -947,6 +955,12 @@ function checkEnemyCollisions(player)
 						{
 							case "Chilli1":
 										chilliCounter--;
+										if (chilliCounter <= 0 && !chilliBonusAwardedByLevel[level])
+										{
+											chilliBonusAwardedByLevel[level] = true;
+											player1.lives += 2;
+											sound.playSound(SND_EXTRALIFEx2);
+										}
 										break;
 							case "ChilliEL":
 										//get Chilli ID
