@@ -4,11 +4,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" /> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="pancho.css">
     
-    <title>Pancho the Explorer v0.07.02</title>
+    <title>Pancho the Explorer v0.08.01</title>
 </head>
 <body>
 
@@ -84,47 +82,26 @@
             var btnFS = document.getElementById('start_fs');
             var btnWin = document.getElementById('start_win');
 
-            function resize(){
-                // don't override sizing after the game has initialized its own layout
-                if (window.gameLoaded) return;
-                var w = window.innerWidth || document.documentElement.clientWidth;
-                var h = window.innerHeight || document.documentElement.clientHeight;
-                canvas.width = w;
-                canvas.height = h;
-                canvas.style.width = w + 'px';
-                canvas.style.height = h + 'px';
-            }
-            window.addEventListener('resize', resize);
-            resize();
-
-            function enterFSThenLoad(callback)
+            function enterFullscreen()
             {
-                var el = document.documentElement;
-                var requested = false;
-                function afterFS(){
-                    document.removeEventListener('fullscreenchange', afterFS);
-                    document.removeEventListener('webkitfullscreenchange', afterFS);
-                    callback();
-                }
-                if (el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen)
-                {
-                    document.addEventListener('fullscreenchange', afterFS);
-                    document.addEventListener('webkitfullscreenchange', afterFS);
-                    if (el.requestFullscreen) el.requestFullscreen();
-                    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-                    else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
-                    else if (el.msRequestFullscreen) el.msRequestFullscreen();
-                    requested = true;
-                }
-                if (!requested)
-                {
-                    // if Fullscreen API not available, just continue
-                    callback();
+                var root = document.documentElement;
+                var request = root.requestFullscreen || root.webkitRequestFullscreen ||
+                    root.mozRequestFullScreen || root.msRequestFullscreen;
+                if (!request) return;
+
+                try {
+                    var result = request.call(root);
+                    if (result && typeof result.catch === 'function') {
+                        result.catch(function() {});
+                    }
+                } catch (error) {
+                    // The game can still run within the browser viewport.
                 }
             }
 
             function loadGameScript()
             {
+                if (window.gameLoaded) return;
                 window.gameLoaded = true;
                 // hide splash and overlay
                 if (splash) splash.style.display = 'none';
@@ -142,21 +119,19 @@
                 document.body.appendChild(s);
             }
 
-            if (btnFS) btnFS.addEventListener('click', function(){ enterFSThenLoad(loadGameScript); });
+            if (btnFS) btnFS.addEventListener('click', function(){
+                enterFullscreen();
+                loadGameScript();
+            });
             if (btnWin) btnWin.addEventListener('click', loadGameScript);
 
             // Also keep the small fullscreen button available for direct fullscreen requests
             function enterFS(){
-                var el = document.documentElement;
-                if (el.requestFullscreen) el.requestFullscreen();
-                else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-                else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
-                else if (el.msRequestFullscreen) el.msRequestFullscreen();
+                enterFullscreen();
                 if (overlay) overlay.style.display = 'none';
                 try { canvas.focus(); } catch(e) {}
             }
             if (btn) btn.addEventListener('click', enterFS);
-            if (canvas) canvas.addEventListener('click', enterFS);
             if (overlay) overlay.addEventListener('click', function(e){ if(e.target===overlay) enterFS(); });
 
             // Make sure canvas is visible for rendering

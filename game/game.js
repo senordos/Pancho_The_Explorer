@@ -79,6 +79,8 @@ bctx.imageSmoothingEnabled = false;
 onWindowResize();
 //Event listener if the window is resized
 window.addEventListener("resize", onWindowResize);
+document.addEventListener("fullscreenchange", onWindowResize);
+document.addEventListener("webkitfullscreenchange", onWindowResize);
 
 
 var touchable = 'createTouch' in document;
